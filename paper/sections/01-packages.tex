@@ -1,0 +1,10 @@
+% \url command and clickable links
+\usepackage[hidelinks]{hyperref}
+
+% minted
+\usepackage{minted}
+% minted config
+\newenvironment{code}{\VerbatimEnvironment\begin{minted}{haskell}}{\end{minted}}
+\newenvironment{spec}{\VerbatimEnvironment\begin{minted}{haskell}}{\end{minted}}
+\newcommand{\hs}{\mintinline{haskell}}
+\setminted[haskell]{escapeinside=@@}
