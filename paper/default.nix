@@ -31,8 +31,7 @@ stdenv.mkDerivation {
   buildPhase = "make";
   shellHook = ''
     virtualenv --no-wheel --no-setuptools venv
-    venv/bin/pip install -v https://github.com/hmemcpy/pygments-patched/archive/2.4.2-PATCHED.tar.gz
-    venv/bin/pip install -v pygments-style-github
+    venv/bin/pip install -v pygments
     source venv/bin/activate
   '';
 }
