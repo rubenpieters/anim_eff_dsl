@@ -16,6 +16,7 @@ stdenv.mkDerivation {
                       ifplatform
                       xstring
                       framed
+                      ifsym
 
                       # build tools
                       latexmk
