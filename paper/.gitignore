@@ -7,6 +7,9 @@
 ## ignore venv folder
 venv/*
 
+## ignore to_compile_processed
+to_compile_processed.lhs
+
 ## rest from: https://github.com/github/gitignore/blob/master/TeX.gitignore
 
 ## Core latex/pdflatex auxiliary files:

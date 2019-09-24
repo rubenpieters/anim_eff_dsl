@@ -2,7 +2,7 @@
 
 \input{sections/01-packages.tex}
 
-\title{Effectful DSL for UI Animations}
+\title{Effectful DSL for GUI Animations}
 
 \input{sections/02-commands.tex}
 

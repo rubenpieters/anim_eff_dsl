@@ -1,12 +1,65 @@
 \section{UI Animations}
 \label{sec:ui_animations}
 
-In this paper we develop a DSL for creating UI animations. This section gives a high-level overview of the expected features of the DSL.
+This paper develops a DSL for creating GUI animations. This section gives a high-level overview of the problem domain and the expected features of the DSL.
+
+\subsection{Problem Domain}
+
+A graphical user interface displays the current state of the application to the user. However, the interface should also aid the user in understanding what the application is doing. To achieve this, the interface can display animations to inform the user of change occurring in the state. These are typically called micro-animations or micro-interactions, examples can be found in many different situations:
+\begin{itemize}
+\item In an application with different tabs, when a user changes tabs the UI displays a transition animation to show that the old tab content is removed and the new tab content is displayed.
+\item In an application with a counter, when the counter changes the UI displays numbers inbetween the two values to indicate that the counter is changing.
+\item ...
+\end{itemize}
+
+(TODO: add some animations)
 
 \subsection{Basic Animations}
 
-\subsection{Composing Animations}
+We distinguish between \emph{basic} and \emph{composed} animations. A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements. First, a lens specifies which property in our UI should change. Second, we provide the target value for this property. Third, we provide the duration, specifying how many seconds the animation should last.
+
+In the following \hs{moveRight} animation, we focus on the \hs{x} property with a target of \hs{10} during \hs{1} second.
+\begin{code}
+moveRight = basic x (To 10) (For 1)
+\end{code}
+
+This results in an animation of a box moving to the right, since its starting position is \texttt{x=0}.
+
+If we focus on a different value, for example the \hs{y} property, then we obtain the animation which moves the box upwards.
+\begin{code}
+moveUp = basic y (To 10) (For 1)
+\end{code}
+
+\subsection{Composed Animations}
+
+A composed animation combines several other animations into one new animation. We can do this either in \emph{sequence} or in \emph{parallel}.
+
+Composing animations in sequence executes them one after the other. When we compose \hs{moveUp} and \hs{moveRight} in sequence, we get an animation which first moves the box up and then right.
+\begin{code}
+upThenRight = seq [moveUp, moveRight]
+\end{code}
+
+Composing animations in parallel executes them at the same time, When we compose \hs{moveUp} and \hs{moveRight} in parallel we get an animation which moves the box up and right at the same time, or diagonally.
+\begin{code}
+upAndRight = par [moveUp, moveRight]
+\end{code}
 
 \subsection{Additional Operations}
 
+% Other UI Animation Libraries:
+% https://www.codementor.io/hayeskier/7-best-animation-libraries-for-ui-designers-2018-kmg7byy1g
+% https://greensock.com/docs/
+% https://animejs.com/documentation/#cssSelector
+
+The DSL also supports embedding of any arbitrary effect. For example we can embed an \hs{IO} operation, playing a sound effect, in the middle of a sequence of animations.
+\begin{code}
+upThenBeepThenRight = seq [moveUp, beep, moveRight]
+\end{code}
+
+
 \subsection{Inspection}
+
+
+\subsection{Examples}
+
+(TODO: add examples section?)
