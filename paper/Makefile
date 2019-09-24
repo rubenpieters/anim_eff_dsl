@@ -16,8 +16,13 @@ watch: $(DOCNAME).lhs $(DOCNAME).bib sections/*.tex Formatting.fmt syntax-prelud
 	latexmk -pvc -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make $(DOCNAME).tex -shell-escape
 
 clean:
-	latexmk -CA
 	rm -f $(DOCNAME).tex
+	rm $(DOCNAME)_to_compile.lhs
+	latexmk -CA
+
+compile: $(DOCNAME).lhs sections/*.tex
+	flat-tex $(DOCNAME).lhs > $(DOCNAME)_to_compile.lhs
+	ghc -fno-code $(DOCNAME)_to_compile.lhs
 
 install:
 	cp $(DOCNAME).pdf ${out}/$(DOCNAME).pdf

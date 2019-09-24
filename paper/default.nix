@@ -23,7 +23,9 @@ stdenv.mkDerivation {
                       ;
                   })
                   gnumake
+                  ghc
                   haskellPackages.lhs2tex
+                  haskellPackages.flat-tex
                   which
                   git
                   pythonPackages.virtualenv
