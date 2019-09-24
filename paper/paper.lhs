@@ -2,9 +2,14 @@
 
 \input{sections/01-packages.tex}
 
-\title{Effectful DSL for Composable Animations}
+\title{Effectful DSL for UI Animations}
 
 \input{sections/02-commands.tex}
+
+\ifx\tocompile
+\input{sections/03-code.tex}
+\else
+\fi
 
 \begin{document}
 
@@ -18,10 +23,12 @@ Tom Schrijvers \orcidID{0000-0001-8771-5559}}
 
 \maketitle
 
-\input{sections/03-abstract.tex}
+\input{sections/04-abstract.tex}
 
-\input{sections/04-intro.tex}
+\input{sections/05-intro.tex}
 
-\input{sections/05-motivation.tex}
+\input{sections/06-motivation.tex}
+
+\include{paper_bib}
 
 \end{document}
