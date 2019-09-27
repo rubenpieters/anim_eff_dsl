@@ -5,46 +5,79 @@ This paper develops a DSL for creating GUI animations. This section gives a high
 
 \subsection{Problem Domain}
 
-A graphical user interface displays the current state of the application to the user. However, the interface should also aid the user in understanding what the application is doing. To achieve this, the interface can display animations to inform the user of change occurring in the state. These are typically called micro-animations or micro-interactions, examples can be found in many different situations:
-\begin{itemize}
-\item In an application with different tabs, when a user changes tabs the UI displays a transition animation to show that the old tab content is removed and the new tab content is displayed.
-\item In an application with a counter, when the counter changes the UI displays numbers inbetween the two values to indicate that the counter is changing.
-\item ...
-\end{itemize}
+Graphical user interfaces typically use various concepts to aid users in understanding what the application is doing. One example is to display brief animations whenever the interface changes shape.
 
-(TODO: add some animations)
+For example, in Figure~\ref{fig:usecase1} a menu is displayed on the screen when the corresponding icon is pressed. This menu slides in from the right while the background fades out.
 
-\subsection{Basic Animations}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{pictures/usecase1fig.png}
+\caption{Animation of a menu sliding in from the right while the background fades out.}
+\label{fig:usecase1}
+\end{figure}
 
-We distinguish between \emph{basic} and \emph{composed} animations. A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements. First, a lens specifies which property in our UI should change. Second, we provide the target value for this property. Third, we provide the duration, specifying how many seconds the animation should last.
+Another example can be seen in Figure~\ref{fig:usecase2}, where a user can click on a location to move the character in the game. The application displays an animation to indicate the button press is received correctly and then the character moves to the selected location.
 
-In the following \hs{moveRight} animation, we focus on the \hs{x} property with a target of \hs{10} during \hs{1} second.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{pictures/todo.png}
+\caption{An animation is played to indicate the selected location, then the character moves to this location.}
+\label{fig:usecase2}
+\end{figure}
+
+\subsection{Composing Animations}
+
+The DSL expresses animations by composing smaller parts together. A \emph{basic} animation expresses an elementary unit of animation, which is typically one varying property within the interface. On the other hand, \emph{composed} animations creates a bigger animation out of smaller animations.
+
+\subsubsection{Basic Animations}
+
+A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements. First, a lens specifies which property in our UI should change. Second, we provide the target value for this property. Third, we provide the duration, specifying how many seconds the animation should last.
+
+In the menu use case of Figure~\ref{fig:usecase1} there are two properties which need to change during the animation: the x-value of the incoming menu and the alpha property of the box obscuring the application. We express this using the \hs{basic} operation.
+
+First we need to create the animation which makes the menu slide in. We pass three parameters to the \hs{basic} operation: the lens \hs{menu . x} which focuses on the x-value of the incoming menu, the duration \hs{For 0.5} and the target value \hs{To 25}. This results in the animation seen in Figure~\ref{fig:usecase1basic1}.
+
 \begin{code}
-moveRight = basic x (To 10) (For 1)
+menuSlideIn = basic (menu . x) (For 0.5) (To 25)
 \end{code}
 
-This results in an animation of a box moving to the right, since its starting position is \texttt{x=0}.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{pictures/usecase1basic1.png}
+\caption{...}
+\label{fig:usecase1basic1}
+\end{figure}
 
-If we focus on a different value, for example the \hs{y} property, then we obtain the animation which moves the box upwards.
+Second we also need to create an animation which fades out the application. Now the lens focuses on the alpha-value of the obscuring box and sets it to \hs{0.6} over \hs{0.5} seconds. This results in the animation seen in Figure~\ref{fig:usecase1basic2}.
+
 \begin{code}
-moveUp = basic y (To 10) (For 1)
+appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
 \end{code}
 
-\subsection{Composed Animations}
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{pictures/usecase1basic2.png}
+\caption{...}
+\label{fig:usecase1basic2}
+\end{figure}
+
+\subsubsection{Composed Animations}
 
 A composed animation combines several other animations into one new animation. We can do this either in \emph{sequence} or in \emph{parallel}.
 
-Composing animations in sequence executes them one after the other. When we compose \hs{moveUp} and \hs{moveRight} in sequence, we get an animation which first moves the box up and then right.
+For the menu use case we want to display the animations \hs{menuSlideIn} and \hs{appFadeOut} at the same time. Thus, we create a composed animation using \hs{par},  which results in the animation as seen in Figure~\ref{fig:usecase1}.
+
 \begin{code}
-upThenRight = seq [moveUp, moveRight]
+menuAnimation = menuSlideIn `par` appFadeOut
 \end{code}
 
-Composing animations in parallel executes them at the same time, When we compose \hs{moveUp} and \hs{moveRight} in parallel we get an animation which moves the box up and right at the same time, or diagonally.
-\begin{code}
-upAndRight = par [moveUp, moveRight]
-\end{code}
+For the game use case we want to display the animations \hs{selectedIndicator} and \hs{playerMove} one after the other. To do this we create a composed animation using \hs{seq}, which results in the animation as seen in Figure~\ref{fig:usecase2}.
 
-\subsection{Additional Operations}
+\subsection{Additional Requirements}
+
+In addition to the previous features, we also expect the DSL to support two additional requirements: the user can embed custom operations and inspect an animation specified with the DSL.
+
+\subsubsection{Custom Operations}
 
 % Other UI Animation Libraries:
 % https://www.codementor.io/hayeskier/7-best-animation-libraries-for-ui-designers-2018-kmg7byy1g
@@ -57,9 +90,8 @@ upThenBeepThenRight = seq [moveUp, beep, moveRight]
 \end{code}
 
 
-\subsection{Inspection}
+\subsubsection{Inspection}
 
 
 \subsection{Examples}
 
-(TODO: add examples section?)
