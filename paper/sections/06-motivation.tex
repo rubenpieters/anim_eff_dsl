@@ -33,9 +33,9 @@ The DSL expresses animations by composing smaller parts together. A \emph{basic}
 
 A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements. First, a lens specifies which property in our UI should change. Second, we provide the target value for this property. Third, we provide the duration, specifying how many seconds the animation should last.
 
-In the menu use case of Figure~\ref{fig:usecase1} there are two properties which need to change during the animation: the x-value of the incoming menu and the alpha property of the box obscuring the application. We express this using the \hs{basic} operation.
+In the menu use case of Figure~\ref{fig:usecase1} there are two properties which need to change during the animation: the \hs{x} value of the incoming menu and the alpha property of the box obscuring the application. We express this using the \hs{basic} operation.
 
-First we need to create the animation which makes the menu slide in. We pass three parameters to the \hs{basic} operation: the lens \hs{menu . x} which focuses on the x-value of the incoming menu, the duration \hs{For 0.5} and the target value \hs{To 25}. This results in the animation seen in Figure~\ref{fig:usecase1basic1}.
+First we need to create the animation which makes the menu slide in. We pass three parameters to the \hs{basic} operation: the lens \hs{menu}~\hs{.}~\hs{x} which focuses on the \hs{x} value of the incoming menu, the duration \hs{For 0.5} and the target value \hs{To 25}. This results in the animation seen in Figure~\ref{fig:usecase1basic1}.
 
 \begin{code}
 menuSlideIn = basic (menu . x) (For 0.5) (To 25)
@@ -44,11 +44,11 @@ menuSlideIn = basic (menu . x) (For 0.5) (To 25)
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{pictures/usecase1basic1.png}
-\caption{...}
+\caption{TODO}
 \label{fig:usecase1basic1}
 \end{figure}
 
-Second we also need to create an animation which fades out the application. Now the lens focuses on the alpha-value of the obscuring box and sets it to \hs{0.6} over \hs{0.5} seconds. This results in the animation seen in Figure~\ref{fig:usecase1basic2}.
+Second we also need to create an animation which fades out the application. Now the lens focuses on the \hs{alpha} value of the obscuring box and sets it to \hs{0.6} over \hs{0.5} seconds. This results in the animation seen in Figure~\ref{fig:usecase1basic2}.
 
 \begin{code}
 appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
@@ -57,9 +57,11 @@ appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
 \begin{figure}[H]
 \centering
 \includegraphics[scale=0.4]{pictures/usecase1basic2.png}
-\caption{...}
+\caption{TODO}
 \label{fig:usecase1basic2}
 \end{figure}
+
+\paragraph{Lenses} TODO: explain basics of lenses?
 
 \subsubsection{Composed Animations}
 
@@ -73,6 +75,10 @@ menuAnimation = menuSlideIn `par` appFadeOut
 
 For the game use case we want to display the animations \hs{selectedIndicator} and \hs{playerMove} one after the other. To do this we create a composed animation using \hs{seq}, which results in the animation as seen in Figure~\ref{fig:usecase2}.
 
+\begin{code}
+playerMoveAnimation = indicatorAnimation `seq` characterMove
+\end{code}
+
 \subsection{Additional Requirements}
 
 In addition to the previous features, we also expect the DSL to support two additional requirements: the user can embed custom operations and inspect an animation specified with the DSL.
@@ -84,14 +90,36 @@ In addition to the previous features, we also expect the DSL to support two addi
 % https://greensock.com/docs/
 % https://animejs.com/documentation/#cssSelector
 
-The DSL also supports embedding of any arbitrary effect. For example we can embed an \hs{IO} operation, playing a sound effect, in the middle of a sequence of animations.
-\begin{code}
-upThenBeepThenRight = seq [moveUp, beep, moveRight]
-\end{code}
+The DSL also supports embedding of arbitrary operations, by allowing customization of the available operations. For instance, we can add sound effects by creating a \hs{playSound} operation. This operation is then available anywhere an animation.
 
+In the menu use case for example, we can extend the previous \hs{appFadeOut} animation with a sound effect playing in parallel.
+
+\begin{code}
+menuAnimationWithSound = menuAnimation `par` playSound
+\end{code}
 
 \subsubsection{Inspection}
 
+The DSL is also inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuAnimation} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed correct since the animation consists of two basic animation of \hs{0.5} composed in parallel.
+
+\begin{code}
+menuAnimDuration = duration menuAnimation
+-- menuAnimDuration = 0.5 
+\end{code}
+
+Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{getValue} which returns a \hs{Float}. If the result of this value is used as the duration parameter, then we cannot know upfront how long the animation will last. Requesting to calculate the duration of this animation then results in a type error.
+
+\begin{spec}
+complicatedAnimation = do
+  v <- getValue
+  basic lens (For v) (To 10)
+
+compAnimDuration = duration complicatedAnimation
+-- type error
+\end{spec}
 
 \subsection{Examples}
 
+This section displays some examples of more complicated animations and how they are constructed using the DSL.
+
+TODO: add examples
