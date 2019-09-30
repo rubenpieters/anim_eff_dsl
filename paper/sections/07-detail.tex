@@ -1,0 +1,75 @@
+\section{The DSL in Detail}
+\label{sec:detail}
+
+The DSL is based on mtl-style effects, which derives its name from the Haskell \texttt{mtl} library\footnote{\url{http://hackage.haskell.org/package/mtl}} implementing monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}. The DSL also incorporates interpretable (non-monadic) effects as seen in previous approaches \cite{DBLP:journals/corr/abs-1905-06544} \cite{DBLP:conf/icfp/Lindley14}.
+
+\subsection{Specifying Basic Animations}
+
+Mtl-style effects are based on typeclasses defining the available operations for a particular effect. For example, we specify the \hs{basic} operation using the following typeclass.
+
+\begin{code}
+class Basic obj f where
+  basic :: Traversal' obj Float -> Duration -> Target -> f ()
+\end{code}
+
+Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => Basic obj f}. However, this constraint is not necessarily true for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
+
+Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to specify basic animations. Now we can accompany the \hs{menuSlideIn} and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type annotations.
+
+\begin{code}
+menuSlideIn :: (Basic MenuWorld f) => f ()
+menuSlideIn = basic (menu . x :: Traversal' MenuWorld Float) (For 0.5) (To 25)
+
+appFadeOut :: (Basic MenuWorld f) => f ()
+appFadeOut = basic (obscuringBox . alpha :: Traversal' MenuWorld Float) (For 0.5) (To 0.6)
+\end{code}
+
+\begin{code}
+indicatorAnimation :: (Basic GameWorld f) => f ()
+indicatorAnimation = basic (undefined :: Traversal' GameWorld Float) (For 0.5) (To 25)
+
+characterMove :: (Basic GameWorld f) => f ()
+characterMove = basic (undefined :: Traversal' GameWorld Float) (For 0.5) (To 0.6)
+\end{code}
+
+
+\subsection{Specifying Composed Animations}
+
+Before we define the \hs{seq} and \hs{par} functions in their corresponding classes, we take a look at how general we want the functions to be.
+
+Based on the use of the functions in Section~\ref{sec:motivation}, the type of both \hs{seq} and \hs{par} should be \hs{f}~\hs{()}~\hs{->}~\hs{f ()}~\hs{->}~\hs{f}~\hs{()}. However, if we decide to implement these functions in this way we will be restricted to operations which do not return values. Instead, we generalize these functions to \hs{f}~\hs{a}~\hs{->}~\hs{f}~\hs{b}~\hs{->}~\hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)}~\hs{->}~\hs{f}~\hs{c}, which takes two operations returning values of respectively type \hs{a} and \hs{b} and a function which combines these return values. The result is then an operation returning a value of type \hs{c}.
+
+\subsubsection{Sequential Composition}
+
+The \hs{seq} function corresponds to the \hs{liftA2} function from the \hs{Applicative} typeclass. In fact, the whole hierarchy of \hs{Functor}-\hs{Applicative}-\hs{Monad} is sensible to reuse for sequential composition of animations, and thus we do not need to define our own typeclass.
+
+First, we can define the more specific \hs{seq} function which works on actions without return value, then we can give a type signature to the \hs{playerMoveAnimation} definition.
+
+\begin{code}
+seq :: (Applicative f) => f () -> f () -> f ()
+seq f1 f2 = liftA2 (\ _ _ -> ()) f1 f2
+
+playerMoveAnimation :: (Applicative f, Basic GameWorld f) => f ()
+playerMoveAnimation = indicatorAnimation `seq` characterMove
+\end{code}
+
+\subsubsection{Parallel Composition}
+
+The \hs{par} function does not correspond to any function in an existing Haskell typeclass. At first we might suspect to find something in the \hs{Alternative} class, but there is no sensible implementation for \hs{mzero} and the potential laws do not make sense for animations.
+
+Instead, we create our own \hs{Par} typeclass defined below.
+
+\begin{code}
+class Par f where
+  liftP2 :: f a -> f b -> (a -> b -> c) -> f c
+\end{code}
+
+\begin{code}
+par :: (Par f) => f () -> f () -> f ()
+par f1 f2 = liftP2 f1 f2 (\ _ _ -> ())
+\end{code}
+
+\begin{code}
+menuAnimation :: (Par f, Basic MenuWorld f) => f ()
+menuAnimation = menuSlideIn `par` appFadeOut
+\end{code}

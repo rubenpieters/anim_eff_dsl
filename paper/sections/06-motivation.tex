@@ -37,9 +37,9 @@ In the menu use case of Figure~\ref{fig:usecase1} there are two properties which
 
 First we need to create the animation which makes the menu slide in. We pass three parameters to the \hs{basic} operation: the lens \hs{menu}~\hs{.}~\hs{x} which focuses on the \hs{x} value of the incoming menu, the duration \hs{For 0.5} and the target value \hs{To 25}. This results in the animation seen in Figure~\ref{fig:usecase1basic1}.
 
-\begin{code}
+\begin{spec}
 menuSlideIn = basic (menu . x) (For 0.5) (To 25)
-\end{code}
+\end{spec}
 
 \begin{figure}[H]
 \centering
@@ -50,9 +50,9 @@ menuSlideIn = basic (menu . x) (For 0.5) (To 25)
 
 Second we also need to create an animation which fades out the application. Now the lens focuses on the \hs{alpha} value of the obscuring box and sets it to \hs{0.6} over \hs{0.5} seconds. This results in the animation seen in Figure~\ref{fig:usecase1basic2}.
 
-\begin{code}
+\begin{spec}
 appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
-\end{code}
+\end{spec}
 
 \begin{figure}[H]
 \centering
@@ -69,15 +69,15 @@ A composed animation combines several other animations into one new animation. W
 
 For the menu use case we want to display the animations \hs{menuSlideIn} and \hs{appFadeOut} at the same time. Thus, we create a composed animation using \hs{par},  which results in the animation as seen in Figure~\ref{fig:usecase1}.
 
-\begin{code}
+\begin{spec}
 menuAnimation = menuSlideIn `par` appFadeOut
-\end{code}
+\end{spec}
 
 For the game use case we want to display the animations \hs{selectedIndicator} and \hs{playerMove} one after the other. To do this we create a composed animation using \hs{seq}, which results in the animation as seen in Figure~\ref{fig:usecase2}.
 
-\begin{code}
+\begin{spec}
 playerMoveAnimation = indicatorAnimation `seq` characterMove
-\end{code}
+\end{spec}
 
 \subsection{Additional Requirements}
 
@@ -94,18 +94,18 @@ The DSL also supports embedding of arbitrary operations, by allowing customizati
 
 In the menu use case for example, we can extend the previous \hs{appFadeOut} animation with a sound effect playing in parallel.
 
-\begin{code}
+\begin{spec}
 menuAnimationWithSound = menuAnimation `par` playSound
-\end{code}
+\end{spec}
 
 \subsubsection{Inspection}
 
-The DSL is also inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuAnimation} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed correct since the animation consists of two basic animation of \hs{0.5} composed in parallel.
+The DSL is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuAnimation} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed correct since the animation consists of two basic animation of \hs{0.5} composed in parallel.
 
-\begin{code}
+\begin{spec}
 menuAnimDuration = duration menuAnimation
 -- menuAnimDuration = 0.5 
-\end{code}
+\end{spec}
 
 Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{getValue} which returns a \hs{Float}. If the result of this value is used as the duration parameter, then we cannot know upfront how long the animation will last. Requesting to calculate the duration of this animation then results in a type error.
 

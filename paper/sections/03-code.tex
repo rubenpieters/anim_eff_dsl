@@ -1,5 +1,10 @@
 \begin{code}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 import Prelude hiding (seq)
+
+import Control.Applicative (liftA2)
 
 main :: IO ()
 main = return ()
@@ -7,18 +12,21 @@ main = return ()
 str :: String
 str = "str"
 
-data For = For Float
-data To = To Float
+data Duration = For Float
+data Target = To Float
+
+data MenuWorld = MenuWorld
+data GameWorld = GameWorld
+
+type Traversal' a b = a -> b
 
 x = undefined
 y = undefined
 
-basic a b c = undefined
-seq a b = undefined
-par a b = undefined
-
-beep = undefined
-
 menu = undefined
-x = undefined
+obscuringBox = undefined
+alpha = undefined
+
+playSound = undefined
+duration = undefined
 \end{code}

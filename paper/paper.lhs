@@ -29,6 +29,8 @@ Tom Schrijvers \orcidID{0000-0001-8771-5559}}
 
 \input{sections/06-motivation.tex}
 
+\input{sections/07-detail.tex}
+
 \include{paper_bib}
 
 \end{document}
