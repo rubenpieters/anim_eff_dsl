@@ -4,6 +4,9 @@
 
 with pkgs;
 
+let
+  ghc = haskellPackages.ghcWithPackages (p: [p.microlens]);
+in
 stdenv.mkDerivation {
   name = "paper";
   buildInputs = [ (texlive.combine {

@@ -1,10 +1,15 @@
 \begin{code}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE RankNTypes #-}
 
 import Prelude hiding (seq)
 
 import Control.Applicative (liftA2)
+import Control.Monad
+
+import Lens.Micro
 
 main :: IO ()
 main = return ()
@@ -18,8 +23,6 @@ data Target = To Float
 data MenuWorld = MenuWorld
 data GameWorld = GameWorld
 
-type Traversal' a b = a -> b
-
 x = undefined
 y = undefined
 
@@ -29,4 +32,11 @@ alpha = undefined
 
 playSound = undefined
 duration = undefined
+
+instance (Monad m) => Functor (Animation obj m) where
+  fmap = liftM
+
+instance (Monad m) => Applicative (Animation obj m) where
+  pure = return
+  (<*>) = ap
 \end{code}
