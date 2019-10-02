@@ -9,6 +9,8 @@ import Prelude hiding (seq)
 import Control.Applicative (liftA2)
 import Control.Monad
 
+import Data.Functor.Const
+
 import Lens.Micro
 
 main :: IO ()
@@ -17,8 +19,18 @@ main = return ()
 str :: String
 str = "str"
 
-data Duration = For Float
-data Target = To Float
+newtype Duration = For Float
+  deriving (Ord, Eq, Show)
+
+instance Semigroup Duration where
+  (<>) = mappend
+
+instance Monoid Duration where
+  mempty = For 0
+  mappend (For a) (For b) = For (a + b)
+
+newtype Target = To Float
+  deriving (Ord, Eq, Show)
 
 data MenuWorld = MenuWorld
 data GameWorld = GameWorld
@@ -31,7 +43,6 @@ obscuringBox = undefined
 alpha = undefined
 
 playSound = undefined
-duration = undefined
 
 instance (Monad m) => Functor (Animation obj m) where
   fmap = liftM

@@ -7,7 +7,7 @@ This paper develops a DSL for creating GUI animations. This section gives a high
 
 Graphical user interfaces typically use various concepts to aid users in understanding what the application is doing. One example is to display brief animations whenever the interface changes shape.
 
-For example, in Figure~\ref{fig:usecase1} a menu is displayed on the screen when the corresponding icon is pressed. This menu slides in from the right while the background fades out.
+For example, in Figure~\ref{fig:usecase1} a menu is displayed on the screen when the hamburger icon is pressed. This menu slides in from the right while the background fades out.
 
 \begin{figure}[H]
 \centering
@@ -24,6 +24,8 @@ Another example can be seen in Figure~\ref{fig:usecase2}, where a user can click
 \caption{An animation is played to indicate the selected location, then the character moves to this location.}
 \label{fig:usecase2}
 \end{figure}
+
+Another example can be seen in Figure~\ref{fig:usecase2}, at the top of the application is a navigation bar. When the user clicks on one of the elements in the bar, an animation is displayed removing the underline from the previously selected element and introducing the underline for the newly selected element.
 
 \subsection{Composing Animations}
 

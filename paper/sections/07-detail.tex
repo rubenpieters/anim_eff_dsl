@@ -184,3 +184,55 @@ TODO: examples of running animations by linking with gloss?
 
 Inspecting an animation is done by interpreting the DSL to a \emph{different} data type, which provides instances for the typeclasses with different semantics. This section provides the example of calculating the duration of an animation.
 
+\subsubsection{Inspecting Basic}
+
+The data type we utilize for inspection is the \hs{Const} functor, defined below.
+
+\begin{spec}
+newtype Const a b = Const { getConst :: a }
+\end{spec}
+
+To inspect animations we provide an instance for the operations which interprets them into this data type. In the case of the \hs{basic} operation, we embed the duration within a \hs{Const} wrapper.
+
+\begin{code}
+instance Basic obj (Const Duration) where
+  basic _ duration _ = Const duration
+\end{code}
+
+\subsubsection{Inspecting Applicative}
+
+While the \hs{Const} data type does not provide a \hs{Monad} instance, it does provide an \hs{Applicative} instance. This means that it is not possible to inspect animations with a \hs{Monad} constraint, but it is possible for animations with an \hs{Applicative} constraint.
+
+\subsubsection{Inspecting Par}
+
+The duration of two animations in parallel is equal to the highest duration of the two. The \hs{Par} instance implementation for \hs{Const Duration} reflects this idea. 
+
+\begin{code}
+instance Par (Const Duration) where
+  liftP2 _ (Const x1) (Const x2) = Const (max x1 x2)
+\end{code}
+
+\subsubsection{Examples}
+
+The duration function is a specialization of the unwrapper function of the \hs{Const} data type, namely \hs{getConst}. We can feed our previously defined animations to this function and obtain the duration of the animations as a result.
+
+\begin{code}
+duration :: Const Duration a -> Duration
+duration = getConst
+
+playerMoveAnimDuration :: Duration
+playerMoveAnimDuration = duration playerMoveAnimation
+-- playerMoveAnimDuration = For 1.0
+
+menuAnimDuration :: Duration
+menuAnimDuration = duration menuAnimation
+-- menuAnimDuration = For 0.5
+\end{code}
+
+When we try to retrieve the duration of an animation with a monad constraint, we receive an error from the compiler: it cannot find a \hs{Monad} instance for \hs{Const Duration}.
+
+\begin{spec}
+compAnimDuration :: Duration
+compAnimDuration = duration complicatedAnimation
+-- No instance for (Monad (Const Duration))
+\end{spec}
