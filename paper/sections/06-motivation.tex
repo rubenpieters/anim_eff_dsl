@@ -43,13 +43,6 @@ First we need to create the animation which makes the menu slide in. We pass thr
 menuSlideIn = basic (menu . x) (For 0.5) (To 25)
 \end{spec}
 
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.4]{pictures/usecase1basic1.png}
-\caption{TODO}
-\label{fig:usecase1basic1}
-\end{figure}
-
 Second we also need to create an animation which fades out the application. Now the lens focuses on the \hs{alpha} value of the obscuring box and sets it to \hs{0.6} over \hs{0.5} seconds. This results in the animation seen in Figure~\ref{fig:usecase1basic2}.
 
 \begin{spec}
@@ -58,9 +51,23 @@ appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
 
 \begin{figure}[H]
 \centering
+
+\begin{subfigure}[h]{0.75\textwidth}
+\centering
+\includegraphics[scale=0.4]{pictures/usecase1basic1.png}
+\caption{TODO}
+\label{fig:usecase1basic1}
+\end{subfigure}
+
+\begin{subfigure}[h]{0.75\textwidth}
+\centering
 \includegraphics[scale=0.4]{pictures/usecase1basic2.png}
 \caption{TODO}
 \label{fig:usecase1basic2}
+\end{subfigure}
+
+\caption{TODO}
+\label{fig:usecase1basic}
 \end{figure}
 
 \paragraph{Lenses} TODO: explain basics of lenses?
