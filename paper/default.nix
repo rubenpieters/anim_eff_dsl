@@ -5,7 +5,7 @@
 with pkgs;
 
 let
-  ghc = haskellPackages.ghcWithPackages (p: [p.microlens]);
+  ghc = haskellPackages.ghcWithPackages (p: with p; [microlens microlens-th gloss]);
 in
 stdenv.mkDerivation {
   name = "paper";

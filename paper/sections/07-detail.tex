@@ -113,7 +113,7 @@ instance (Applicative m) => Basic obj (Animation obj m) where
     in pure (newObj, remainingAnim, remainingDelta)
 \end{code}
 
-The \hs{updateValue} helper function updates the value within the traversal has to change depending on the time delta, duration and target value. The result value is clamped to make sure we do not overshoot the target when the time delta is larger than the remaining duration of the animation.
+The \hs{updateValue} helper function updates the value within the traversal depending on the time delta, duration and target value. The result value is clamped to make sure we do not overshoot the target when the time delta is larger than the remaining duration of the animation.
 
 \begin{code}
 updateValue ::

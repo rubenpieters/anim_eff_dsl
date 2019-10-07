@@ -1,8 +1,10 @@
 \begin{code}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE RankNTypes #-}
 
 import Prelude hiding (seq)
 
@@ -12,9 +14,17 @@ import Control.Monad
 import Data.Functor.Const
 
 import Lens.Micro
+import Lens.Micro.TH
+
+import Graphics.Gloss hiding (color)
+import Graphics.Gloss.Interface.Pure.Game hiding (color)
 
 main :: IO ()
-main = return ()
+main = let
+  bgColor = makeColor (196 / 256) (200 / 256) (194 / 256) 1
+  window = InWindow "animation-dsl" (100, 100) (100, 100)
+  in do
+  play window bgColor 60 () (\_ -> rectangleSolid 20 20 & Color (makeColor 1 0 0 1)) (\_ w -> w) (\_ w -> w)
 
 str :: String
 str = "str"
