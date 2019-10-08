@@ -18,7 +18,7 @@ Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to 
 
 \begin{code}
 menuSlideIn :: (Basic MenuWorld f) => f ()
-menuSlideIn = basic (menu . x :: Traversal' MenuWorld Float) (For 0.5) (To 25)
+menuSlideIn = basic (menu . width :: Traversal' MenuWorld Float) (For 0.5) (To 75)
 
 appFadeOut :: (Basic MenuWorld f) => f ()
 appFadeOut = basic (obscuringBox . alpha :: Traversal' MenuWorld Float) (For 0.5) (To 0.6)

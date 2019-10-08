@@ -6,13 +6,14 @@ DOCNAME = paper
 
 all: $(DOCNAME).pdf
 
-$(DOCNAME).pdf: $(DOCNAME).lhs $(DOCNAME).bib sections/*.tex paper_bib.tex Formatting.fmt syntax-prelude.fmt
+pictures/*.eps: pictures/*.png
 	scripts/convert_to_eps
+
+$(DOCNAME).pdf: $(DOCNAME).lhs $(DOCNAME).bib sections/*.tex paper_bib.tex Formatting.fmt syntax-prelude.fmt pictures/*.eps
 	lhs2TeX -o $(DOCNAME).tex --poly $(DOCNAME).lhs
 	latexmk -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make $(DOCNAME).tex -shell-escape
 
-watch: $(DOCNAME).lhs $(DOCNAME).bib sections/*.tex paper_bib.tex Formatting.fmt syntax-prelude.fmt
-	scripts/convert_to_eps
+watch: $(DOCNAME).lhs $(DOCNAME).bib sections/*.tex paper_bib.tex Formatting.fmt syntax-prelude.fmt pictures/*.eps
 	see $(DOCNAME).pdf &
 	lhs2TeX -o $(DOCNAME).tex --poly $(DOCNAME).lhs
 	latexmk -pvc -pdf -pdflatex="pdflatex -interaction=nonstopmode" -use-make $(DOCNAME).tex -shell-escape

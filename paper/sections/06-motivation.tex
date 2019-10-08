@@ -7,38 +7,38 @@ This paper develops a DSL for creating GUI animations. This section gives a high
 
 Graphical user interfaces typically use various concepts to aid users in understanding the current state of the application. One example is to display brief animations whenever the interface changes shape.
 
-For example, in Figure~\ref{fig:usecase1} a menu is displayed on the screen when the hamburger icon is pressed. This menu slides in from the right while the background fades out.
+For example, in Figure~\ref{fig:usecase1} an animation is displayed when the side menu appears on-screen. This menu appears from the right while the background fades out.
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=0.4]{pictures/usecase1fig.png}
-\caption{Animation of a menu sliding in from the right while the background fades out.}
+\includegraphics[width=\figscale\textwidth]{pictures/usecase1fig}
+\caption{Animation of a side menu appearing while the background fades out.}
 \label{fig:usecase1}
 \end{figure}
 
-Another example can be seen in Figure~\ref{fig:usecase2}, at the top of the application is a navigation bar. When the user clicks on one of the elements in the bar, an animation is displayed removing the underline from the previously selected element and introducing the underline for the newly selected element.
+Another example can be seen in Figure~\ref{fig:usecase2}, at the top of the application is a navigation bar. When the user clicks on one of the elements in the bar, an animation is displayed removing the underline from the previously selected element and underlining the newly selected element.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/usecase2fig}
-\caption{An animation is played to indicate the selected location, then the character moves to this location.}
+\caption{Animation of the underlined element changing in the navigation bar.}
 \label{fig:usecase2}
 \end{figure}
 
 \subsection{Composing Animations}
 
-The DSL expresses animations by composing smaller parts together. A \emph{basic} animation expresses an elementary unit of animation, which is typically one varying property within the interface. On the other hand, \emph{composed} animations create bigger animations out of smaller ones.
+The DSL expresses animations by composing smaller parts together. A \emph{basic} animation expresses an elementary unit of animation, which is typically one varying property within the interface. The \emph{composed} animations compose multiple animations into a new animation.
 
 \subsubsection{Basic Animations}
 
 A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements. First, a lens specifies which property in our UI should change. Second, we provide the target value for this property. Third, we provide the duration, specifying how many seconds the animation should last.
 
-In the menu use case of Figure~\ref{fig:usecase1} there are two properties which need to change during the animation: the \hs{x} value of the incoming menu and the alpha property of the box obscuring the application. We express this using the \hs{basic} operation.
+In the menu use case of Figure~\ref{fig:usecase1} there are two properties which need to change during the animation: the \hs{width} of the incoming menu and the alpha property of the box obscuring the application. We express this using the \hs{basic} operation.
 
-First we need to create the animation which makes the menu slide in. We pass three parameters to the \hs{basic} operation: the lens \hs{menu}~\hs{.}~\hs{x} which focuses on the \hs{x} value of the incoming menu, the duration \hs{For 0.5} and the target value \hs{To 25}. This results in the animation seen in Figure~\ref{fig:usecase1basic1}.
+First we need to create the animation which makes the side menu appear. We pass three parameters to the \hs{basic} operation: the lens \hs{menu}~\hs{.}~\hs{width} which focuses on the \hs{width} of the incoming menu, the duration \hs{For 0.5} and the target value \hs{To 75}. This results in the animation seen in Figure~\ref{fig:usecase1basic1}.
 
 \begin{spec}
-menuSlideIn = basic (menu . x) (For 0.5) (To 25)
+menuSlideIn = basic (menu . width) (For 0.5) (To 75)
 \end{spec}
 
 Second we also need to create an animation which fades out the application. Now the lens focuses on the \hs{alpha} value of the obscuring box and sets it to \hs{0.6} over \hs{0.5} seconds. This results in the animation seen in Figure~\ref{fig:usecase1basic2}.
@@ -50,22 +50,51 @@ appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
 \begin{figure}[h]
 \centering
 
-\begin{subfigure}[h]{0.75\textwidth}
+\begin{subfigure}[h]{\textwidth}
 \centering
-\includegraphics[scale=0.4]{pictures/usecase1basic1.png}
-\caption{TODO}
+\includegraphics[width=\figscale\textwidth]{pictures/usecase1basic1}
+\caption{The \hs{menuSlideIn} animation.}
 \label{fig:usecase1basic1}
 \end{subfigure}
 
-\begin{subfigure}[h]{0.75\textwidth}
+\begin{subfigure}[h]{\textwidth}
 \centering
-\includegraphics[scale=0.4]{pictures/usecase1basic2.png}
-\caption{TODO}
+\includegraphics[width=\figscale\textwidth]{pictures/usecase1basic2}
+\caption{The \hs{appFadeOut} animation.}
 \label{fig:usecase1basic2}
 \end{subfigure}
 
-\caption{TODO}
+\caption{The \hs{menuAnimation} decomposed into its two elements.}
 \label{fig:usecase1basic}
+\end{figure}
+
+In the navigation bar use case of Figure~\ref{fig:usecase2} there are again two changing properties: the \hs{height} of the first and second line element. The former is reduced to \hs{0} while the latter is increased to \hs{4}. Again, we create these two animations using the \hs{basic} operation. This results in the animations seen in Figure~\ref{fig:usecase2basic}.
+
+\begin{spec}
+decreaseBar1 = basic (navBarLine1 . height) (For 0.25) (To 0)
+
+increaseBar2 = basic (navBarLine2 . height) (For 0.25) (To 4)
+\end{spec}
+
+\begin{figure}[h]
+\centering
+
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/usecase2basic1}
+\caption{The \hs{decreaseBar1} animation.}
+\label{fig:usecase2basic1}
+\end{subfigure}
+
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/usecase2basic2}
+\caption{The \hs{increaseBar2} animation.}
+\label{fig:usecase2basic2}
+\end{subfigure}
+
+\caption{The \hs{bar2Animation} decomposed into its two elements.}
+\label{fig:usecase2basic}
 \end{figure}
 
 \paragraph{Lenses} TODO: explain basics of lenses?
@@ -80,10 +109,10 @@ For the menu use case we want to display the animations \hs{menuSlideIn} and \hs
 menuAnimation = menuSlideIn `par` appFadeOut
 \end{spec}
 
-For the game use case we want to display the animations \hs{selectedIndicator} and \hs{playerMove} one after the other. To do this we create a composed animation using \hs{seq}, which results in the animation as seen in Figure~\ref{fig:usecase2}.
+For the navigation bar use case we want to display the animations \hs{decreaseBar1} and \hs{increaseBar2} one after the other. To do this we create a composed animation using \hs{seq}, which results in the animation as seen in Figure~\ref{fig:usecase2}.
 
 \begin{spec}
-playerMoveAnimation = indicatorAnimation `seq` characterMove
+bar2Animation = decreaseBar1 `seq` increaseBar2
 \end{spec}
 
 \subsection{Additional Requirements}
