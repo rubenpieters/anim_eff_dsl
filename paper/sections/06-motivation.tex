@@ -9,7 +9,7 @@ Graphical user interfaces typically use various concepts to aid users in underst
 
 For example, in Figure~\ref{fig:usecase1} a menu is displayed on the screen when the hamburger icon is pressed. This menu slides in from the right while the background fades out.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[scale=0.4]{pictures/usecase1fig.png}
 \caption{Animation of a menu sliding in from the right while the background fades out.}
@@ -18,7 +18,7 @@ For example, in Figure~\ref{fig:usecase1} a menu is displayed on the screen when
 
 Another example can be seen in Figure~\ref{fig:usecase2}, at the top of the application is a navigation bar. When the user clicks on one of the elements in the bar, an animation is displayed removing the underline from the previously selected element and introducing the underline for the newly selected element.
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/usecase2fig}
 \caption{An animation is played to indicate the selected location, then the character moves to this location.}
@@ -47,7 +47,7 @@ Second we also need to create an animation which fades out the application. Now 
 appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
 \end{spec}
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 
 \begin{subfigure}[h]{0.75\textwidth}

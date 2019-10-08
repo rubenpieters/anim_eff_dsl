@@ -33,6 +33,7 @@ stdenv.mkDerivation {
                   git
                   pythonPackages.virtualenv
                   pythonPackages.pip
+                  imagemagick
                 ];
   buildPhase = "make";
   shellHook = ''
