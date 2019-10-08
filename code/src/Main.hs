@@ -4,10 +4,13 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
 import Prelude hiding (seq)
+
+import Numeric
 
 import Control.Applicative (liftA2)
 import Control.Monad
@@ -20,11 +23,20 @@ import Lens.Micro.TH
 
 import Graphics.Gloss hiding (color)
 import Graphics.Gloss.Interface.Pure.Game hiding (color)
+import Graphics.Gloss.Export.PNG
 
-newtype Duration = For Float
-  deriving Show
-newtype Target = To Float
-  deriving Show
+newtype Duration = For { getDuration :: Float }
+  deriving (Ord, Eq, Show)
+
+instance Semigroup Duration where
+  (<>) = mappend
+
+instance Monoid Duration where
+  mempty = For 0
+  mappend (For a) (For b) = For (a + b)
+
+newtype Target = To { getTarget :: Float }
+  deriving (Ord, Eq, Show)
 
 class Basic obj f where
   basic :: Traversal' obj Float -> Duration -> Target -> f ()
@@ -121,7 +133,24 @@ instance (Monad m) => Par (Animation obj m) where
             Left (liftP2 combine aniA aniB)
     return (obj2, newAnim, newRem)
 
+instance Basic obj (Const Duration) where
+  basic _ duration _ = Const duration
+
+instance Par (Const Duration) where
+  liftP2 _ (Const x1) (Const x2) = Const (max x1 x2)
+
+duration :: Const Duration a -> Duration
+duration = getConst
+
 type RGB = (Float, Float, Float)
+
+hexToRgb :: String -> String -> String -> RGB
+hexToRgb v1 v2 v3 = let
+  r = fst (head (readHex v1))
+  g = fst (head (readHex v2))
+  b = fst (head (readHex v3))
+  in (r / 256, g / 256, b / 256)
+
 
 data Sprite = Sprite
   { _x :: Float
@@ -151,7 +180,7 @@ data MenuWorld = MenuWorld
 makeLenses ''MenuWorld
 
 data NavBarWorld = NavBarWorld
-  { _navBarBg :: Sprite
+  { _navBarBgElements :: [Sprite]
   , _navBarBtn1 :: Sprite
   , _navBarBtn2 :: Sprite
   , _navBarBtn3 :: Sprite
@@ -164,9 +193,9 @@ data NavBarWorld = NavBarWorld
 makeLenses ''NavBarWorld
 
 drawNavBarWorld :: NavBarWorld -> Picture
-drawNavBarWorld w = Pictures
-  [ drawSprite (w ^. navBarBg)
-  , drawSprite (w ^. navBarBtn1)
+drawNavBarWorld w = Pictures $
+  map drawSprite (w ^. navBarBgElements) ++
+  [ drawSprite (w ^. navBarBtn1)
   , drawSprite (w ^. navBarBtn2)
   , drawSprite (w ^. navBarBtn3)
   , drawSprite (w ^. navBarLine1)
@@ -209,23 +238,69 @@ runAnimations t w (anim:r) = let
 
 initialNavBarWorld :: NavBarWorld
 initialNavBarWorld = NavBarWorld
-  { _navBarBg =
-      Sprite
-      { _x = 0
-      , _y = 0
-      , _width = 100
-      , _height = 28
-      , _color = (0, 1, 0)
-      , _alpha = 1
-      , _pic = rectangleSolid
-      }
+  { _navBarBgElements =
+      [ Sprite
+        { _x = 0
+        , _y = 0
+        , _width = 100
+        , _height = 100
+        , _color = hexToRgb "c4" "c8" "c2"
+        , _alpha = 1
+        , _pic = rectangleSolid
+        }
+      , Sprite
+        { _x = 0
+        , _y = 0
+        , _width = 100
+        , _height = 28
+        , _color = hexToRgb "55" "7a" "95"
+        , _alpha = 1
+        , _pic = rectangleSolid
+        }
+      , Sprite
+        { _x = 20
+        , _y = 35
+        , _width = 50
+        , _height = 8
+        , _color = hexToRgb "b1" "a2" "96"
+        , _alpha = 1
+        , _pic = rectangleSolid
+        }
+      , Sprite
+        { _x = 20
+        , _y = 45
+        , _width = 60
+        , _height = 30
+        , _color = hexToRgb "b1" "a2" "96"
+        , _alpha = 1
+        , _pic = rectangleSolid
+        }
+      , Sprite
+        { _x = 20
+        , _y = 83
+        , _width = 50
+        , _height = 8
+        , _color = hexToRgb "b1" "a2" "96"
+        , _alpha = 1
+        , _pic = rectangleSolid
+        }
+      , Sprite
+        { _x = 20
+        , _y = 93
+        , _width = 60
+        , _height = 7
+        , _color = hexToRgb "b1" "a2" "96"
+        , _alpha = 1
+        , _pic = rectangleSolid
+        }
+      ]
   , _navBarBtn1 =
       Sprite
       { _x = 7.5
       , _y = 7
       , _width = 25
       , _height = 10
-      , _color = (1, 0, 0)
+      , _color = hexToRgb "73" "95" "ae"
       , _alpha = 1
       , _pic = rectangleSolid
       }
@@ -235,7 +310,7 @@ initialNavBarWorld = NavBarWorld
       , _y = 7
       , _width = 25
       , _height = 10
-      , _color = (1, 0, 0)
+      , _color = hexToRgb "73" "95" "ae"
       , _alpha = 1
       , _pic = rectangleSolid
       }
@@ -245,7 +320,7 @@ initialNavBarWorld = NavBarWorld
       , _y = 7
       , _width = 25
       , _height = 10
-      , _color = (1, 0, 0)
+      , _color = hexToRgb "73" "95" "ae"
       , _alpha = 1
       , _pic = rectangleSolid
       }
@@ -255,7 +330,7 @@ initialNavBarWorld = NavBarWorld
       , _y = 20
       , _width = 25
       , _height = 4
-      , _color = (0, 0, 1)
+      , _color = hexToRgb "5d" "5c" "61"
       , _alpha = 1
       , _pic = rectangleSolid
       }
@@ -265,7 +340,7 @@ initialNavBarWorld = NavBarWorld
       , _y = 20
       , _width = 25
       , _height = 0
-      , _color = (0, 0, 1)
+      , _color = hexToRgb "5d" "5c" "61"
       , _alpha = 1
       , _pic = rectangleSolid
       }
@@ -273,9 +348,39 @@ initialNavBarWorld = NavBarWorld
   , _barSelected = 1
   }
 
+fetchInbetweens :: Float -> Int -> obj -> Animation obj Identity a -> [obj] -> [obj]
+fetchInbetweens _ 0 obj _ acc = acc ++ [obj]
+fetchInbetweens delta k obj (Animation f) acc = let
+  (obj', eFa, _) = runIdentity (f obj delta)
+  in case eFa of
+     Left anim -> fetchInbetweens delta (k - 1) obj' anim (acc ++ [obj])
+     Right _ -> acc ++ [obj, obj']
+
+navBarPic1 :: [NavBarWorld]
+navBarPic1 = let
+  k = 3
+  anim :: (Applicative f, Basic NavBarWorld f) => f ()
+  anim = bar2Anim
+  in fetchInbetweens (getDuration (duration anim) / fromIntegral k) k initialNavBarWorld anim []
+
+drawnWorlds :: [NavBarWorld] -> Picture
+drawnWorlds worlds = let
+  k = length worlds
+  f (i, w) = drawNavBarWorld w & Translate (50 - 206 + 104 * i) 0
+  whiteBoxTop i = rectangleSolid 5 5 & Color (makeColor 1 1 1 1) & Translate (-203 + 10 * i) (-55)
+  whiteBoxBot i = rectangleSolid 5 5 & Color (makeColor 1 1 1 1) & Translate (-203 + 10 * i) 55
+  in Pictures (map f (zip [0..] worlds) ++ map whiteBoxTop [0..50] ++ map whiteBoxBot [0..50])
+
 main :: IO ()
 main = let
-  bgColor = makeColor (196 / 256) (200 / 256) (194 / 256) 1
-  window = InWindow "animation-dsl" (100, 100) (100, 100)
-  in
-  play window bgColor 60 initialNavBarWorld drawNavBarWorld handleInputNb updateNb
+  bgColor = makeColor 0 0 0 1
+  sw = 100
+  sh = 100
+  window = InWindow "animation-dsl" (sw, sh) (100, 100)
+  in do
+  putStrLn "Command:"
+  x :: Int <- readLn
+  case x of
+    1 -> play window bgColor 60 initialNavBarWorld drawNavBarWorld handleInputNb updateNb
+    2 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "test.png" (drawnWorlds navBarPic1)
+    _ -> error "unknown"

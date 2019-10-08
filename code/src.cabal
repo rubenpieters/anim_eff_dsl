@@ -17,6 +17,9 @@ executable src
   hs-source-dirs:      src
   main-is:             Main.hs
   default-language:    Haskell2010
+  other-modules:       Graphics.Gloss.Export.Image
+                       Graphics.Gloss.Export.PNG
+                       Graphics.Gloss.Export.Gif
   build-depends:       base >= 4.7 && < 5
                      , containers
                      , gloss
@@ -24,4 +27,9 @@ executable src
                      , microlens-th
                      , mtl
                      , transformers
-
+                     , GLUT
+                     , OpenGLRaw
+                     , gloss-rendering
+                     , vector
+                     , JuicyPixels
+                     , GLFW-b

@@ -19,6 +19,7 @@ clean:
 	latexmk -CA || true
 	rm -f $(DOCNAME).tex
 	rm -f to_compile_processed.lhs
+	rm -f pictures/*-eps-converted-to.pdf
 
 compile: to_compile.lhs sections/*.tex
 	flat-tex to_compile.lhs > to_compile_processed.lhs
