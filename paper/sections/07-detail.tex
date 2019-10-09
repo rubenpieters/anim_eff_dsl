@@ -71,7 +71,7 @@ menuAnimation = menuSlideIn `par` appFadeOut
 
 \subsection{Running Animations}
 
-To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. There are different choices depending on how we expect our animations to be used. We will implement a straightforward model of animations.
+To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. There are different choices depending on how we expect our animations to be used. We choose to implement our model of animations as follows.
 
 An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when we are, for example, at the end of an animation and the time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{Basic}, \hs{Monad} and \hs{Par}.
 

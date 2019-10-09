@@ -31,7 +31,7 @@ The DSL expresses animations by composing smaller parts together. A \emph{basic}
 
 \subsubsection{Basic Animations}
 
-A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements. First, a lens specifies which property in our UI should change. Second, we provide the target value for this property. Third, we provide the duration, specifying how many seconds the animation should last.
+A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements: a lens specifying which property in our UI should change, the target value for this property and, lastly, the duration specifying how many seconds the animation should last.
 
 In the menu use case of Figure~\ref{fig:usecase1} there are two properties which need to change during the animation: the \hs{width} of the incoming menu and the alpha property of the box obscuring the application. We express this using the \hs{basic} operation.
 
@@ -117,22 +117,27 @@ bar2Animation = decreaseBar1 `seq` increaseBar2
 
 \subsection{Additional Requirements}
 
-In addition to the previous features, we also expect the DSL to support two additional requirements: the user can embed custom operations and inspect an animation specified with the DSL.
+In addition to the previous ones, we want to support some additional features: embedding custom operations, embedding custom combinators, and inspecting animations.
 
 \subsubsection{Custom Operations}
+
+The \hs{basic}, \hs{seq}, and \hs{par} operations form the basis for expressing a variety of animations. However, sometimes we need different operations to express our animation. For example, the animation in Figure TODO requires a variety of extra features: randomness, creation and deletion, and setting values within the world. Rather than predicting which operations users will need, the DSL provides the possibility of embedding custom operations.
+
+
+
 
 % Other UI Animation Libraries:
 % https://www.codementor.io/hayeskier/7-best-animation-libraries-for-ui-designers-2018-kmg7byy1g
 % https://greensock.com/docs/
 % https://animejs.com/documentation/#cssSelector
 
-The DSL also supports embedding of arbitrary operations, by allowing customization of the available operations. For instance, we can add sound effects by creating a \hs{playSound} operation. This operation is then available anywhere an animation.
+% The DSL also supports embedding of arbitrary operations, by allowing customization of the available operations. For instance, we can add sound effects by creating a \hs{playSound} operation. This operation is then available anywhere an animation.
 
-In the menu use case for example, we can extend the previous \hs{appFadeOut} animation with a sound effect playing in parallel.
+% In the menu use case for example, we can extend the previous \hs{appFadeOut} animation with a sound effect playing in parallel.
 
-\begin{spec}
-menuAnimationWithSound = menuAnimation `par` playSound
-\end{spec}
+% \begin{spec}
+% menuAnimationWithSound = menuAnimation `par` playSound
+% \end{spec}
 
 \subsubsection{Inspection}
 
@@ -153,6 +158,12 @@ complicatedAnimation = do
 compAnimDuration = duration complicatedAnimation
 -- type error
 \end{spec}
+
+\subsubsection{Custom Combinators}
+
+Similarly to providing custom operations, the DSL also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since this DSL has the additional requirement of being inspectable, the \hs{>>=} combinator can end up being a liability because it only provide a very limited amount of inspectability. The user is able to use custom combinators, for which they can decide how to inspect them.
+
+Imagine that the user would like to use an \texttt{if-then-else} construction and defines their own combinator \hs{ifThenElse}. Then the user can, similarly to using custom operations, freely mix it with other operations/combinators.
 
 \subsection{Examples}
 
