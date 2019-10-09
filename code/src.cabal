@@ -33,3 +33,4 @@ executable src
                      , vector
                      , JuicyPixels
                      , GLFW-b
+                     , random
