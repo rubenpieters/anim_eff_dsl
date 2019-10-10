@@ -121,10 +121,24 @@ In addition to the previous ones, we want to support some additional features: e
 
 \subsubsection{Custom Operations}
 
-The \hs{basic}, \hs{seq}, and \hs{par} operations form the basis for expressing a variety of animations. However, sometimes we need different operations to express our animation. For example, the animation in Figure TODO requires a variety of extra features: randomness, creation and deletion of particles, and setting values within the world. Rather than predicting which operations users will need, the DSL provides the possibility of embedding custom operations.
+The \hs{basic}, \hs{seq}, and \hs{par} operations form the basis for expressing a variety of animations. However, sometimes require more expressive operations to express our desired animation.
 
+For example, below we have an animation which creates a box particle where the user has clicked. This particle then grows bigger and fades out. This animation is represented visually in Figure~\ref{fig:usecase3}. This requires an operation to create and delete particles. The DSL facilitates creating custom operations and embedding them within any animation.
 
+\begin{spec}
+mouseBoxAnimation mouseX mouseY = do
+  i <- create (createBoxParticle mouseX mouseY)
+  par (basic (msParticles . withId i . scale) (For 0.5) (To 4))
+      (basic (msParticles . withId i . alpha) (For 0.5) (To 0))
+  delete deleteBoxParticle i
+\end{spec}
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/usecase3fig}
+\caption{Box particle animation when the user clicks in the screen center.}
+\label{fig:usecase3}
+\end{figure}
 
 % Other UI Animation Libraries:
 % https://www.codementor.io/hayeskier/7-best-animation-libraries-for-ui-designers-2018-kmg7byy1g
@@ -148,7 +162,7 @@ menuAnimDuration = duration menuAnimation
 -- menuAnimDuration = 0.5 
 \end{spec}
 
-Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{getValue} which returns a \hs{Float}. If the result of this value is used as the duration parameter, then we cannot know upfront how long the animation will last. Requesting to calculate the duration of this animation then results in a type error.
+Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{getValue} which returns a \hs{Float}. If the result of this value is used as the duration parameter, then we cannot know upfront how long the animation will last. Requesting to calculate the duration of this animation results in a type error.
 
 \begin{spec}
 complicatedAnimation = do
@@ -160,10 +174,13 @@ compAnimDuration = duration complicatedAnimation
 \end{spec}
 
 \subsubsection{Custom Combinators}
+\label{sec:customcomb}
 
 Similarly to providing custom operations, the DSL also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since this DSL has the additional requirement of being inspectable, the \hs{>>=} combinator can end up being a liability because it only provide a very limited amount of inspectability. The user is able to use custom combinators, for which they can decide how to inspect them.
 
 Imagine that the user would like to use an \texttt{if-then-else} construction and defines their own combinator \hs{ifThenElse}. Then the user can, similarly to using custom operations, freely mix it with other operations/combinators.
+
+For example, imagine there is a special animation that has a 1 in 10 chance of occurring. We utilize a custom \hs{rng} operation to retrieve a random number, and decide whether the special animation should be displayed using the \hs{ifThenElse} combinator.
 
 \begin{spec}
 rareAnimation =
@@ -173,15 +190,9 @@ rareAnimation =
     normalAnimation
 \end{spec}
 
-Now it is not possible to inspect the animation to retrieve the exact duration, since \hs{specialAnimation} might have a different duration than \hs{normalAnimation}. Instead, we can retrieve the maximum or minimum duration for the animation.
+This combinator has made it impossible to inspect the animation and retrieve the exact duration, since \hs{specialAnimation} might have a different duration than \hs{normalAnimation}. Instead, we can retrieve the maximum or minimum duration for the animation.
 
 \begin{spec}
 rareAnimMaxDuration = maxDuration rareAnimation
 -- rareAnimMaxDuration = 2
 \end{spec}
-
-\subsection{Examples}
-
-This section displays some examples of more complicated animations and how they are constructed using the DSL.
-
-TODO: add examples

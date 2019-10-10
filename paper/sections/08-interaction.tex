@@ -1,0 +1,24 @@
+\section{Interaction Between Expressiveness and Inspectability}
+\label{sec:interaction}
+
+A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of the DSL.
+
+Recall the \hs{rareAnimation} definition from Section~\ref{sec:customcomb}, a definition using \hs{do}-notation is given below. Now it contains a \hs{Monad} constraint on \hs{f} which means that the animation is not inspectable.
+
+\begin{code}
+rareAnimationDo :: (Monad f, Basic RareWorld f, Rng f) => f ()
+rareAnimationDo = do
+  x <- rng (1, 10)
+  if x == 10
+    then specialAnimation
+    else normalAnimation
+\end{code}
+
+However, when looking at the actual code we should be able to extract some duration related information from it. For example, the maximum duration should be the maximum of the duration of \hs{specialAnimation} and \hs{normalAnimation} --- and similarly for the minimum duration.
+
+To express this idea using the DSL we need to introduce an explicit combinator for the constructions which piggyback on the \hs{>>=} cominator. In this case this is the \hs{if-then-else} construction, for which we create a new custom combinator. This combinator is a different formulation of selective applicative functors \cite{Mokhov:2019:SAF:3352468.3341694}.
+
+\begin{code}
+class IfThenElse f where
+  ifThenElse :: f Bool -> f a -> f a -> f a
+\end{code}

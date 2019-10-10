@@ -23,9 +23,9 @@ import Data.List (find, findIndex, nub)
 import Lens.Micro
 import Lens.Micro.TH
 
-import Graphics.Gloss hiding (color)
-import Graphics.Gloss.Interface.Pure.Game hiding (color)
-import Graphics.Gloss.Interface.IO.Game hiding (color)
+import Graphics.Gloss hiding (color, scale)
+import Graphics.Gloss.Interface.Pure.Game hiding (color, scale)
+import Graphics.Gloss.Interface.IO.Game hiding (color, scale)
 import Graphics.Gloss.Export.PNG
 
 import System.Random
@@ -199,6 +199,18 @@ data Sprite = Sprite
   , _spriteId :: Int
   }
 
+makeLenses ''Sprite
+
+withId :: Int -> Lens' [Sprite] Sprite
+withId i = let
+  get l = case find (\x -> x ^. spriteId == i) l of
+    Just s -> s
+    Nothing -> error ("no particle with index " ++ show i)
+  set l x = case findIndex (\x -> x ^. spriteId == i) l of
+    Just ix -> take ix l ++ x : drop (ix+1) l
+    Nothing -> error ("no particle with index " ++ show i)
+  in lens get set
+
 spriteDef :: Sprite
 spriteDef = Sprite
   { _alpha = 1
@@ -206,8 +218,6 @@ spriteDef = Sprite
   , _scale = 1
   , _spriteId = (-1)
   }
-
-makeLenses ''Sprite
 
 drawSprite :: Sprite -> Picture
 drawSprite Sprite{ _x, _y, _color, _alpha, _pic, _width, _height, _rotation, _scale } = let
@@ -588,7 +598,7 @@ deleteParticle id w@(ColorWorld {_cwParticles}) = let
   newWorld = w { _cwParticles = filter (\x -> x ^. spriteId /= id) _cwParticles }
   in newWorld
 
-instance (Applicative f) => Particle ColorWorld (Animation ColorWorld f) where
+instance (Applicative f) => Particle obj (Animation obj f) where
   create f = Animation $ \obj t ->
     let (newObj, id) = f obj
     in pure (newObj, Right id, Just t)
@@ -621,9 +631,143 @@ colorAnim1 x y n =
 
 colorAnim2 :: (Basic ColorWorld f, Par f) => Float -> Float -> Float -> Float -> Int -> f ()
 colorAnim2 mx my offset dist id =
-        basic (cwParticles . withSpriteId id . x) (For 1) (To (mx + dist * cos offset))
-  `par` basic (cwParticles . withSpriteId id . y) (For 1) (To (my - dist * sin offset))
-  `par` basic (cwParticles . withSpriteId id . alpha) (For 1) (To 0.3)
+        basic (cwParticles . withId id . x) (For 1) (To (mx + dist * cos offset))
+  `par` basic (cwParticles . withId id . y) (For 1) (To (my - dist * sin offset))
+  `par` basic (cwParticles . withId id . alpha) (For 1) (To 0.3)
+
+data MouseWorld = MouseWorld
+  { _msBgElements :: [Sprite]
+  , _msParticles :: [Sprite]
+  , _msNextSpriteId :: Int
+  , _msAnimations :: [Animation MouseWorld Identity ()]
+  }
+
+makeLenses ''MouseWorld
+
+initialMouseWorld :: MouseWorld
+initialMouseWorld = MouseWorld
+  { _msBgElements =
+      [ spriteDef
+        { _x = 0
+        , _y = 0
+        , _width = 100
+        , _height = 100
+        , _color = hexToRgb "c4" "c8" "c2"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 0
+        , _y = 0
+        , _width = 100
+        , _height = 28
+        , _color = hexToRgb "55" "7a" "95"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 20
+        , _y = 35
+        , _width = 50
+        , _height = 8
+        , _color = hexToRgb "b1" "a2" "96"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 20
+        , _y = 45
+        , _width = 60
+        , _height = 30
+        , _color = hexToRgb "b1" "a2" "96"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 20
+        , _y = 83
+        , _width = 50
+        , _height = 8
+        , _color = hexToRgb "b1" "a2" "96"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 20
+        , _y = 93
+        , _width = 60
+        , _height = 7
+        , _color = hexToRgb "b1" "a2" "96"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 7.5
+        , _y = 7
+        , _width = 25
+        , _height = 10
+        , _color = hexToRgb "73" "95" "ae"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 37.5
+        , _y = 7
+        , _width = 25
+        , _height = 10
+        , _color = hexToRgb "73" "95" "ae"
+        , _pic = rectangleSolid
+        }
+      , spriteDef
+        { _x = 67.5
+        , _y = 7
+        , _width = 25
+        , _height = 10
+        , _color = hexToRgb "73" "95" "ae"
+        , _pic = rectangleSolid
+        }
+      ]
+  , _msParticles = []
+  , _msNextSpriteId = 0
+  , _msAnimations = []
+  }
+
+drawMouseWorld :: MouseWorld -> Picture
+drawMouseWorld w = Pictures $
+  map drawSprite (w ^. msBgElements) ++
+  map drawSprite (w ^. msParticles)
+
+handleInputMs :: Event -> MouseWorld -> MouseWorld
+handleInputMs (EventKey (MouseButton LeftButton) Down _ (mouseX, mouseY)) w =
+  w & msAnimations %~ \l -> mouseBoxAnimation (mouseX + 50) (50 - mouseY) : l
+handleInputMs _ w = w
+
+updateMs :: Float -> MouseWorld -> MouseWorld
+updateMs t w = let
+  (newWorld, newAnimations) = runAnimations t w (w ^. msAnimations)
+  in newWorld & msAnimations .~ newAnimations
+
+createBoxParticle :: Float -> Float -> MouseWorld -> (MouseWorld, Int)
+createBoxParticle x y w@(MouseWorld {_msParticles, _msNextSpriteId}) = let
+  newIndex = _msNextSpriteId
+  particle = spriteDef
+      { _x = x
+      , _y = y
+      , _width = 5
+      , _height = 5
+      , _color = hexToRgb "96" "00" "18"
+      , _pic = rectangleSolid
+      , _spriteId = newIndex
+      , _rotation = 0
+      , _scale = 1
+      }
+  newWorld = w { _msParticles = particle : _msParticles, _msNextSpriteId = _msNextSpriteId + 1 }
+  in (newWorld, newIndex)
+
+deleteBoxParticle :: Int -> MouseWorld -> MouseWorld
+deleteBoxParticle id w@(MouseWorld {_msParticles}) = let
+  newWorld = w { _msParticles = filter (\x -> x ^. spriteId /= id) _msParticles }
+  in newWorld
+
+mouseBoxAnimation :: (Particle MouseWorld f, Basic MouseWorld f, Par f, Monad f) => Float -> Float -> f ()
+mouseBoxAnimation mouseX mouseY = do
+  i <- create (createBoxParticle mouseX mouseY)
+  par (basic (msParticles . withId i . scale) (For 0.5) (To 4))
+      (basic (msParticles . withId i . alpha) (For 0.5) (To 0))
+  delete deleteBoxParticle i
 
 fetchInbetweens :: Float -> Int -> obj -> Animation obj Identity a -> [obj] -> [obj]
 fetchInbetweens _ 0 obj _ acc = acc ++ [obj]
@@ -676,6 +820,14 @@ usecase2basic2 = let
   world = initialNavBarWorld & navBarLine1 . height .~ 0
   in fetchInbetweens (getDuration (duration anim) / fromIntegral k) k world anim []
 
+usecase3fig :: [MouseWorld]
+usecase3fig = let
+  k = 3
+  anim :: (Particle MouseWorld f, Basic MouseWorld f, Par f, Monad f) => f ()
+  anim = mouseBoxAnimation 50 50
+  --in fetchInbetweens (getDuration (duration anim) / fromIntegral k) k initialNavBarWorld anim []
+  in fetchInbetweens 0.125 k initialMouseWorld anim []
+
 drawnWorlds :: (obj -> Picture) -> [obj] -> Picture
 drawnWorlds drawFun worlds = let
   k = length worlds
@@ -697,6 +849,7 @@ main = let
     1 -> play window bgColor 60 initialNavBarWorld drawNavBarWorld handleInputNb updateNb
     2 -> play window bgColor 60 initialMenuWorld drawMenuWorld handleInputMn updateMn
     3 -> playIO window bgColor 60 initialColorWorld drawColorWorld handleInputCw updateCw
+    4 -> play window bgColor 60 initialMouseWorld drawMouseWorld handleInputMs updateMs
     9 -> do
       exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/usecase1fig.png" (drawnWorlds drawMenuWorld usecase1fig)
       exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/usecase1basic1.png" (drawnWorlds drawMenuWorld usecase1basic1)
@@ -704,17 +857,8 @@ main = let
       exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/usecase2fig.png" (drawnWorlds drawNavBarWorld usecase2fig)
       exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/usecase2basic1.png" (drawnWorlds drawNavBarWorld usecase2basic1)
       exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/usecase2basic2.png" (drawnWorlds drawNavBarWorld usecase2basic2)
+      exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/usecase3fig.png" (drawnWorlds drawMouseWorld usecase3fig)
     _ -> error "unknown"
 
 atIndex :: Int -> Lens' [a] a
 atIndex i = lens (!! i) (\s b -> take i s ++ b : drop (i+1) s)
-
-withSpriteId :: Int -> Lens' [Sprite] Sprite
-withSpriteId i = let
-  get l = case find (\x -> x ^. spriteId == i) l of
-    Just s -> s
-    Nothing -> error ("no particle with index " ++ show i)
-  set l x = case findIndex (\x -> x ^. spriteId == i) l of
-    Just ix -> take ix l ++ x : drop (ix+1) l
-    Nothing -> error ("no particle with index " ++ show i)
-  in lens get set
