@@ -185,7 +185,7 @@ For example, imagine there is a special animation that has a 1 in 10 chance of o
 \begin{spec}
 rareAnimation =
   ifThenElse
-    (fmap (\x -> x == 10) (rng (1, 10))
+    (fmap (\(x :: Int) -> x == 10) (rng (1, 10))
     specialAnimation
     normalAnimation
 \end{spec}

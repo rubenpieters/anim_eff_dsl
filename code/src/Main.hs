@@ -40,6 +40,16 @@ instance Monoid Duration where
   mempty = For 0
   mappend (For a) (For b) = For (a + b)
 
+newtype MaxDuration = MaxDur { getMaxDuration :: Float }
+  deriving (Ord, Eq, Show)
+
+instance Semigroup MaxDuration where
+  (<>) = mappend
+
+instance Monoid MaxDuration where
+  mempty = MaxDur 0
+  mappend (MaxDur a) (MaxDur b) = MaxDur (a + b)
+
 newtype Target = To { getTarget :: Float }
   deriving (Ord, Eq, Show)
 
@@ -144,8 +154,17 @@ instance Basic obj (Const Duration) where
 instance Par (Const Duration) where
   liftP2 _ (Const x1) (Const x2) = Const (max x1 x2)
 
+instance Basic obj (Const MaxDuration) where
+  basic _ (For dur) _ = Const (MaxDur dur)
+
+instance Par (Const MaxDuration) where
+  liftP2 _ (Const x1) (Const x2) = Const (max x1 x2)
+
 duration :: Const Duration a -> Duration
 duration = getConst
+
+maxDuration :: Const MaxDuration a -> MaxDuration
+maxDuration = getConst
 
 runAnimations :: Float -> obj -> [Animation obj Identity ()] -> (obj, [Animation obj Identity ()])
 runAnimations t w [] = (w, [])
@@ -173,9 +192,29 @@ instance (MonadIO f) => Rng (Animation obj f) where
     v <- liftIO (randomRIO range)
     return (obj, Right v, Just t)
 
+instance Rng (Const Duration) where
+  rng _ = (Const (For 0))
+
+instance Rng (Const MaxDuration) where
+  rng _ = (Const (MaxDur 0))
+
 class Particle obj f where
   create :: (obj -> (obj, Int)) -> f Int
   delete :: (Int -> obj -> obj) -> Int -> f ()
+
+class IfThenElse f where
+  ifThenElse :: f Bool -> f a -> f a -> f a
+
+instance (Monad f) => IfThenElse (Animation obj f) where
+  ifThenElse fb fl fr = do
+    bool <- fb
+    if bool
+      then fl
+      else fr
+
+instance IfThenElse (Const MaxDuration) where
+  ifThenElse (Const (MaxDur db)) (Const (MaxDur dl)) (Const (MaxDur dr)) =
+    Const (MaxDur (db + max dl dr))
 
 type RGB = (Float, Float, Float)
 
@@ -768,6 +807,16 @@ mouseBoxAnimation mouseX mouseY = do
   par (basic (msParticles . withId i . scale) (For 0.5) (To 4))
       (basic (msParticles . withId i . alpha) (For 0.5) (To 0))
   delete deleteBoxParticle i
+
+rareAnimation :: (IfThenElse f, Basic MouseWorld f, Rng f, Functor f) => f ()
+rareAnimation =
+  ifThenElse
+    (fmap (\(x :: Int) -> x == 10) (rng (1, 10)))
+    (basic (msParticles . withId 0 . scale) (For 1) (To 1))
+    (basic (msParticles . withId 0 . scale) (For 5) (To 1))
+
+rareAnimMaxDuration :: MaxDuration
+rareAnimMaxDuration = maxDuration rareAnimation
 
 fetchInbetweens :: Float -> Int -> obj -> Animation obj Identity a -> [obj] -> [obj]
 fetchInbetweens _ 0 obj _ acc = acc ++ [obj]
