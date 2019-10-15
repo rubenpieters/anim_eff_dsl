@@ -33,6 +33,8 @@ Tom Schrijvers \orcidID{0000-0001-8771-5559}}
 
 \input{sections/08-interaction.tex}
 
+\input{sections/98-related.tex}
+
 \include{paper_bib}
 
 \end{document}

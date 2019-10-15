@@ -5,6 +5,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE Arrows #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module Main where
 
@@ -12,6 +16,9 @@ import Prelude hiding (seq)
 
 import Numeric
 
+import Control.Category (Category)
+import qualified Control.Category as Category (id, (.))
+import Control.Arrow
 import Control.Applicative (liftA2)
 import Control.Monad
 import Control.Monad.Identity
@@ -215,6 +222,64 @@ instance (Monad f) => IfThenElse (Animation obj f) where
 instance IfThenElse (Const MaxDuration) where
   ifThenElse (Const (MaxDur db)) (Const (MaxDur dl)) (Const (MaxDur dr)) =
     Const (MaxDur (db + max dl dr))
+
+class Particle2 a f where
+  withParticle :: a Int o -> f o
+
+newtype AnimationA obj m i o = AnimationA { unAnimationA :: Kleisli (Animation obj m) i o }
+  deriving (Category, Arrow, ParA)
+
+--deriving instance (Particle obj (Animation obj m), Applicative m) => ParticleA obj (AnimationA obj m)
+
+newtype MyLens obj = MyLens (Traversal' obj Float)
+
+class BasicA obj a where
+  basicA :: Duration -> Target -> a (MyLens obj) ()
+
+instance (Monad m, Basic obj m) => BasicA obj (Kleisli m) where
+  basicA (For duration) (To target) = Kleisli $ \(MyLens traversal) ->
+    basic traversal (For duration) (To target)
+
+class ParA a where
+  liftP2A :: (x -> y -> o) -> a i x -> a i y -> a i o
+
+parA :: (ParA a) => a i () -> a i () -> a i ()
+parA = liftP2A (\_ _ -> ())
+
+instance (Monad m, Par m) => ParA (Kleisli m) where
+  liftP2A combine (Kleisli a1) (Kleisli a2) = Kleisli $ \i ->
+    liftP2 combine (a1 i) (a2 i)
+
+class ParticleA obj a where
+  createA :: a (obj -> (obj, Int)) Int
+  deleteA :: a ((Int -> obj -> obj), Int) ()
+
+instance (Particle obj m) => ParticleA obj (Kleisli m) where
+  createA = Kleisli $ \createF -> create createF
+  deleteA = Kleisli $ \(deleteF, i) -> delete deleteF i
+
+newtype ConstArr a i o = ConstArr { getConstArr :: a }
+
+instance BasicA obj (ConstArr Duration) where
+  basicA duration _ = ConstArr duration
+
+instance (Monoid a) => Category (ConstArr a) where
+  id = ConstArr mempty
+  (ConstArr a1) . (ConstArr a2) = ConstArr (a1 <> a2)
+
+instance (Monoid a) => Arrow (ConstArr a) where
+  arr _ = ConstArr mempty
+  first (ConstArr a) = ConstArr a
+
+instance (Ord a) => ParA (ConstArr a) where
+  liftP2A _ (ConstArr a1) (ConstArr a2) = ConstArr (max a1 a2)
+
+instance ParticleA obj (ConstArr Duration) where
+  createA = ConstArr (For 0)
+  deleteA = ConstArr (For 0)
+
+durationA :: ConstArr Duration i o -> Duration
+durationA = getConstArr
 
 type RGB = (Float, Float, Float)
 
@@ -807,6 +872,19 @@ mouseBoxAnimation mouseX mouseY = do
   par (basic (msParticles . withId i . scale) (For 0.5) (To 4))
       (basic (msParticles . withId i . alpha) (For 0.5) (To 0))
   delete deleteBoxParticle i
+
+mouseBoxAnimationA :: (ParticleA MouseWorld a, BasicA MouseWorld a, ParA a, Arrow a) => a (Float, Float) ()
+mouseBoxAnimationA = proc (mouseX, mouseY) -> do
+  i <- createA -< (createBoxParticle mouseX mouseY)
+  parA (arr (\i -> MyLens $ msParticles . withId i . scale) >>> basicA (For 0.5) (To 4))
+       (arr (\i -> MyLens $ msParticles . withId i . scale) >>> basicA (For 0.5) (To 4)) -< i
+  deleteA -< (deleteBoxParticle, i)
+
+mouseBoxAnimationA2 :: (Monad m) => Float -> Float -> Animation MouseWorld m ()
+mouseBoxAnimationA2 mouseX mouseY = runKleisli mouseBoxAnimationA (mouseX, mouseY)
+
+mouseBoxAnimDuration :: Duration
+mouseBoxAnimDuration = durationA mouseBoxAnimationA
 
 rareAnimation :: (IfThenElse f, Basic MouseWorld f, Rng f, Functor f) => f ()
 rareAnimation =
