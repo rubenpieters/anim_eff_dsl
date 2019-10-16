@@ -35,6 +35,8 @@ Tom Schrijvers \orcidID{0000-0001-8771-5559}}
 
 \input{sections/98-related.tex}
 
+\input{sections/99-conclusion.tex}
+
 \include{paper_bib}
 
 \end{document}

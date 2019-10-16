@@ -2,11 +2,25 @@
 \label{sec:related}
 
 \subsection{Functional Reactive Programming}
-The origins of functional reactive programming lie in the creation of animations \cite{DBLP:conf/icfp/ElliottH97}. Since then, many developments have been based on this idea to create purely functional GUIs. It is a natural question to ask how this work relates to the idea of functional programming, since there seems to be some common ground.
+The origins of functional reactive programming lie in the creation of animations \cite{DBLP:conf/icfp/ElliottH97}. Since then, many developments have been based on this idea to create purely functional GUIs. It is a natural question to ask how this work relates to the idea of functional reactive programming, since there seems to be some common ground.
 
-This DSL is intended to be usable on top of an underlying framework such as functional reactive programming, rather than instead of it. We believe that the essence of the dsl: \hs{basic}, \hs{par}, and \hs{seq} can be translated into functional reactive programming primitives. This can help in expressing animations on a higher level, if so desired.
+This DSL is intended to be usable on top of an underlying framework such as functional reactive programming, rather than instead of it. The essential operations of the DSL, \hs{basic}, \hs{par}, and \hs{seq}, can be translated into FRP behaviour or behaviour combinators and the use can be embedded inside an FRP framework.
 
-The flexibility of the DSL enables it to be used on top of other frameworks as well, such as immediate mode GUIs or traditional event-based GUIs.
+The flexibility of the DSL enables it to be used on top of other frameworks as well, for example immediate mode or event-based GUIs.
 
 \subsection{Animation Frameworks}
 
+Typical micro-animation libraries for web applications (with CSS or JavaScript) or animation construction in game engines provide a variety of configurable pre-made operations while composing complex animations or integrating new types of operations is difficult. This DSL focuses on the creation of complex sequences of events while still being able to embed any complex atomic operations. We hope that this DSL design provides inspiration for micro-animation libraries to provide more powerful combinators for composing complex animations.
+
+
+
+% Other UI Animation Libraries:
+% https://www.codementor.io/hayeskier/7-best-animation-libraries-for-ui-designers-2018-kmg7byy1g
+% https://greensock.com/docs/
+% https://animejs.com/documentation/#cssSelector
+
+\subsection{Planning-Based Animations}
+
+This DSL shares similarities with approaches which specify an animation as a plan which needs to be executed \cite{DBLP:conf/chi/KurlanderL95} \cite{DBLP:conf/eics/MirlacherPB12}. In essence an animation is outlined by a series of actions specified upfront, which is the plan of the animation. The coordinator, which manages and advances the animations, is implemented inside the hosting UI framework. Using the inspection capabilities of the DSL it is possible to define efficient compilation of the animations to another animation framework.
+
+The DSL also shares a weakness with this approach in the resolution of conflicting actions. Imagine we specify an animation to both change the \hs{width} value of a component to \hs{0} and \hs{100} in parallel over the same duration. It is unclear what the resulting animation should look like, and as implemented in this paper will not result in a smooth animation. We could have used a \hs{basic} operation which specifies relative movement, which would avoid this issue, but at the cost of usability of the DSL for the programmer. The modularity of the DSL enables using this operation in scenarios where this issue might occur, while still allowing the more user-friendly operation in all other scenarios.
