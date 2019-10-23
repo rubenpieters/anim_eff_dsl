@@ -9,20 +9,27 @@ Graphical user interfaces typically use various concepts to aid users in underst
 
 For example, in Figure~\ref{fig:usecase1} an animation is displayed when the side menu appears on-screen. This menu appears from the right while the background fades out.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase1fig}
-\caption{Animation of a side menu appearing while the background fades out.}
-\label{fig:usecase1}
-\end{figure}
-
 Another example can be seen in Figure~\ref{fig:usecase2}, at the top of the application is a navigation bar. When the user clicks on one of the elements in the bar, an animation is displayed removing the underline from the previously selected element and underlining the newly selected element.
 
 \begin{figure}[h]
 \centering
+
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/usecase1fig}
+\caption{Animation of a side menu appearing while the background fades out.}
+\label{fig:usecase1}
+\end{subfigure}
+
+\begin{subfigure}[h]{\textwidth}
+\centering
 \includegraphics[width=\figscale\textwidth]{pictures/usecase2fig}
 \caption{Animation of the underlined element changing in the navigation bar.}
 \label{fig:usecase2}
+\end{subfigure}
+
+\caption{Examples of micro-animations.}
+\label{fig:usecase1basic}
 \end{figure}
 
 \subsection{Composing Animations}
