@@ -12,11 +12,11 @@ import Lens.Micro
 class Basic obj f where
   basic :: Lens' obj Float -> Duration -> Target -> f ()
 
-seq :: (Applicative f) => f () -> f () -> f ()
-seq f1 f2 = liftA2 (\_ _ -> ()) f1 f2
+sequential :: (Applicative f) => f () -> f () -> f ()
+sequential f1 f2 = liftA2 (\_ _ -> ()) f1 f2
 
-class Par f where
+class Parallel f where
   liftP2 :: (a -> b -> c) -> f a -> f b -> f c
 
-par :: (Par f) => f () -> f () -> f ()
-par f1 f2 = liftP2 (\_ _ -> ()) f1 f2
+parallel :: (Parallel f) => f () -> f () -> f ()
+parallel f1 f2 = liftP2 (\_ _ -> ()) f1 f2
