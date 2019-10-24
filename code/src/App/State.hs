@@ -68,7 +68,11 @@ menuOutro :: (Basic Application f, Parallel f) => f ()
 menuOutro = basic (menu . width) (For 0.5) (To 0)
   `parallel` basic (obscuringBox . alpha) (For 0.5) (To 0)
 
+line1Outro :: (Basic Application f) => f ()
+line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
 
---removeUnderlineBtn1 = basic (menu . width) 
+line2Intro :: (Basic Application f) => f ()
+line2Intro = basic (navbar . underline2 . width) (For 0.25) (To 28)
 
---underlineBtn2Animation =
+selectBtn2Anim :: (Basic Application f, Applicative f) => f ()
+selectBtn2Anim = line1Outro `sequential` line2Intro

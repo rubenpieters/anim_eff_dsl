@@ -6,6 +6,7 @@ import Util.Sprite
 import App.State
 import App.Menu
 import DSL.Animation
+import DSL.Functor
 
 import Lens.Micro
 import Graphics.Gloss
@@ -14,7 +15,7 @@ import Graphics.Gloss.Interface.Pure.Game
 handleInput :: Event -> Application -> Application
 handleInput (EventKey (MouseButton LeftButton) Down _ centerCoords) w = let
   (mouseX, mouseY) = unCenterCoords (100, 100) centerCoords
-  in case (insideMenuBtn (mouseX, mouseY), w ^. menu . extra) of
+  w0 = case (insideMenuBtn (mouseX, mouseY), w ^. menu . extra) of
      (False, _) -> w
      (True, MenuClosed) ->
        w & menuAnimation .~ menuIntro
@@ -22,6 +23,14 @@ handleInput (EventKey (MouseButton LeftButton) Down _ centerCoords) w = let
      (True, MenuOpen) ->
        w & menuAnimation .~ menuOutro
          & menu . extra .~ MenuClosed
+  w1 = case (insideNavBarBtn (mouseX, mouseY), w ^. menu . extra) of
+     (Nothing, _) -> w0
+     (_, MenuOpen) -> w0
+     (Just 1, _) -> w0
+     (Just 2, _) -> w0 & animations %~ \l -> l `parallel` selectBtn2Anim
+     (Just 3, _) -> w0
+     (Just _, _) -> w0
+  in w1
 handleInput _ w = w
 
 update :: Float -> Application -> Application

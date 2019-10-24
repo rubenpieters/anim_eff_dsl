@@ -27,7 +27,7 @@ instance (Applicative m) => Basic obj (Animation obj m) where
   basic traversal (For duration) (To target) =
     Animation $ \obj t -> let
     -- construct new object state
-    newObj = over traversal (updateValue t duration target) obj
+    newObj = obj & traversal %~ updateValue t duration target
     -- calculate remaining duration of this basic animation
     newDuration = duration - t
     -- create remainder animation / time delta
