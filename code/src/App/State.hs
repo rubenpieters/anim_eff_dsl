@@ -23,7 +23,6 @@ data Application = Application
   , _menu :: Menu
   , _obscuringBox :: Sprite
   , _navbar :: Navbar
-  , _completeIcon :: CompleteIcon
   , _animations :: Animation Application Identity ()
   , _menuAnimation :: Animation Application Identity ()
   }
@@ -31,11 +30,10 @@ data Application = Application
 makeLenses ''Application
 
 instance Draw Application where
-  draw Application{ _mainWindow, _menu, _obscuringBox, _navbar, _completeIcon } =
+  draw Application{ _mainWindow, _menu, _obscuringBox, _navbar } =
     Pictures
     [ draw _mainWindow
     , draw _navbar
-    , draw _completeIcon
     , draw _obscuringBox
     , draw _menu
     ]
@@ -54,7 +52,6 @@ initialApplication = Application
     , _alpha = 0
     }
   , _navbar = initialNavbar
-  , _completeIcon = initialCompleteIcon
   , _animations = return ()
   , _menuAnimation = return ()
   }
@@ -99,6 +96,7 @@ menuIntro = menuSlideIn `parallel` appFadeOut
 
 -- COMPLETE ICON ANIM
 
+{-
 completeIconCheck :: (Basic Application f, Monad f, Parallel f, Set Application f) => f ()
 completeIconCheck = do
   set (completeIcon . checked) True
@@ -119,3 +117,4 @@ completeIconUncheck = do
        basic (completeIcon . checkmark . scale) (For 0.05) (To 1)
     )
     (basic (completeIcon . circle . extra) (For 0.05) (To 1))
+-}

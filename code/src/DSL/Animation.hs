@@ -1,11 +1,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes #-}
 
 module DSL.Animation where
 
 import DSL.Functor
 import Util.Types
 
+import Control.Arrow (left)
 import Control.Monad (ap, liftM)
 import Control.Monad.Identity
 import Lens.Micro
@@ -22,6 +24,12 @@ newtype Animation obj m a = Animation {
       , Maybe Float -- remaining time delta
       )
 }
+
+embed :: (Functor m) => Lens' sup sub -> Animation sub m a -> Animation sup m a
+embed lens (Animation anim) = Animation $ \sup t -> let
+  f (sub, remainingAnim, remainingDelta) =
+    (sup & lens .~ sub, left (embed lens) remainingAnim, remainingDelta)
+  in fmap f (anim (sup ^. lens) t)
 
 instance (Applicative m) => Basic obj (Animation obj m) where
   basic traversal (For duration) (To target) =

@@ -19,3 +19,9 @@ insideNavBarBtn (x, y) =
       _ -> Nothing
   else
     Nothing
+
+insideTodoItem :: (Float, Float) -> Maybe Int
+insideTodoItem (x, y) | x >= 15 && x <= 85 && y >= 28.75 && y <= 48.75 = Just 1
+insideTodoItem (x, y) | x >= 15 && x <= 85 && y >= 52.5 && y <= 72.5 = Just 2
+insideTodoItem (x, y) | x >= 15 && x <= 85 && y >= 76.25 && y <= 96.25 = Just 3
+insideTodoItem _ = Nothing

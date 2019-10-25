@@ -6,6 +6,7 @@ module App.Menu where
 import Util.Types
 import Util.Sprite
 import Util.Draw
+import Util.Animate
 
 import Lens.Micro
 import Lens.Micro.TH
