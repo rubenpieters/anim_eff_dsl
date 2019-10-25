@@ -93,6 +93,11 @@ instance (Monad m) => Parallel (Animation obj m) where
             Left (liftP2 combine aniA aniB)
     return (obj2, newAnim, newRem)
 
+instance (Applicative m) => Set obj (Animation obj m) where
+  set lens a = Animation $ \obj t -> let
+    newObj = obj & lens .~ a
+    in pure (newObj, Right (), Just t)
+
 applyAnimation :: (Monad m) => obj -> Float -> Animation obj m () -> m (obj, Animation obj m ())
 applyAnimation w t anim = let
   f (obj, eAnim, _) = case eAnim of

@@ -20,3 +20,6 @@ class Parallel f where
 
 parallel :: (Parallel f) => f () -> f () -> f ()
 parallel f1 f2 = liftP2 (\_ _ -> ()) f1 f2
+
+class Set obj f where
+  set :: Lens' obj a -> a -> f ()

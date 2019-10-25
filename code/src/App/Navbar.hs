@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes #-}
 
 module App.Navbar where
 
@@ -20,6 +21,7 @@ data Navbar = Navbar
   , _underline2 :: Sprite
   , _underline3 :: Sprite
   , _menuBtn :: Sprite
+  , _selectedBtn :: Int
   }
 
 makeLenses ''Navbar
@@ -103,6 +105,7 @@ initialNavbar = Navbar
     , _color = (1, 1, 1)
     , _pic = menuBtnPic
     }
+  , _selectedBtn = 1
 }
 
 menuBtnPic :: Float -> Float -> Picture
@@ -111,3 +114,15 @@ menuBtnPic w h = Pictures
   , rectangleSolid 0.8 0.15 & Translate 0 (-0.23)
   , rectangleSolid 0.8 0.15 & Translate 0 0.23
   ] & Scale w h
+
+btn :: Int -> Lens' Navbar Sprite
+btn 1 = btn1
+btn 2 = btn2
+btn 3 = btn3
+btn i = error ("unknown button " ++ show i)
+
+underline :: Int -> Lens' Navbar Sprite
+underline 1 = underline1
+underline 2 = underline2
+underline 3 = underline3
+underline i = error ("unknown underline " ++ show i)

@@ -5,12 +5,15 @@ import Util.Draw
 import Util.Sprite
 import App.State
 import App.Menu
+import App.Navbar
+import App.CompleteIcon
 import DSL.Animation
 import DSL.Functor
 
 import Lens.Micro
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
+import Graphics.Gloss.Export.PNG
 
 handleInput :: Event -> Application -> Application
 handleInput (EventKey (MouseButton LeftButton) Down _ centerCoords) w = let
@@ -23,14 +26,19 @@ handleInput (EventKey (MouseButton LeftButton) Down _ centerCoords) w = let
      (True, MenuOpen) ->
        w & menuAnimation .~ menuOutro
          & menu . extra .~ MenuClosed
+  prev = w ^. navbar . selectedBtn
   w1 = case (insideNavBarBtn (mouseX, mouseY), w ^. menu . extra) of
      (Nothing, _) -> w0
      (_, MenuOpen) -> w0
-     (Just 1, _) -> w0
-     (Just 2, _) -> w0 & animations %~ \l -> l `parallel` selectBtn2Anim
-     (Just 3, _) -> w0
-     (Just _, _) -> w0
+     (Just new, _) ->
+       w0 & animations %~ (\l -> l `parallel` selectBtnXAnim prev new)
+          & navbar . selectedBtn .~ new
   in w1
+handleInput (EventKey (Char 'x') Down _ _) w =
+  if w ^. completeIcon . checked then
+    w & animations %~ (\l -> l `parallel` completeIconUncheck)
+  else
+    w & animations %~ (\l -> l `parallel` completeIconCheck)
 handleInput _ w = w
 
 update :: Float -> Application -> Application

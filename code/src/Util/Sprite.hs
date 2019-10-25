@@ -13,6 +13,9 @@ import Graphics.Gloss
 
 type Sprite = SpriteExtra ()
 
+data Anchor = TopLeft | Center
+  deriving Eq
+
 data SpriteExtra a = SpriteExtra
   { _x :: Float
   , _y :: Float
@@ -25,6 +28,7 @@ data SpriteExtra a = SpriteExtra
   , _scale :: Float
   , _spriteId :: Int
   , _extra :: a
+  , _anchor :: Anchor
   }
 
 makeLenses ''SpriteExtra
@@ -35,10 +39,14 @@ spriteDef = SpriteExtra
   , _rotation = 0
   , _scale = 1
   , _spriteId = -1
+  , _anchor = TopLeft
   }
 
+noop :: Picture -> Picture
+noop = Scale 1 1
+
 instance Draw (SpriteExtra a) where
-  draw SpriteExtra{ _x, _y, _color, _alpha, _pic, _width, _height, _rotation, _scale } = let
+  draw SpriteExtra{ _x, _y, _color, _alpha, _pic, _width, _height, _rotation, _scale, _anchor } = let
     (r, g, b) = _color
     sw = 100
     sh = 100
@@ -47,4 +55,7 @@ instance Draw (SpriteExtra a) where
     & Color (makeColor r g b _alpha)
     & Rotate _rotation
     & Scale _scale _scale
-    & Translate (x + _width / 2) (y - _height / 2)
+    & if _anchor == TopLeft then
+        Translate (x + _width / 2) (y - _height / 2)
+      else
+        Translate x y
