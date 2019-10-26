@@ -11,10 +11,12 @@ import App.Navbar
 import App.MainWindow
 import App.Menu
 import App.CompleteIcon
+import App.TodoItem
 import DSL.Functor
 import DSL.Animation
 
 import Control.Monad.Identity
+import Lens.Micro hiding (set)
 import Lens.Micro.TH
 import Graphics.Gloss hiding (circle, scale, color)
 
@@ -118,3 +120,40 @@ completeIconUncheck = do
     )
     (basic (completeIcon . circle . extra) (For 0.05) (To 1))
 -}
+
+-- ONLY COPMLETE TODOS
+
+showAll :: (Basic Application f, Parallel f) => f ()
+showAll =
+  (basic (mainWindow . todoItems . traverse . todoItemBg . alpha) (For 0.5) (To 1))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . completeIcon . checkmark . alpha) (For 0.5) (To 1))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . completeIcon . circle . alpha) (For 0.5) (To 1))
+
+onlyComplete :: (Basic Application f, Set Application f, Monad f, Parallel f) => f ()
+onlyComplete = do
+  (basic (mainWindow . todoItems . traverse . todoItemBg . alpha) (For 0.5) (To 1))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . completeIcon . checkmark . alpha) (For 0.5) (To 1))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . completeIcon . circle . alpha) (For 0.5) (To 1))
+  (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . todoItemBg . alpha) (For 0.5) (To 0))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
+
+onlyTodo :: (Basic Application f, Set Application f, Monad f, Parallel f) => f ()
+onlyTodo = do
+  (basic (mainWindow . todoItems . traverse . todoItemBg . alpha) (For 0.5) (To 1))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . completeIcon . checkmark . alpha) (For 0.5) (To 1))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . completeIcon . circle . alpha) (For 0.5) (To 1))
+  (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . todoItemBg . alpha) (For 0.5) (To 0))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
+    `parallel`
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
+

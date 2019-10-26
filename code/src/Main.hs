@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Main where
 
@@ -32,25 +33,25 @@ handleInput (EventKey (MouseButton LeftButton) Down _ centerCoords) w = let
        w & menuAnimation .~ menuOutro
          & menu . extra .~ MenuClosed
   prev = w ^. navbar . selectedBtn
+  showTodoAnim 1 = showAll
+  showTodoAnim 2 = onlyComplete
+  showTodoAnim 3 = onlyTodo
   w1 = case (insideNavBarBtn (mouseX, mouseY), w ^. menu . extra) of
      (Nothing, _) -> w0
      (_, MenuOpen) -> w0
      (Just new, _) | new == prev -> w0
      (Just new, _) ->
-       w0 & animations %~ (\l -> l `parallel` selectBtnXAnim prev new)
+       w0 & animations %~ (\l -> l `parallel` selectBtnXAnim prev new `parallel` showTodoAnim new)
           & navbar . selectedBtn .~ new
   w2 = case (insideTodoItem (mouseX, mouseY), w ^. menu . extra) of
      (Nothing, _) -> w1
      (_, MenuOpen) -> w1
      (Just i, _) ->
-       w1 & animations %~ (\l -> l `parallel` embed (mainWindow . stillTodos . atIndex (i - 1) . completeIcon) completeIconCheck)
+       if w1 ^. mainWindow . todoItems . atIndex (i - 1) . completeIcon . checked then
+         w1 & animations %~ (\l -> l `parallel` embed (mainWindow . todoItems . atIndex (i - 1) . completeIcon) completeIconUncheck)
+       else
+         w1 & animations %~ (\l -> l `parallel` embed (mainWindow . todoItems . atIndex (i - 1) . completeIcon) completeIconCheck)
   in w2
-{-handleInput (EventKey (Char 'x') Down _ _) w =
-  if w ^. completeIcon . checked then
-    w & animations %~ (\l -> l `parallel` embed completeIcon completeIconUncheck)
-  else
-    w & animations %~ (\l -> l `parallel` embed completeIcon completeIconCheck)
--}
 handleInput _ w = w
 
 update :: Float -> Application -> Application

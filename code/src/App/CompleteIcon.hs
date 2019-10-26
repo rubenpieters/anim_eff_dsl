@@ -66,7 +66,7 @@ drawCompleteCircle SpriteExtra{ _x, _y, _color, _alpha, _pic, _width, _height, _
   sw = 100
   sh = 100
   (x, y) = toCenterCoords (sw, sh) (_x, _y)
-  in ThickArc 0 _extra _width 6
+  in ThickArc 0 _extra _width 7
   & Color (makeColor r g b _alpha)
   & Rotate _rotation
   & Scale _scale _scale

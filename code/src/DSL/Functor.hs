@@ -10,7 +10,7 @@ import Control.Applicative (liftA2)
 import Lens.Micro
 
 class Basic obj f where
-  basic :: Lens' obj Float -> Duration -> Target -> f ()
+  basic :: Traversal' obj Float -> Duration -> Target -> f ()
 
 sequential :: (Applicative f) => f () -> f () -> f ()
 sequential f1 f2 = liftA2 (\_ _ -> ()) f1 f2
@@ -22,4 +22,4 @@ parallel :: (Parallel f) => f () -> f () -> f ()
 parallel f1 f2 = liftP2 (\_ _ -> ()) f1 f2
 
 class Set obj f where
-  set :: Lens' obj a -> a -> f ()
+  set :: Traversal' obj a -> a -> f ()

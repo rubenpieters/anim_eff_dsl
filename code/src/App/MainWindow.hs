@@ -14,17 +14,16 @@ import Graphics.Gloss
 
 data MainWindow = MainWindow
   { _mainBg :: Sprite
-  , _completedTodos :: [TodoItem]
-  , _stillTodos :: [TodoItem]
+  , _todoItems :: [TodoItem]
   }
 
 makeLenses ''MainWindow
 
 instance Draw MainWindow where
-  draw MainWindow{ _mainBg, _completedTodos, _stillTodos } =
+  draw MainWindow{ _mainBg, _todoItems } =
     Pictures $
     [ draw _mainBg
-    ] ++ map draw _completedTodos ++ map draw _stillTodos
+    ] ++ map draw _todoItems
 
 initialMainWindow :: MainWindow
 initialMainWindow = MainWindow
@@ -36,8 +35,7 @@ initialMainWindow = MainWindow
     , _color = hexToRgb "c4" "c8" "c2"
     , _pic = rectangleSolid
     }
-  , _completedTodos = []
-  , _stillTodos =
+  , _todoItems =
     [ mkTodoItem 0 25
     , mkTodoItem 0 48.75
     , mkTodoItem 0 72.5
