@@ -115,3 +115,11 @@ applyAnimation w t anim = let
 
 applyIdAnimation :: obj -> Float -> Animation obj Identity () -> (obj, Animation obj Identity ())
 applyIdAnimation w t anim = runIdentity (applyAnimation w t anim)
+
+fetchInbetweens :: Float -> Int -> obj -> Animation obj Identity a -> [obj] -> [obj]
+fetchInbetweens _ 0 obj _ acc = acc ++ [obj]
+fetchInbetweens delta k obj (Animation f) acc = let
+  (obj', eFa, _) = runIdentity (f obj delta)
+  in case eFa of
+     Left anim -> fetchInbetweens delta (k - 1) obj' anim (acc ++ [obj])
+     Right _ -> acc ++ [obj, obj']

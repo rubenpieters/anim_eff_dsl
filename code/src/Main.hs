@@ -1,8 +1,10 @@
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
+import Util.Types
 import Util.Coordinates
 import Util.Draw
 import Util.Animate
@@ -15,6 +17,7 @@ import App.MainWindow
 import App.TodoItem
 import DSL.Animation
 import DSL.Functor
+import DSL.Duration
 
 import Lens.Micro
 import Graphics.Gloss hiding (animate)
@@ -34,8 +37,8 @@ handleInput (EventKey (MouseButton LeftButton) Down _ centerCoords) w = let
          & menu . extra .~ MenuClosed
   prev = w ^. navbar . selectedBtn
   showTodoAnim 1 = showAll
-  showTodoAnim 2 = onlyComplete
-  showTodoAnim 3 = onlyTodo
+  showTodoAnim 2 = onlyDone
+  showTodoAnim 3 = onlyNotDone
   w1 = case (insideNavBarBtn (mouseX, mouseY), w ^. menu . extra) of
      (Nothing, _) -> w0
      (_, MenuOpen) -> w0
@@ -61,13 +64,43 @@ update t w = let
   in w1 & animations .~ newAnimations
         & menuAnimation .~ newMenuAnimation
 
+drawnWorlds :: Draw obj => [obj] -> Picture
+drawnWorlds worlds = let
+  k = length worlds
+  f (i, w) = draw w & Translate (50 - 206 + 104 * i) 0
+  whiteBoxTop i = rectangleSolid 5 5 & Color (makeColor 1 1 1 1) & Translate (-203 + 10 * i) (-55)
+  whiteBoxBot i = rectangleSolid 5 5 & Color (makeColor 1 1 1 1) & Translate (-203 + 10 * i) 55
+  in Pictures (map f (zip [0..] worlds) ++ map whiteBoxTop [0..50] ++ map whiteBoxBot [0..50])
+
+completeIconCheckFig :: [Application]
+completeIconCheckFig = let
+  k = 3
+  in fetchInbetweens (0.3 / fromIntegral k) k initialApplication (embed (mainWindow . todoItems . atIndex 0 . completeIcon) completeIconCheck) []
+
+onlyDoneFig :: [Application]
+onlyDoneFig = let
+  k = 3
+  in fetchInbetweens (getDuration (duration (onlyDone `parallel` selectBtn2Anim)) / fromIntegral k) k initialApplication (onlyDone `parallel` selectBtn2Anim) []
+
+menuIntroFig :: [Application]
+menuIntroFig = let
+  k = 3
+  in fetchInbetweens (getDuration (duration menuIntro) / fromIntegral k) k initialApplication menuIntro []
+
 main :: IO ()
 main = let
   bgColor = makeColor 0 0 0 1
   sw = 100
   sh = 100
   window = InWindow "animation-dsl" (sw, sh) (100, 100)
-  in play window bgColor 60 initialApplication draw handleInput update
+  in do
+  putStrLn "Command:"
+  x :: Int <- readLn
+  case x of
+    1 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/completeIconCheckFig.png" (drawnWorlds completeIconCheckFig)
+    2 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/onlyDoneFig.png" (drawnWorlds onlyDoneFig)
+    3 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/menuIntroFig.png" (drawnWorlds menuIntroFig)
+    9 -> play window bgColor 60 initialApplication draw handleInput update
 
 atIndex :: Int -> Lens' [a] a
 atIndex i = lens (!! i) (\s b -> take i s ++ b : drop (i+1) s)

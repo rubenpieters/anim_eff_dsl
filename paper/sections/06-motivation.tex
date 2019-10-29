@@ -1,40 +1,56 @@
 \section{Motivation}
 \label{sec:motivation}
 
-This paper develops a DSL for creating GUI animations. This section gives a high-level overview of the problem domain and the expected features of the DSL.
+Graphical user interfaces (GUIs) typically use animations to aid the user in understanding the transitioning states of the application. This section showcases the key features of the DSL by showing how to implement animations for a mock application.
 
-\subsection{Problem Domain}
+\subsection{Running Example}
 
-Graphical user interfaces typically use various concepts to aid users in understanding the current state of the application. One example is to display brief animations whenever the interface changes shape. These type of animations are sometimes called micro-animations.
+Our running example is a simplified todo-list application. The application has two screens: a main screen and a menu screen. The main screen contains a navigation bar and three todo items.
 
-For example, in Figure~\ref{fig:usecase1} an animation is displayed when the side menu appears on-screen. This menu appears from the right while the background fades out.
+TODO: application fig
 
-Another example can be seen in Figure~\ref{fig:usecase2}, at the top of the application is a navigation bar. When the user clicks on one of the elements in the bar, an animation is displayed removing the underline from the previously selected element and underlining the newly selected element.
+In this application, the user can execute various actions which are accompanied with an animation:
+\begin{itemize}
+\item Each todo item can be marked as \emph{done} or \emph{not done} by clicking on it. The checkmark icon will change shape and color to indicate the change in status. These are the \hs{markAsDone}/\hs{markAsNotDone} animations, shown in Figure~\ref{fig:completeIconCheck}.
+\item Todo items can be filtered by their status by using the navigation bar buttons. The first button shows all items, the second shows all complete items, and the third shows all incomplete items. Both the navigation bar underline and the todo items itself will change shape to indicate the change in selection. These are the \hs{showAll}/\hs{onlyDone}/\hs{onlyNotDone} animations, shown in Figure~\ref{fig:onlyDoneFig}.
+\item The menu screen shows/hides itself after clicking the hamburger icon. The menu expands inward from the left, to indicate the change in application state. These are the \hs{menuIntro}/\hs{menuOutro} animations, shown in Figure~\ref{fig:menuIntroFig}.
+\end{itemize}
 
 \begin{figure}[h]
 \centering
 
 \begin{subfigure}[h]{\textwidth}
 \centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase1fig}
-\caption{Animation of a side menu appearing while the background fades out.}
-\label{fig:usecase1}
+\includegraphics[width=\figscale\textwidth]{pictures/completeIconCheckFig}
+\caption{The \hs{markAsDone} animation, the checkmark changes shape and color.}
+\label{fig:completeIconCheck}
 \end{subfigure}
 
 \begin{subfigure}[h]{\textwidth}
 \centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase2fig}
-\caption{Animation of the underlined element changing in the navigation bar.}
-\label{fig:usecase2}
+\includegraphics[width=\figscale\textwidth]{pictures/onlyDoneFig}
+\caption{The \hs{onlyDone} animation, each of the not done todo items fades out and the navbar underline changes. TODO: 2 rows and start with 1 completed}
+\label{fig:onlyDoneFig}
 \end{subfigure}
 
-\caption{Examples of micro-animations.}
-\label{fig:usecase1basic}
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/menuIntroFig}
+\caption{The \hs{menuIntro} animation, the menu appears while the background fades out.}
+\label{fig:menuIntroFig}
+\end{subfigure}
+
+\caption{Micro-Animations in the todo application.}
+\label{fig:animExamples}
 \end{figure}
 
 \subsection{Composing Animations}
 
-The DSL expresses animations by composing smaller parts together. A \emph{basic} animation expresses an elementary unit of animation, which is typically one varying property within the interface. The \emph{composed} animations compose multiple animations into a new animation.
+The philosophy of \dsl{} is to express animations by combining smaller animations into larger ones. As an example, a partial decomposition of the \hs{onlyDone} animation in Figure~\ref{fig:onlyDoneFig} is shown in Figure~TODO.
+
+First we need to both \emph{change the navbar underlining} and \emph{fade out all not done items}, then we want to \emph{fade in all done items}. The animation \emph{change the navbar underlining} can in turn be decomposed: first \emph{remove underline on button 3}, then \emph{add underline on button 2}. These animations cannot be decomposed further, they are \emph{basic} animations, which signals the end of the decomposition.
+
+In the next paragraphs we explain how to construct these basic and composed animations.
 
 \subsubsection{Basic Animations}
 

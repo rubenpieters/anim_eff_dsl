@@ -2,7 +2,7 @@
 
 \input{sections/01-packages.tex}
 
-\title{Effectful DSL for GUI Animations}
+\title{PaSe: An Extensible and Inspectable DSL\\for Micro-Animations}
 
 \input{sections/02-commands.tex}
 

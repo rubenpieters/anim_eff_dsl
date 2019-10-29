@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE FlexibleContexts#-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE ApplicativeDo #-}
 
 module App.State where
 
@@ -121,7 +122,7 @@ completeIconUncheck = do
     (basic (completeIcon . circle . extra) (For 0.05) (To 1))
 -}
 
--- ONLY COPMLETE TODOS
+-- SHOW ALL / FILTER
 
 showAll :: (Basic Application f, Parallel f) => f ()
 showAll =
@@ -131,8 +132,8 @@ showAll =
     `parallel`
     (basic (mainWindow . todoItems . traverse . completeIcon . circle . alpha) (For 0.5) (To 1))
 
-onlyComplete :: (Basic Application f, Set Application f, Monad f, Parallel f) => f ()
-onlyComplete = do
+onlyDone :: (Basic Application f, Set Application f, Applicative f, Parallel f) => f ()
+onlyDone = do
   (basic (mainWindow . todoItems . traverse . todoItemBg . alpha) (For 0.5) (To 1))
     `parallel`
     (basic (mainWindow . todoItems . traverse . completeIcon . checkmark . alpha) (For 0.5) (To 1))
@@ -143,9 +144,10 @@ onlyComplete = do
     (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
     `parallel`
     (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
+  return ()
 
-onlyTodo :: (Basic Application f, Set Application f, Monad f, Parallel f) => f ()
-onlyTodo = do
+onlyNotDone :: (Basic Application f, Set Application f, Applicative f, Parallel f) => f ()
+onlyNotDone = do
   (basic (mainWindow . todoItems . traverse . todoItemBg . alpha) (For 0.5) (To 1))
     `parallel`
     (basic (mainWindow . todoItems . traverse . completeIcon . checkmark . alpha) (For 0.5) (To 1))
@@ -156,4 +158,5 @@ onlyTodo = do
     (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
     `parallel`
     (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
+  return ()
 
