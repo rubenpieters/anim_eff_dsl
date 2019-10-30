@@ -75,17 +75,17 @@ selectBtnXAnim prev new = lineXOutro prev `sequential` lineXIntro new
 
 ----- BASIC
 
-menuSlideIn :: (Basic Application f) => f ()
-menuSlideIn = basic (menu . width) (For 0.5) (To 75)
-
-appFadeOut :: (Basic Application f) => f ()
-appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.5)
-
 line1Outro :: (Basic Application f) => f ()
 line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
 
 line2Intro :: (Basic Application f) => f ()
 line2Intro = basic (navbar . underline2 . width) (For 0.25) (To 28)
+
+menuSlideIn :: (Basic Application f) => f ()
+menuSlideIn = basic (menu . width) (For 0.5) (To 75)
+
+appFadeOut :: (Basic Application f) => f ()
+appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.5)
 
 -- SEQ
 

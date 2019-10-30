@@ -1,7 +1,7 @@
 \section{Motivation}
 \label{sec:motivation}
 
-Graphical user interfaces (GUIs) typically use animations to aid the user in understanding the transitioning states of the application. This section showcases the key features of the DSL by showing how to implement animations for a mock application.
+Graphical user interfaces (GUIs) often use animations to aid the user in understanding the transitions in the application. In this section we explore the basic features of \dsl{}.
 
 \subsection{Running Example}
 
@@ -11,12 +11,12 @@ TODO: application fig
 
 In this application, the user can execute various actions which are accompanied with an animation:
 \begin{itemize}
-\item Each todo item can be marked as \emph{done} or \emph{not done} by clicking on it. The checkmark icon will change shape and color to indicate the change in status. These are the \hs{markAsDone}/\hs{markAsNotDone} animations, shown in Figure~\ref{fig:completeIconCheck}.
-\item Todo items can be filtered by their status by using the navigation bar buttons. The first button shows all items, the second shows all complete items, and the third shows all incomplete items. Both the navigation bar underline and the todo items itself will change shape to indicate the change in selection. These are the \hs{showAll}/\hs{onlyDone}/\hs{onlyNotDone} animations, shown in Figure~\ref{fig:onlyDoneFig}.
+\item Each todo item can be marked as \emph{done} or \emph{not done} by clicking on it. The checkmark icon changes shape and color to indicate the change in status. These are the \hs{markAsDone}/\hs{markAsNotDone} animations, shown in Figure~\ref{fig:completeIconCheck}.
+\item Todo items can be filtered by their status by using the navigation bar buttons. The first button shows all items, the second shows all complete items, and the third shows all incomplete items. Both the navigation bar underline and the todo items itself change shape to indicate the change in selection. These are the \hs{showAll}/\hs{onlyDone}/\hs{onlyNotDone} animations, shown in Figure~\ref{fig:onlyDoneFig}.
 \item The menu screen shows/hides itself after clicking the hamburger icon. The menu expands inward from the left, to indicate the change in application state. These are the \hs{menuIntro}/\hs{menuOutro} animations, shown in Figure~\ref{fig:menuIntroFig}.
 \end{itemize}
 
-\begin{figure}[h]
+\begin{figure}[!htbp]
 \centering
 
 \begin{subfigure}[h]{\textwidth}
@@ -46,172 +46,104 @@ In this application, the user can execute various actions which are accompanied 
 
 \subsection{Composing Animations}
 
-The philosophy of \dsl{} is to express animations by combining smaller animations into larger ones. As an example, a partial decomposition of the \hs{onlyDone} animation in Figure~\ref{fig:onlyDoneFig} is shown in Figure~TODO.
+The philosophy of \dsl{} is to express animations by combining smaller animations into larger ones. To express an animation, we need to come up with a suitable decomposition. As an example, a partial decomposition of the \hs{onlyDone} animation in Figure~\ref{fig:onlyDoneFig} is shown in Figure~TODO.
 
 First we need to both \emph{change the navbar underlining} and \emph{fade out all not done items}, then we want to \emph{fade in all done items}. The animation \emph{change the navbar underlining} can in turn be decomposed: first \emph{remove underline on button 3}, then \emph{add underline on button 2}. These animations cannot be decomposed further, they are \emph{basic} animations, which signals the end of the decomposition.
 
 In the next paragraphs we explain how to construct these basic and composed animations.
 
-\subsubsection{Basic Animations}
+\subsection{Basic Animations}
 
 A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements: a lens specifying which property in our UI should change, the target value for this property and, lastly, the duration specifying how many seconds the animation should last.
 
-In the menu use case of Figure~\ref{fig:usecase1} there are two properties which need to change during the animation: the \hs{width} of the incoming menu and the alpha property of the box obscuring the application. We express this using the \hs{basic} operation.
+\paragraph{Note on Lenses} We utilize the lens notation \texttt{x . y . z} to target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z: Property } } }}. This type of lenses were introduced by Twan van Laarhoven \cite{vlLenses}, and this idea has been packaged into various Haskell libraries, such as \texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
 
-First we need to create the animation which makes the side menu appear. We pass three parameters to the \hs{basic} operation: the lens \hs{menu}~\hs{.}~\hs{width} which focuses on the \hs{width} of the incoming menu, the duration \hs{For 0.5} and the target value \hs{To 75}. This results in the animation seen in Figure~\ref{fig:usecase1basic1}.
+To implement the navigation bar underline animation, we need two basic components for the underline on each button. We reduce the width of the first button for 0.25 seconds, and increase the width of the second button for 0.25 seconds. These animations are expressed in respectively \hs{line1Outro} and \hs{line2Intro} below, and shown visually in Figure~\ref{fig:basic}.
+
+\begin{spec}
+line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
+
+line2Intro = basic (navbar . underline2 . width) (For 0.25) (To 28)
+\end{spec}
+
+Since we use these animations in the next section, we also define the \hs{menuSlideIn} and \hs{appFadeOut} animations. For the former, we increase the width of the menu over a duration of 0.5 seconds, and for the latter we increase the alpha value of the obscuring box over a duration of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
 menuSlideIn = basic (menu . width) (For 0.5) (To 75)
+
+appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.65)
 \end{spec}
 
-Second we also need to create an animation which fades out the application. Now the lens focuses on the \hs{alpha} value of the obscuring box and sets it to \hs{0.6} over \hs{0.5} seconds. This results in the animation seen in Figure~\ref{fig:usecase1basic2}.
-
-\begin{spec}
-appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
-\end{spec}
-
-\begin{figure}[h]
+\begin{figure}[!htbp]
 \centering
 
 \begin{subfigure}[h]{\textwidth}
 \centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase1basic1}
+\includegraphics[width=\figscale\textwidth]{pictures/line1OutroFig}
+\caption{The \hs{line1Outro} animation.}
+\label{fig:basic1_1}
+\end{subfigure}
+
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/line2IntroFig}
+\caption{The \hs{line2Intro} animation. TODO: different start state}
+\label{fig:basic1_2}
+\end{subfigure}
+
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/menuSlideInFig}
 \caption{The \hs{menuSlideIn} animation.}
-\label{fig:usecase1basic1}
+\label{fig:basic2_1}
 \end{subfigure}
 
 \begin{subfigure}[h]{\textwidth}
 \centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase1basic2}
+\includegraphics[width=\figscale\textwidth]{pictures/appFadeOutFig}
 \caption{The \hs{appFadeOut} animation.}
-\label{fig:usecase1basic2}
+\label{fig:basic2_2}
 \end{subfigure}
 
-\caption{The \hs{menuAnimation} decomposed into its two elements.}
-\label{fig:usecase1basic}
+\caption{All of the defined basic animations.}
+\label{fig:basic}
 \end{figure}
 
-In the navigation bar use case of Figure~\ref{fig:usecase2} there are again two changing properties: the \hs{height} of the first and second line element. The former is reduced to \hs{0} while the latter is increased to \hs{4}. Again, we create these two animations using the \hs{basic} operation. This results in the animations seen in Figure~\ref{fig:usecase2basic}.
-
-\begin{spec}
-decreaseBar1 = basic (navBarLine1 . height) (For 0.25) (To 0)
-
-increaseBar2 = basic (navBarLine2 . height) (For 0.25) (To 4)
-\end{spec}
-
-\begin{figure}[h]
-\centering
-
-\begin{subfigure}[h]{\textwidth}
-\centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase2basic1}
-\caption{The \hs{decreaseBar1} animation.}
-\label{fig:usecase2basic1}
-\end{subfigure}
-
-\begin{subfigure}[h]{\textwidth}
-\centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase2basic2}
-\caption{The \hs{increaseBar2} animation.}
-\label{fig:usecase2basic2}
-\end{subfigure}
-
-\caption{The \hs{bar2Animation} decomposed into its two elements.}
-\label{fig:usecase2basic}
-\end{figure}
-
-\paragraph{Lenses} TODO: explain basics of lenses?
-
-\subsubsection{Composed Animations}
+\subsection{Composed Animations}
 
 A composed animation combines several other animations into one new animation. We can do this either in \emph{sequence} or in \emph{parallel}.
 
-For the menu use case we want to display the animations \hs{menuSlideIn} and \hs{appFadeOut} at the same time. Thus, we create a composed animation using \hs{par},  which results in the animation as seen in Figure~\ref{fig:usecase1}.
+To obtain the \hs{selectBtn2} animation, we combine the \hs{line1Outro} and \hs{line2Intro} animations with the \hs{sequential} combinator. This constructs a new animation which first plays the \hs{line1Outro} animation, and once it is finished plays the \hs{line2Intro} animation.
 
 \begin{spec}
-menuAnimation = menuSlideIn `par` appFadeOut
+selectBtn2Anim = line1Outro `sequential` line2Intro
 \end{spec}
 
-For the navigation bar use case we want to display the animations \hs{decreaseBar1} and \hs{increaseBar2} one after the other. To do this we create a composed animation using \hs{seq}, which results in the animation as seen in Figure~\ref{fig:usecase2}.
+To obtain the \hs{menuIntro} animation, we combine the \hs{menuSlideIn} and \hs{appFadeOut} animations with the \hs{parallel} combinator. This constructs a new animation wich plays both the \hs{menuSlideIn} and \hs{appFadeOut} animations at the same time.
 
 \begin{spec}
-bar2Animation = decreaseBar1 `seq` increaseBar2
+menuIntro = menuSlideIn `parallel` appFadeOut
 \end{spec}
 
-\subsection{Additional Requirements}
+Both of these animations are shown visually in Figure~\ref{fig:composed}.
 
-In addition to the previous ones, we want to support some additional features: embedding custom operations, embedding custom combinators, and inspecting animations.
-
-\subsubsection{Custom Operations}
-\label{sec:customop}
-
-The \hs{basic}, \hs{seq}, and \hs{par} operations form the basis for expressing a variety of animations. However, sometimes require more expressive operations to express our desired animation.
-
-For example, below we have an animation which creates a box particle where the user has clicked. This particle then grows bigger and fades out. This animation is represented visually in Figure~\ref{fig:usecase3}. This requires an operation to create and delete particles. The DSL facilitates creating custom operations and embedding them within any animation.
-
-\begin{spec}
-mouseBoxAnimation mouseX mouseY = do
-  i <- create (createBoxParticle mouseX mouseY)
-  par (basic (msParticles . withId i . scale) (For 0.5) (To 4))
-      (basic (msParticles . withId i . alpha) (For 0.5) (To 0))
-  delete deleteBoxParticle i
-\end{spec}
-
-\begin{figure}[h]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=\figscale\textwidth]{pictures/usecase3fig}
-\caption{Box particle animation when the user clicks in the screen center.}
-\label{fig:usecase3}
+
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/selectBtn2AnimFig}
+\caption{The \hs{selectBtn2} animation.}
+\label{fig:composed1}
+\end{subfigure}
+
+\begin{subfigure}[h]{\textwidth}
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/menuIntroFig}
+\caption{The \hs{menuIntro} animation.}
+\label{fig:composed2}
+\end{subfigure}
+
+\caption{All of the defined composed animations.}
+\label{fig:composed}
 \end{figure}
-
-% The DSL also supports embedding of arbitrary operations, by allowing customization of the available operations. For instance, we can add sound effects by creating a \hs{playSound} operation. This operation is then available anywhere an animation.
-
-% In the menu use case for example, we can extend the previous \hs{appFadeOut} animation with a sound effect playing in parallel.
-
-% \begin{spec}
-% menuAnimationWithSound = menuAnimation `par` playSound
-% \end{spec}
-
-\subsubsection{Inspection}
-
-The DSL is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuAnimation} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed the duration of two \hs{0.5} second animations in parallel.
-
-\begin{spec}
-menuAnimDuration = duration menuAnimation
--- menuAnimDuration = 0.5 
-\end{spec}
-
-Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{getValue} which returns a \hs{Float}. If the result of this value is used as the duration parameter, then we cannot know upfront how long the animation will last. Requesting to calculate the duration of this animation results in a type error.
-
-\begin{spec}
-complicatedAnimation = do
-  v <- getValue
-  basic lens (For v) (To 10)
-
-compAnimDuration = duration complicatedAnimation
--- type error
-\end{spec}
-
-\subsubsection{Custom Combinators}
-\label{sec:customcomb}
-
-Similarly to providing custom operations, the DSL also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since this DSL has the additional requirement of being inspectable, the \hs{>>=} combinator can end up being a liability because it only provide a very limited amount of inspectability. The user is able to use custom combinators, for which they can decide how to inspect them.
-
-Imagine that the user would like to use an \texttt{if-then-else} construction and defines their own combinator \hs{ifThenElse}. Then the user can, similarly to using custom operations, freely mix it with other operations/combinators.
-
-For example, imagine there is a special animation that has a 1 in 10 chance of occurring. We utilize a custom \hs{rng} operation to retrieve a random number, and decide whether the special animation should be displayed using the \hs{ifThenElse} combinator.
-
-\begin{spec}
-rareAnimation =
-  ifThenElse
-    (fmap (\(x :: Int) -> x == 10) (rng (1, 10))
-    specialAnimation
-    normalAnimation
-\end{spec}
-
-This combinator has made it impossible to inspect the animation and retrieve the exact duration, since \hs{specialAnimation} might have a different duration than \hs{normalAnimation}. Instead, we can retrieve the maximum or minimum duration for the animation.
-
-\begin{spec}
-rareAnimMaxDuration = maxDuration rareAnimation
--- rareAnimMaxDuration = 2
-\end{spec}

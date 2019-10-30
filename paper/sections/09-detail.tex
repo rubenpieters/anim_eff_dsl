@@ -1,7 +1,7 @@
 \section{The DSL in Detail}
 \label{sec:detail}
 
-The DSL is based on mtl-style effects, which derives its name from the Haskell \texttt{mtl} library\footnote{\url{http://hackage.haskell.org/package/mtl}} implementing monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}. The DSL can incorporate non-monadic effects to provide more powerful inspection.
+This section goes over the definition of the operations used earlier and redefines the animations to show the resulting type signature. We develop \dsl{} in the mtl-style, which derives its name from the Haskell \texttt{mtl} library\footnote{\url{http://hackage.haskell.org/package/mtl}} implementing monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}. This style is also called the finally tagless approach TODO: ref?. However, \dsl{} does not force the monadic constraint on its class definitions and thus provides opportunities for inspectability.
 
 % The DSL also incorporates interpretable (non-monadic) effects as seen in previous approaches \cite{DBLP:journals/corr/abs-1905-06544} \cite{DBLP:conf/icfp/Lindley14}.
 
@@ -16,64 +16,64 @@ class Basic obj f where
 
 Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => Basic obj f}. However, this constraint is not necessarily true for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
 
-Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to specify basic animations. Now we can accompany the \hs{menuSlideIn}, \hs{appFadeOut}, \hs{decreaseBar1}, and \hs{increaseBar2} animations from Section~\ref{sec:motivation} with their type signatures.
+Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{Basic Application f} constraint.
 
 \begin{code}
-menuSlideIn :: (Basic MenuWorld f) => f ()
+line1Outro :: (Basic Application f) => f ()
+line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
+
+line2Intro :: (Basic Application f) => f ()
+line2Intro = basic (navbar . underline2 . width) (For 0.25) (To 28)
+
+menuSlideIn :: (Basic Application f) => f ()
 menuSlideIn = basic (menu . width) (For 0.5) (To 75)
 
-appFadeOut :: (Basic MenuWorld f) => f ()
-appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.6)
-
-decreaseBar1 :: (Basic NavBarWorld f) => f ()
-decreaseBar1 = basic (navBarLine1 . height) (For 0.25) (To 0)
-
-increaseBar2 :: (Basic NavBarWorld f) => f ()
-increaseBar2 = basic (navBarLine2 . height) (For 0.5) (To 4)
+appFadeOut :: (Basic Application f) => f ()
+appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.5)
 \end{code}
 
 \subsection{Specifying Composed Animations}
 
-Before we define the \hs{seq} and \hs{par} functions in their corresponding classes, we stop and think if we can generalize these functions a bit.
-
-Based on the use of the functions in Section~\ref{sec:motivation}, the type of both \hs{seq} and \hs{par} should be \hs{f}~\hs{()}~\hs{->}~\hs{f ()}~\hs{->}~\hs{f}~\hs{()}. However, if we implement these functions like that, we will be restricted to composing animations which do not return values. Instead, we generalize these functions to \hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)}~\hs{->}~\hs{f}~\hs{a}~\hs{->}~\hs{f}~\hs{b}~\hs{->}~\hs{f}~\hs{c}, which takes two animations returning values of respectively type \hs{a} and \hs{b} and a function which combines these return values. The result is then an animation returning a value of type \hs{c}.
+We used the combinators \hs{sequential} and \hs{parallel} for creating composed animations. Based on their use in Section~\ref{sec:motivation}, these have the form \hs{f}~\hs{()}~\hs{->}~\hs{f ()}~\hs{->}~\hs{f}~\hs{()}. However, these functions are limited to animations with no interesting return value. Instead, we generalize these functions to \hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)}~\hs{->}~\hs{f}~\hs{a}~\hs{->}~\hs{f}~\hs{b}~\hs{->}~\hs{f}~\hs{c}, which takes two animations returning values of respectively type \hs{a} and \hs{b} and a function which combines these return values. The result is then an animation returning a value of type \hs{c}.
 
 \subsubsection{Sequential Composition}
 
-The \hs{seq} function is a specialization of the \hs{liftA2} function from the \hs{Applicative} typeclass. We reuse the whole hierarchy of \hs{Functor}-\hs{Applicative}-\hs{Monad} for our DSL.
-
-First, we define the \hs{seq} function which works on actions without return value, then we can give a type signature to the \hs{playerMoveAnimation} definition.
+Instead of defining our own class for sequential animations, we reuse the \hs{Functor}-\hs{Applicative}-\hs{Monad} hierarchy intended for sequencing effects. As a result, the \hs{sequential} function becomes a specialization of the \hs{liftA2} function\footnote{\url{https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html#v:liftA2}}.
 
 \begin{code}
-seq :: (Applicative f) => f () -> f () -> f ()
-seq f1 f2 = liftA2 (\_ _ -> ()) f1 f2
+sequential :: (Applicative f) => f () -> f () -> f ()
+sequential f1 f2 = liftA2 (\_ _ -> ()) f1 f2
+\end{code}
 
-bar2Animation :: (Applicative f, Basic NavBarWorld f) => f ()
-bar2Animation = decreaseBar1 `seq` increaseBar2
+The type signature for \hs{selectBtn2Anim} contains an additional \hs{Applicative f} constraint in addition to the \hs{Basic Application f} constraint.
+
+\begin{code}
+selectBtn2Anim :: (Basic Application f, Applicative f) => f ()
+selectBtn2Anim = line1Outro `sequential` line2Intro
 \end{code}
 
 \subsubsection{Parallel Composition}
 
-The \hs{par} function does not correspond to any function in an existing Haskell typeclass. At first we might suspect to find something in the \hs{Alternative} class, but there is no sensible implementation for \hs{mzero} and the potential laws do not make sense for animations.
+The \hs{parallel} function does not correspond to any function in an existing Haskell typeclass. At first we might suspect to find something in the \hs{Alternative} class, but there is no sensible implementation for \hs{mzero} and the potential laws\footnote{\url{https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus}} do not make sense for animations.
 
-Instead, we create our own \hs{Par} typeclass defined below. The function \hs{liftP2} has the same signature as \hs{liftA2}, but its semantics are parallel composition instead of sequential composition. We define the specialized \hs{par} function for animations with no return value, and then we can give a type signature to the \hs{menuAnimation} definition.
+Instead, we create our own \hs{Parallel} typeclass defined below. The function \hs{liftP2} has the same signature as \hs{liftA2}, but its semantics are parallel composition instead of sequential composition. We define the specialized \hs{parallel} function for animations with no return value, and then we can give a type signature to the \hs{menuIntro} definition.
 
 \begin{code}
-class Par f where
+class Parallel f where
   liftP2 :: (a -> b -> c) -> f a -> f b -> f c
 
-par :: (Par f) => f () -> f () -> f ()
-par f1 f2 = liftP2 (\_ _ -> ()) f1 f2
+parallel :: (Parallel f) => f () -> f () -> f ()
+parallel f1 f2 = liftP2 (\_ _ -> ()) f1 f2
 
-menuAnimation :: (Par f, Basic MenuWorld f) => f ()
-menuAnimation = menuSlideIn `par` appFadeOut
+menuIntro :: (Basic Application f, Parallel f) => f ()
+menuIntro = menuSlideIn `parallel` appFadeOut
 \end{code}
 
 \subsection{Running Animations}
 
-To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. There are different choices depending on how we expect our animations to be used. We choose to implement our model of animations as follows.
+To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. We give an explanation of our implementation in the following paragraph.
 
-An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when we are, for example, at the end of an animation and the time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{Basic}, \hs{Monad} and \hs{Par}.
+An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when, for example, we are at the end of an animation and the delta time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{Basic}, \hs{Monad} and \hs{Par}.
 
 \begin{code}
 newtype Animation obj m a = Animation {
@@ -131,34 +131,37 @@ updateValue t duration target current = let
 
 \subsubsection{Monad Instance}
 
-In the \hs{Monad} instance, we define how animations run in sequence.
+In the \hs{Monad} instance, we define how animations run in sequence. In the \hs{return} case, we embed an animation into the \hs{Animation} data type. In the \hs{>>=} case, we run the animation function inside the first argument. From this, we obtain a new state, a remaining animation, and remaining time delta. What happens next is dependent on the content of the remainders. If no remaining animation is left, we continue running the animation in the continuation \hs{k} by applying the result \hs{a}. If there is a remaining animation, we repackage this remainder with the continuation. Additionally, we merely \hs{return} the next animation if there is no time delta left. If there was time delta left, then the animation keeps running in this timestep.
 
 \begin{code}
 instance (Monad m) => Monad (Animation obj m) where
   return a = Animation $ \obj t -> return (obj, Right a, Just t)
   (Animation f) >>= k = Animation $ \obj t -> do
+    -- run first animation and obtain result
     (newObj, animResult, mRemainingDelta) <- f obj t
     case (animResult, mRemainingDelta) of
-      (Left anim, Nothing) ->
+      (Left anim, Nothing) -> -- return repackaged animation
         return (newObj, Left (anim >>= k), Nothing)
-      (Right a, Nothing) ->
+      (Right a, Nothing) -> -- return animation in k
         return (newObj, Left (k a), Nothing)
-      (Left anim, Just remainingDelta) ->
+      (Left anim, Just remainingDelta) -> -- run repackaged animation
         runAnimation (anim >>= k) newObj remainingDelta
-      (Right a, Just remainingDelta) ->
+      (Right a, Just remainingDelta) -> -- run animation in k
         runAnimation (k a) newObj remainingDelta
 \end{code}
 
 \subsubsection{Par Instance}
 
-In the \hs{Par} instance, we define how animations run in parallel.
+In the \hs{Par} instance, we define how animations run in parallel. To do this, we apply both animation functions \hs{f1} and \hs{f2} after each other on the given state \hs{obj}. Deciding how to proceed the animation is done in a similar manner as the \hs{Monad} implementation, but is more laborious to implement since we need to take two remaining animations and two remaining time deltas into consideration.
 
 \begin{code}
 instance (Monad m) => Par (Animation obj m) where
   liftP2 combine (Animation f1) (Animation f2) =
     Animation $ \obj t -> do
+    -- apply animation functions
     (obj1, remAnim1, mRem1) <- f1 obj t
     (obj2, remAnim2, mRem2) <- f2 obj1 t
+    -- calculate remaining time delta
     let newRem = case (mRem1, mRem2) of
           (Nothing, _) -> Nothing
           (_, Nothing) -> Nothing
@@ -177,11 +180,11 @@ instance (Monad m) => Par (Animation obj m) where
 
 \subsubsection{Examples}
 
-TODO: examples of running animations by linking with gloss?
+TODO: examples of running animations by linking with gloss? or tuple world example with visual explanation?
 
 \subsection{Inspecting Animations}
 
-Inspecting an animation is done by interpreting the DSL to a \emph{different} data type, which provides instances for the typeclasses with different semantics. This section provides the example of calculating the duration of an animation.
+Inspecting an animation is done by interpreting the DSL to a different data type, which provides instances for the typeclasses with different semantics. This section implements support for calculating the duration of an animation.
 
 \subsubsection{Inspecting Basic}
 

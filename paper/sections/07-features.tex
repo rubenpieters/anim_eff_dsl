@@ -1,0 +1,78 @@
+\section{Extra Features}
+\label{sec:features}
+
+In addition to the previous features, we want to support some additional ones: extending with custom operations, inspecting animations, and extending with custom combinators.
+
+TODO: motivation of features by comparing with GSAP and refer to that section
+
+\subsection{Extensibility}
+\label{sec:customop}
+
+The \hs{basic} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are many different situations which require different primitives to express our desired animation.
+
+An example in our use case is the \hs{checkIcon} animation, which is part of the \hs{markAsDone} animation, where it is required to set the color of the checkmark to a specific value. We can define an additional \hs{set} operation and embed it inside a \dsl{} animation.
+
+\begin{spec}
+checkIcon = do
+  basic (checkmark . scale) (For 0.05) (To 0)
+  set (checkmark . color) completeGreen
+  (basic (circle . extra) (For 0.2) (To 360))
+    `parallel`
+    (basic (checkmark . scale) (For 0.2) (To 1.2))
+  basic (checkmark . scale) (For 0.05) (To 1)
+\end{spec}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/todo}
+\caption{The \hs{checkIcon} animation.}
+\label{fig:}
+\end{figure}
+
+\subsection{Inspectability}
+
+The DSL is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuAnimation} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed the duration of two \hs{0.5} second animations in parallel.
+
+\begin{spec}
+menuAnimDuration = duration menuAnimation
+-- menuAnimDuration = 0.5 
+\end{spec}
+
+Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{getValue} which returns a \hs{Float}. If the result of this value is used as the duration parameter, then we cannot know upfront how long the animation will last. Requesting to calculate the duration of this animation results in a type error.
+
+\begin{spec}
+complicatedAnimation = do
+  v <- getValue
+  basic lens (For v) (To 10)
+
+compAnimDuration = duration complicatedAnimation
+-- type error
+\end{spec}
+
+\subsection{Expressiveness}
+\label{sec:customcomb}
+
+Similarly to providing custom operations, \dsl{} also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since \dsl{} has the additional requirement of being inspectable, the \hs{>>=} combinator can end up being a liability because it only provide a very limited amount of inspectability.
+
+TODO: onlyDone example
+
+Imagine that the user would like to use an \texttt{if-then-else} construction and defines their own combinator \hs{ifThenElse}. Then the user can, similarly to using custom operations, freely mix it with other operations/combinators.
+
+For example, imagine there is a special animation that has a 1 in 10 chance of occurring. We utilize a custom \hs{rng} operation to retrieve a random number, and decide whether the special animation should be displayed using the \hs{ifThenElse} combinator.
+
+\begin{spec}
+rareAnimation =
+  ifThenElse
+    (fmap (\(x :: Int) -> x == 10) (rng (1, 10))
+    specialAnimation
+    normalAnimation
+\end{spec}
+
+This combinator has made it impossible to inspect the animation and retrieve the exact duration, since \hs{specialAnimation} might have a different duration than \hs{normalAnimation}. Instead, we can retrieve the maximum or minimum duration for the animation.
+
+\begin{spec}
+rareAnimMaxDuration = maxDuration rareAnimation
+-- rareAnimMaxDuration = 2
+\end{spec}
+
+These sections gave a taste of the features of \dsl{} and what using it feels like. In the following sections, we delve deeper into the internals of the implementation and compare it with a state-of-the-art JavaScript animation library.

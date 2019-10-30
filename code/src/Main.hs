@@ -87,6 +87,31 @@ menuIntroFig = let
   k = 3
   in fetchInbetweens (getDuration (duration menuIntro) / fromIntegral k) k initialApplication menuIntro []
 
+line1OutroFig :: [Application]
+line1OutroFig = let
+  k = 3
+  in fetchInbetweens (getDuration (duration line1Outro) / fromIntegral k) k initialApplication line1Outro []
+
+line2IntroFig :: [Application]
+line2IntroFig = let
+  k = 3
+  in fetchInbetweens (getDuration (duration line2Intro) / fromIntegral k) k initialApplication line2Intro []
+
+menuSlideInFig :: [Application]
+menuSlideInFig = let
+  k = 3
+  in fetchInbetweens (getDuration (duration menuSlideIn) / fromIntegral k) k initialApplication menuSlideIn []
+
+appFadeOutFig :: [Application]
+appFadeOutFig = let
+  k = 3
+  in fetchInbetweens (getDuration (duration appFadeOut) / fromIntegral k) k initialApplication appFadeOut []
+
+selectBtn2AnimFig :: [Application]
+selectBtn2AnimFig = let
+  k = 3
+  in fetchInbetweens (getDuration (duration selectBtn2Anim) / fromIntegral k) k initialApplication selectBtn2Anim []
+
 main :: IO ()
 main = let
   bgColor = makeColor 0 0 0 1
@@ -100,7 +125,12 @@ main = let
     1 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/completeIconCheckFig.png" (drawnWorlds completeIconCheckFig)
     2 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/onlyDoneFig.png" (drawnWorlds onlyDoneFig)
     3 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/menuIntroFig.png" (drawnWorlds menuIntroFig)
-    9 -> play window bgColor 60 initialApplication draw handleInput update
+    4 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/line1OutroFig.png" (drawnWorlds line1OutroFig)
+    5 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/line2IntroFig.png" (drawnWorlds line2IntroFig)
+    6 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/menuSlideInFig.png" (drawnWorlds menuSlideInFig)
+    7 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/appFadeOutFig.png" (drawnWorlds appFadeOutFig)
+    8 -> exportPictureToPNG (sw * 4 + 4 * 3, sh + 20) bgColor "../paper/pictures/selectBtn2AnimFig.png" (drawnWorlds selectBtn2AnimFig)
+    99 -> play window bgColor 60 initialApplication draw handleInput update
 
 atIndex :: Int -> Lens' [a] a
 atIndex i = lens (!! i) (\s b -> take i s ++ b : drop (i+1) s)
