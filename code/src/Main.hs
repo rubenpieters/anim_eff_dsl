@@ -80,7 +80,7 @@ completeIconCheckFig = let
 onlyDoneFig :: [Application]
 onlyDoneFig = let
   k = 3
-  in fetchInbetweens (getDuration (duration (onlyDone `parallel` selectBtn2Anim)) / fromIntegral k) k initialApplication (onlyDone `parallel` selectBtn2Anim) []
+  in fetchInbetweens (1.5 / fromIntegral k) k initialApplication (onlyDone `parallel` selectBtn2Anim) []
 
 menuIntroFig :: [Application]
 menuIntroFig = let

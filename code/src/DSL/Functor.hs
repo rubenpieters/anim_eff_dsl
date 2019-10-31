@@ -23,3 +23,9 @@ parallel f1 f2 = liftP2 (\_ _ -> ()) f1 f2
 
 class Set obj f where
   set :: Traversal' obj a -> a -> f ()
+
+class Get obj f where
+  get :: Lens' obj a -> f a
+
+class IfThenElse f where
+  ifThenElse :: f Bool -> f a -> f a -> f a

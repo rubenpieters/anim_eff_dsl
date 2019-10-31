@@ -132,31 +132,43 @@ showAll =
     `parallel`
     (basic (mainWindow . todoItems . traverse . completeIcon . circle . alpha) (For 0.5) (To 1))
 
-onlyDone :: (Basic Application f, Set Application f, Applicative f, Parallel f) => f ()
-onlyDone = do
-  (basic (mainWindow . todoItems . traverse . todoItemBg . alpha) (For 0.5) (To 1))
-    `parallel`
-    (basic (mainWindow . todoItems . traverse . completeIcon . checkmark . alpha) (For 0.5) (To 1))
-    `parallel`
-    (basic (mainWindow . todoItems . traverse . completeIcon . circle . alpha) (For 0.5) (To 1))
+hideNotDone :: (Basic Application f, Applicative f, Parallel f) => f ()
+hideNotDone =
   (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . todoItemBg . alpha) (For 0.5) (To 0))
     `parallel`
     (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
     `parallel`
     (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
-  return ()
 
-onlyNotDone :: (Basic Application f, Set Application f, Applicative f, Parallel f) => f ()
-onlyNotDone = do
-  (basic (mainWindow . todoItems . traverse . todoItemBg . alpha) (For 0.5) (To 1))
+hideDone :: (Basic Application f, Applicative f, Parallel f) => f ()
+hideDone =
+  (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . todoItemBg . alpha) (For 0.5) (To 0))
     `parallel`
-    (basic (mainWindow . todoItems . traverse . completeIcon . checkmark . alpha) (For 0.5) (To 1))
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
     `parallel`
-    (basic (mainWindow . todoItems . traverse . completeIcon . circle . alpha) (For 0.5) (To 1))
-  (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . todoItemBg . alpha) (For 0.5) (To 0))
-    `parallel`
-    (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
-    `parallel`
-    (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
-  return ()
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
+
+onlyDoneNaive :: (Basic Application f, Applicative f, Parallel f) => f ()
+onlyDoneNaive = do showAll ; hideNotDone ; return ()
+
+doneItemsGt0 :: (Get Application f, Functor f) => f Bool
+doneItemsGt0 = do
+  doneItems <- get (mainWindow . todoItems)
+  return (length (filter (\x -> x ^. completeIcon . checked) doneItems) > 0)
+
+onlyDone :: (Basic Application f, Get Application f, Set Application f, Applicative f, Parallel f, IfThenElse f) => f ()
+onlyDone = ifThenElse doneItemsGt0
+  (do showAll ; hideNotDone ; return ())
+  (hideNotDone)
+
+notDoneItemsGt0 :: (Get Application f, Functor f) => f Bool
+notDoneItemsGt0 = do
+  doneItems <- get (mainWindow . todoItems)
+  return (length (filter (\x -> x ^. completeIcon . checked) doneItems) > 0)
+
+onlyNotDone :: (Basic Application f, Get Application f, Set Application f, Applicative f, Parallel f, IfThenElse f) => f ()
+onlyNotDone = ifThenElse notDoneItemsGt0
+  (showAll *> hideDone)
+  (hideDone)
+
 

@@ -54,25 +54,35 @@ compAnimDuration = duration complicatedAnimation
 
 Similarly to providing custom operations, \dsl{} also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since \dsl{} has the additional requirement of being inspectable, the \hs{>>=} combinator can end up being a liability because it only provide a very limited amount of inspectability.
 
-TODO: onlyDone example
-
-Imagine that the user would like to use an \texttt{if-then-else} construction and defines their own combinator \hs{ifThenElse}. Then the user can, similarly to using custom operations, freely mix it with other operations/combinators.
-
-For example, imagine there is a special animation that has a 1 in 10 chance of occurring. We utilize a custom \hs{rng} operation to retrieve a random number, and decide whether the special animation should be displayed using the \hs{ifThenElse} combinator.
+In the \hs{onlyDone} animation, we show all done todo items, while hiding all not done items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below.
 
 \begin{spec}
-rareAnimation =
-  ifThenElse
-    (fmap (\(x :: Int) -> x == 10) (rng (1, 10))
-    specialAnimation
-    normalAnimation
+onlyDoneNaive = do showAll ; hideNotDone
 \end{spec}
 
-This combinator has made it impossible to inspect the animation and retrieve the exact duration, since \hs{specialAnimation} might have a different duration than \hs{normalAnimation}. Instead, we can retrieve the maximum or minimum duration for the animation.
+However, this animation is a bit naive since it executes the \hs{showAll} animation regardless of whether there are any hidden done items that actually need to appear. Instead, we first check whether there are any done items and based on that we play the naive version of \hs{onlyDone}, otherwise we just hide the not done items.
 
 \begin{spec}
-rareAnimMaxDuration = maxDuration rareAnimation
--- rareAnimMaxDuration = 2
+onlyDone = do
+  cond <- doneItemsGt0
+  if cond
+    then onlyDoneNaive
+    else hideNotDone
 \end{spec}
 
-These sections gave a taste of the features of \dsl{} and what using it feels like. In the following sections, we delve deeper into the internals of the implementation and compare it with a state-of-the-art JavaScript animation library.
+However, if we also want to inspect this computation the previous formulation is problematic. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express.
+
+\begin{spec}
+onlyDone = ifThenElse doneItemsGt0
+  onlyDoneNaive
+  hideNotDone
+\end{spec}
+
+For this new combinator, we can define custom ways to inspect it. For example, we might want to retrieve the \emph{maximum} duration of an animation. Since retrieving the actual duration is not sensible as both branches might have different durations, which is in fact the case.
+
+\begin{spec}
+onlyDoneMaxDuration = maxDuration onlyDone
+-- onlyDoneMaxDuration = 1
+\end{spec}
+
+These sections gave a taste of the features of \dsl{} and what using it feels like. In the following sections, we delve deeper into the internals of the implementation.

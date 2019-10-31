@@ -106,6 +106,16 @@ instance (Applicative m) => Set obj (Animation obj m) where
     newObj = obj & lens .~ a
     in pure (newObj, Right (), Just t)
 
+instance (Applicative m) => Get obj (Animation obj m) where
+  get lens = Animation $ \obj t -> let
+    a = obj ^. lens
+    in pure (obj, Right a, Just t)
+
+instance (Monad f) => IfThenElse (Animation obj f) where
+  ifThenElse fBool thenBranch elseBranch = do
+    bool <- fBool
+    if bool then thenBranch else elseBranch
+
 applyAnimation :: (Monad m) => obj -> Float -> Animation obj m () -> m (obj, Animation obj m ())
 applyAnimation w t anim = let
   f (obj, eAnim, _) = case eAnim of
