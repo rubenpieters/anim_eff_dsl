@@ -1,7 +1,7 @@
-\section{The DSL in Detail}
+\section{Implementation of \dsl{}}
 \label{sec:detail}
 
-This section goes over the definition of the operations used earlier and redefines the animations to show the resulting type signature. We develop \dsl{} in the mtl-style, which derives its name from the Haskell \texttt{mtl} library\footnote{\url{http://hackage.haskell.org/package/mtl}} implementing monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}. This style is also called the finally tagless approach TODO: ref?. However, \dsl{} does not force the monadic constraint on its class definitions and thus provides opportunities for inspectability.
+This section goes over the definition of the operations used earlier and redefines the animations to show the resulting type signature. We develop \dsl{} in the mtl-style, which derives its name from the Haskell \texttt{mtl} library\footnote{\url{http://hackage.haskell.org/package/mtl}} implementing monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}. This style is also called the finally tagless approach \cite{DBLP:journals/jfp/CaretteKS09}. However, \dsl{} does not force the monadic constraint on its class definitions and thus provides opportunities for inspectability.
 
 % The DSL also incorporates interpretable (non-monadic) effects as seen in previous approaches \cite{DBLP:journals/corr/abs-1905-06544} \cite{DBLP:conf/icfp/Lindley14}.
 
@@ -14,7 +14,7 @@ class Basic obj f where
   basic :: Traversal' obj Float -> Duration -> Target -> f ()
 \end{code}
 
-Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => Basic obj f}. However, this constraint is not necessarily true for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
+Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => Basic obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
 
 Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{Basic Application f} constraint.
 
@@ -184,7 +184,7 @@ TODO: examples of running animations by linking with gloss? or tuple world examp
 
 \subsection{Inspecting Animations}
 
-Inspecting an animation is done by interpreting the DSL to a different data type, which provides instances for the typeclasses with different semantics. This section implements support for calculating the duration of an animation.
+Inspecting an animation is done by interpreting \dsl{} to a different data type, which provides instances for the typeclasses with different semantics. This section implements support for calculating the duration of an animation.
 
 \subsubsection{Inspecting Basic}
 

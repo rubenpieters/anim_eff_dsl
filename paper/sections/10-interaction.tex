@@ -1,7 +1,7 @@
 \section{Interaction Between Expressiveness and Inspectability}
 \label{sec:interaction}
 
-A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of the DSL. In this section we take a look at balancing the wanted expressiveness vs inspectability by introducing custom combinators.
+A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of \dsl{}. In this section we take a look at balancing the wanted expressiveness vs inspectability by introducing custom combinators.
 
 \subsection{Branching}
 
@@ -18,7 +18,7 @@ rareAnimationDo = do
 
 However, it does seem like we should be able to extract some duration related information from it. For example, the maximum duration should be the highest of the duration of \hs{specialAnimation} and \hs{normalAnimation} --- and similarly for the minimum duration.
 
-To express this idea using the DSL we need to introduce an explicit combinator for the constructions which piggyback on the \hs{>>=} cominator. In this case this is the \hs{if-then-else} construction, for which we create a new custom combinator. This is the \hs{handle} combinator from the \hs{DynamicIdiom} class \cite{DBLP:phd/ethos/Yallop10} and the \hs{ifS} combinator from the \hs{Selective} class \cite{Mokhov:2019:SAF:3352468.3341694}.
+To express this idea using \dsl{} we need to introduce an explicit combinator for the constructions which piggyback on the \hs{>>=} cominator. In this case this is the \hs{if-then-else} construction, for which we create a new custom combinator. This is the \hs{handle} combinator from the \hs{DynamicIdiom} class \cite{DBLP:phd/ethos/Yallop10} and the \hs{ifS} combinator from the \hs{Selective} class \cite{Mokhov:2019:SAF:3352468.3341694}.
 
 \begin{code}
 class IfThenElse f where
@@ -48,7 +48,7 @@ To retrieve the maximum duration, we use a different \hs{newtype} definition, \h
 
 The \hs{mouseBoxAnimation} from Section~\ref{sec:customop} defines a monadic computation. Notice that it has data flow dependencies: the particle identifier \hs{i} is used later as the input for the \hs{basic} and \hs{delete} operations. However, this data flow should not impact the calculation of a duration for our animation, since the duration is independent from this identifier.
 
-We need to indicate in our operations how the data dependency flows, to show which values are (or are not) dependent on which other values. Simply adding a new combinator or operation is not sufficient for solving this problem. The arrow abstraction \cite{DBLP:journals/scp/Hughes00} was designed for these use cases. For animations which require this detailed data dependency analysis, we switch to an arrow version of the DSL. The arrow version of \hs{mouseBoxAnimation} is given below. This does require some boilerplate to support all operations in the arrow version.
+We need to indicate in our operations how the data dependency flows, to show which values are (or are not) dependent on which other values. Simply adding a new combinator or operation is not sufficient for solving this problem. The arrow abstraction \cite{DBLP:journals/scp/Hughes00} was designed for these use cases. For animations which require this detailed data dependency analysis, we switch to an arrow version of \dsl{}. The arrow version of \hs{mouseBoxAnimation} is given below. This does require some boilerplate to support all operations in the arrow version.
 
 \begin{code}
 mouseBoxAnimationA ::
