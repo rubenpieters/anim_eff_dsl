@@ -21,6 +21,8 @@ import Lens.Micro hiding (set)
 import Lens.Micro.TH
 import Graphics.Gloss hiding (circle, scale, color)
 
+import Debug.Trace
+
 data Application = Application
   { _mainWindow :: MainWindow
   , _menu :: Menu
@@ -142,11 +144,11 @@ hideNotDone =
 
 hideDone :: (Basic Application f, Applicative f, Parallel f) => f ()
 hideDone =
-  (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . todoItemBg . alpha) (For 0.5) (To 0))
+  (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . todoItemBg . alpha) (For 0.5) (To 0))
     `parallel`
-    (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . checkmark . alpha) (For 0.5) (To 0))
     `parallel`
-    (basic (mainWindow . todoItems . traverse . filtered (\x -> not $ x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
+    (basic (mainWindow . todoItems . traverse . filtered (\x -> x ^. completeIcon . checked) . completeIcon . circle . alpha) (For 0.5) (To 0))
 
 onlyDoneNaive :: (Basic Application f, Applicative f, Parallel f) => f ()
 onlyDoneNaive = do showAll ; hideNotDone ; return ()
@@ -154,12 +156,19 @@ onlyDoneNaive = do showAll ; hideNotDone ; return ()
 doneItemsGt0 :: (Get Application f, Functor f) => f Bool
 doneItemsGt0 = do
   doneItems <- get (mainWindow . todoItems)
-  return (length (filter (\x -> x ^. completeIcon . checked) doneItems) > 0)
+  return (length (filter (\x -> x ^. completeIcon . checked && x ^. todoItemBg . alpha < 1) doneItems) > 0)
+
+onlyDoneMonad :: (Basic Application f, Get Application f, Set Application f, Monad f, Parallel f) => f ()
+onlyDoneMonad = do
+  cond <- doneItemsGt0
+  if cond
+    then do showAll ; hideNotDone
+    else hideNotDone
 
 onlyDone :: (Basic Application f, Get Application f, Set Application f, Applicative f, Parallel f, IfThenElse f) => f ()
 onlyDone = ifThenElse doneItemsGt0
-  (do showAll ; hideNotDone ; return ())
-  (hideNotDone)
+  (traceShow "B1" $ do showAll ; hideNotDone ; return ())
+  (traceShow "B2" $ hideNotDone)
 
 notDoneItemsGt0 :: (Get Application f, Functor f) => f Bool
 notDoneItemsGt0 = do

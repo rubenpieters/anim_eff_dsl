@@ -99,7 +99,9 @@ instance (Monad m) => Parallel (Animation obj m) where
             Left (fmap (\b -> combine a b) aniB)
           (Left aniA, Left aniB) ->
             Left (liftP2 combine aniA aniB)
-    return (obj2, newAnim, newRem)
+    case (newRem, newAnim) of
+      (Just rem, Left anim) -> runAnimation anim obj2 rem
+      (_, _) -> return (obj2, newAnim, newRem)
 
 instance (Applicative m) => Set obj (Animation obj m) where
   set lens a = Animation $ \obj t -> let

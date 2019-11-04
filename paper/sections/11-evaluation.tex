@@ -1,9 +1,9 @@
 \section{Comparison to Sequential/Callback style}
 \label{sec:evaluation}
 
-This section gives a qualitative evaluation of \dsl{} to GreenSock Animation Platform (GSAP). This is a widely recommended JavaScript animation library, which we believe is representative for many other animation libraries.
+This section gives a qualitative evaluation of \dsl{} to the GreenSock Animation Platform (GSAP). This is a widely recommended JavaScript animation library, which we believe is representative for many other animation libraries.
 
-GSAP is a mature library, and as a result presents am extensive amount of features to its users. Some examples are relative property changes, animation primitives related to scalable vector graphics (SVG) images, portability across browsers, various easing functions, \ldots
+GSAP is a mature library, and as a result presents an extensive amount of features to its users. Some examples are relative property changes, animation primitives related to scalable vector graphics (SVG) images, portability across browsers, various easing functions, \ldots
 
 The goal of this section is not to compare feature lists of both, since the maturity of GSAP makes it the clear winner. Instead, this section compares the foundational blocks on which the approaches are built. For the GSAP library, the main building block is \emph{sequential} composition, and only a very limited form of parallel composition. However, \emph{callbacks} are provided for various points within an animation which can be used to simulate parallel elements. Thus, we call this the \textbf{sequential/callback} approach. This is in contrast with the \textbf{sequential/parallel} approach of \dsl{}, where \emph{parallel} composition is a foundational element.
 

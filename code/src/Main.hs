@@ -19,6 +19,7 @@ import DSL.Animation
 import DSL.Functor
 import DSL.Duration
 
+import Data.Functor.Identity
 import Lens.Micro
 import Graphics.Gloss hiding (animate)
 import Graphics.Gloss.Interface.Pure.Game
@@ -72,6 +73,11 @@ drawnWorlds worlds = let
   whiteBoxBot i = rectangleSolid 5 5 & Color (makeColor 1 1 1 1) & Translate (-203 + 10 * i) 55
   in Pictures (map f (zip [0..] worlds) ++ map whiteBoxTop [0..50] ++ map whiteBoxBot [0..50])
 
+worldAfterAnim :: obj -> Float -> Animation obj Identity a -> obj
+worldAfterAnim obj totalTime anim =
+  case runIdentity (runAnimation anim obj totalTime) of
+    (newObj, _, _) -> newObj
+
 completeIconCheckFig :: [Application]
 completeIconCheckFig = let
   k = 3
@@ -80,7 +86,8 @@ completeIconCheckFig = let
 onlyDoneFig :: [Application]
 onlyDoneFig = let
   k = 3
-  in fetchInbetweens (1.5 / fromIntegral k) k initialApplication (onlyDone `parallel` selectBtn2Anim) []
+  startAppState = worldAfterAnim initialApplication 0.3 (embed (mainWindow . todoItems . atIndex 0 . completeIcon) completeIconCheck)
+  in fetchInbetweens (0.5 / fromIntegral k) k startAppState (onlyDone `parallel` selectBtn2Anim) []
 
 menuIntroFig :: [Application]
 menuIntroFig = let
@@ -95,7 +102,8 @@ line1OutroFig = let
 line2IntroFig :: [Application]
 line2IntroFig = let
   k = 3
-  in fetchInbetweens (getDuration (duration line2Intro) / fromIntegral k) k initialApplication line2Intro []
+  startAppState = worldAfterAnim initialApplication 0.25 line1Outro
+  in fetchInbetweens (getDuration (duration line2Intro) / fromIntegral k) k startAppState line2Intro []
 
 menuSlideInFig :: [Application]
 menuSlideInFig = let

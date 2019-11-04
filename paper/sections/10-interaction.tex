@@ -1,24 +1,21 @@
-\section{Interaction Between Expressiveness and Inspectability}
+\section{Interaction Between Extensibility and Inspectability}
 \label{sec:interaction}
 
-A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of \dsl{}. In this section we take a look at balancing the wanted expressiveness vs inspectability by introducing custom combinators.
+A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of \dsl{}. In this section we take a look at an example of balancing the wanted expressiveness vs inspectability by introducing custom combinators.
 
-\subsection{Branching}
+We will revisit the \hs{onlyDone} animation from Section~\ref{sec:customcomb}. The definition using \hs{do}-notation would impose a \hs{Monad} constraint on \hs{f}, meaning that the animation is not inspectable.
 
-Recall the \hs{rareAnimation} definition from Section~\ref{sec:customcomb}, a definition using \hs{do}-notation is given below. Now it contains a \hs{Monad} constraint on \hs{f} which means that the animation is not inspectable.
+\begin{spec}
+onlyDone :: (Basic Application f, Get Application f,
+  Set Application f, Monad f, Parallel f) => f ()
+onlyDone = do
+  cond <- doneItemsGt0
+  if cond then onlyDoneNaive else hideNotDone
+\end{spec}
 
-\begin{code}
-rareAnimationDo :: (Monad f, Basic RareWorld f, Rng f) => f ()
-rareAnimationDo = do
-  x <- rng (1, 10)
-  if x == 10
-    then specialAnimation
-    else normalAnimation
-\end{code}
+However, it does seem like we should be able to extract some duration related information from it. For example, the maximum duration should be the highest of the duration of both branches.
 
-However, it does seem like we should be able to extract some duration related information from it. For example, the maximum duration should be the highest of the duration of \hs{specialAnimation} and \hs{normalAnimation} --- and similarly for the minimum duration.
-
-To express this idea using \dsl{} we need to introduce an explicit combinator for the constructions which piggyback on the \hs{>>=} cominator. In this case this is the \hs{if-then-else} construction, for which we create a new custom combinator. This is the \hs{handle} combinator from the \hs{DynamicIdiom} class \cite{DBLP:phd/ethos/Yallop10} and the \hs{ifS} combinator from the \hs{Selective} class \cite{Mokhov:2019:SAF:3352468.3341694}.
+To express this idea using \dsl{} we need to introduce an explicit combinator for the constructions which were expressed using the \hs{>>=} cominator. In this case this is the \hs{if-then-else} construction, for which we create a new custom combinator. This is the \hs{handle} combinator from the \hs{DynamicIdiom} class \cite{DBLP:phd/ethos/Yallop10} and the \hs{ifS} combinator from the \hs{Selective} class \cite{Mokhov:2019:SAF:3352468.3341694}.
 
 \begin{code}
 class IfThenElse f where
@@ -34,6 +31,17 @@ instance (Monad f) => IfThenElse (Animation obj f) where
     if bool then thenBranch else elseBranch
 \end{code}
 
+Now, we can express the inspectable version of \hs{onlyDone} by using the \hs{ifThenElse} combinator.
+
+\begin{code}
+onlyDone :: (Basic Application f, Get Application f,
+  Set Application f, Applicative f, Parallel f, IfThenElse f)
+  => f ()
+onlyDone = ifThenElse doneItemsGt0
+  (do showAll ; hideNotDone)
+  (hideNotDone)
+\end{code}
+
 To retrieve the maximum duration, we use a different \hs{newtype} definition, \hs{MaxDuration}, to signify that we are not simply calculating the duration of the animation. In the instance definition we retrieve the durations of the \texttt{then} and \texttt{else} branches and add the higher value to the duration of the preceding animation inside the condition.
 
 \begin{code}
@@ -42,31 +50,4 @@ To retrieve the maximum duration, we use a different \hs{newtype} definition, \h
               (Const (MaxDur durThen))
               (Const (MaxDur durElse)) =
    Const (MaxDur (durCondition + max durThen durElse))
-\end{code}
-
-\subsection{Data Dependency}
-
-The \hs{mouseBoxAnimation} from Section~\ref{sec:customop} defines a monadic computation. Notice that it has data flow dependencies: the particle identifier \hs{i} is used later as the input for the \hs{basic} and \hs{delete} operations. However, this data flow should not impact the calculation of a duration for our animation, since the duration is independent from this identifier.
-
-We need to indicate in our operations how the data dependency flows, to show which values are (or are not) dependent on which other values. Simply adding a new combinator or operation is not sufficient for solving this problem. The arrow abstraction \cite{DBLP:journals/scp/Hughes00} was designed for these use cases. For animations which require this detailed data dependency analysis, we switch to an arrow version of \dsl{}. The arrow version of \hs{mouseBoxAnimation} is given below. This does require some boilerplate to support all operations in the arrow version.
-
-\begin{code}
-mouseBoxAnimationA ::
-  (ParticleA MouseWorld a,
-   BasicA MouseWorld a, ParA a, Arrow a) =>
-   a (Float, Float) ()
-mouseBoxAnimationA = proc (mouseX, mouseY) -> do
-  i <- createA -< (createBoxParticle mouseX mouseY)
-  parA (arr (\i -> MyLens (msParticles . withId i . scale))
-        >>> basicA (For 0.5) (To 4))
-       (arr (\i -> MyLens (msParticles . withId i . scale))
-        >>> basicA (For 0.5) (To 4)) -< i
-  deleteA -< (deleteBoxParticle, i)
-\end{code}
-
-From this representation of the animation it is possible to calculate the duration.
-
-\begin{code}
-mouseBoxAnimDuration :: Duration
-mouseBoxAnimDuration = durationA mouseBoxAnimationA
 \end{code}

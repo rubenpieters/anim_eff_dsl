@@ -60,17 +60,15 @@ In the \hs{onlyDone} animation, we show all done todo items, while hiding all no
 onlyDoneNaive = do showAll ; hideNotDone
 \end{spec}
 
-However, this animation is a bit naive since it executes the \hs{showAll} animation regardless of whether there are any hidden done items that actually need to appear. Instead, we first check whether there are any done items and based on that we play the naive version of \hs{onlyDone}, otherwise we just hide the not done items.
+However, this animation is a bit naive since it executes the \hs{showAll} animation regardless of whether there are any hidden done items that actually need to appear. Instead, the intended animation is to only make done items appear when some were hidden. This is done by first checking whether there are any done items and based on that we play the naive version of \hs{onlyDone}, otherwise we just hide the not done items.
 
 \begin{spec}
 onlyDone = do
   cond <- doneItemsGt0
-  if cond
-    then onlyDoneNaive
-    else hideNotDone
+  if cond then onlyDoneNaive else hideNotDone
 \end{spec}
 
-However, if we also want to inspect this computation the previous formulation is problematic. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express.
+However, if we also want to inspect this computation the previous formulation is problematic. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express. With this combinator we can express \hs{onlyDone} in an inspectable manner.
 
 \begin{spec}
 onlyDone = ifThenElse doneItemsGt0
@@ -78,7 +76,7 @@ onlyDone = ifThenElse doneItemsGt0
   hideNotDone
 \end{spec}
 
-For this new combinator, we can define custom ways to inspect it. For example, we might want to retrieve the \emph{maximum} duration of an animation. Since retrieving the actual duration is not sensible as both branches might have different durations, which is in fact the case.
+For this new combinator, we can define custom ways to inspect it. For example, we might want to retrieve the \emph{maximum} duration of an animation. Since retrieving the actual duration is not sensible as both branches might have different durations.
 
 \begin{spec}
 onlyDoneMaxDuration = maxDuration onlyDone

@@ -1,19 +1,24 @@
 \section{Motivation}
 \label{sec:motivation}
 
-Graphical user interfaces (GUIs) often use animations to aid the user in understanding the transitions in the application. In this section we explore the basic features of \dsl{}.
+As motivation, we present the use case of a simplified todo-list application, created to showcase the functionality and features of \dsl{}.
 
 \subsection{Running Example}
 
-Our running example is a simplified todo-list application. The application has two screens: a main screen and a menu screen. The main screen contains a navigation bar and three todo items.
+The application has two screens: a main screen and a menu screen. The main screen contains a navigation bar and three todo items. An overview of the application is given in Figure~\ref{fig:appOverview}.
 
-TODO: application fig
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\figscale\textwidth]{pictures/app_overview}
+\caption{Overview of the todo-list application.}
+\label{fig:appOverview}
+\end{figure}
 
-In this application, the user can execute various actions which are accompanied with an animation:
+In this application, we can execute various actions which are accompanied with an animation:
 \begin{itemize}
-\item Each todo item can be marked as \emph{done} or \emph{not done} by clicking on it. The checkmark icon changes shape and color to indicate the change in status. These are the \hs{markAsDone}/\hs{markAsNotDone} animations, shown in Figure~\ref{fig:completeIconCheck}.
-\item Todo items can be filtered by their status by using the navigation bar buttons. The first button shows all items, the second shows all complete items, and the third shows all incomplete items. Both the navigation bar underline and the todo items itself change shape to indicate the change in selection. These are the \hs{showAll}/\hs{onlyDone}/\hs{onlyNotDone} animations, shown in Figure~\ref{fig:onlyDoneFig}.
-\item The menu screen shows/hides itself after clicking the hamburger icon. The menu expands inward from the left, to indicate the change in application state. These are the \hs{menuIntro}/\hs{menuOutro} animations, shown in Figure~\ref{fig:menuIntroFig}.
+\item Each todo item can be marked as \emph{done} or \emph{not done} by clicking on it. The checkmark icon changes shape and color to indicate the change in status. These are the \hs{markAsDone}/\hs{markAsNotDone} animations, of which \hs{markAsDone} is shown in Figure~\ref{fig:completeIconCheck}.
+\item Todo items can be filtered by their status by using the navigation bar buttons. The first button shows all items, the second shows all complete items, and the third shows all incomplete items. Both the navigation bar underline and the todo items itself change shape to indicate the change in selection. These are the \hs{showAll}/\hs{onlyDone}/\hs{onlyNotDone} animations, of which \hs{onlyDone} is shown in Figure~\ref{fig:onlyDoneFig}.
+\item The menu screen shows/hides itself after clicking the hamburger icon. The menu expands inward from the left, to indicate the change in application state. These are the \hs{menuIntro}/\hs{menuOutro} animations, of which \hs{menuIntro} is shown in Figure~\ref{fig:menuIntroFig}.
 \end{itemize}
 
 \begin{figure}[!htbp]
@@ -29,7 +34,7 @@ In this application, the user can execute various actions which are accompanied 
 \begin{subfigure}[h]{\textwidth}
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/onlyDoneFig}
-\caption{The \hs{onlyDone} animation, each of the not done todo items fades out and the navbar underline changes. TODO: 2 rows and start with 1 completed}
+\caption{The \hs{onlyDone} animation, each of the not done todo items fades out and the navbar underline changes.}
 \label{fig:onlyDoneFig}
 \end{subfigure}
 
@@ -46,9 +51,7 @@ In this application, the user can execute various actions which are accompanied 
 
 \subsection{Composing Animations}
 
-The philosophy of \dsl{} is to express animations by combining smaller animations into larger ones. To express an animation, we need to come up with a suitable decomposition. As an example, a partial decomposition of the \hs{onlyDone} animation in Figure~\ref{fig:onlyDoneFig} is shown in Figure~TODO.
-
-First we need to both \emph{change the navbar underlining} and \emph{fade out all not done items}, then we want to \emph{fade in all done items}. The animation \emph{change the navbar underlining} can in turn be decomposed: first \emph{remove underline on button 3}, then \emph{add underline on button 2}. These animations cannot be decomposed further, they are \emph{basic} animations, which signals the end of the decomposition.
+The philosophy of \dsl{} is to express animations by combining smaller animations into larger ones. To express an animation, we need to come up with a suitable decomposition. For example, the \hs{menuIntro} animation is composed by combining the two basic animations \hs{menuSlideIn} and \hs{appFadeOut} in parallel. These animations respectively introduce the menu screen and fade out the application in the background.
 
 In the next paragraphs we explain how to construct these basic and composed animations.
 
@@ -66,7 +69,7 @@ line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
 line2Intro = basic (navbar . underline2 . width) (For 0.25) (To 28)
 \end{spec}
 
-Since we use these animations in the next section, we also define the \hs{menuSlideIn} and \hs{appFadeOut} animations. For the former, we increase the width of the menu over a duration of 0.5 seconds, and for the latter we increase the alpha value of the obscuring box over a duration of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
+We also define the \hs{menuSlideIn} and \hs{appFadeOut} animations below, since we will use these in the next sections. For the former, we increase the width of the menu over a duration of 0.5 seconds, and for the latter we increase the alpha value of the obscuring box over a duration of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
 menuSlideIn = basic (menu . width) (For 0.5) (To 75)
@@ -87,7 +90,7 @@ appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.65)
 \begin{subfigure}[h]{\textwidth}
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/line2IntroFig}
-\caption{The \hs{line2Intro} animation. TODO: different start state}
+\caption{The \hs{line2Intro} animation.}
 \label{fig:basic1_2}
 \end{subfigure}
 
