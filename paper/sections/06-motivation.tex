@@ -53,15 +53,15 @@ In this application, we can execute various actions which are accompanied with a
 
 The philosophy of \dsl{} is to express animations by combining smaller animations into larger ones. To express an animation, we need to come up with a suitable decomposition. For example, the \hs{menuIntro} animation is composed by combining the two basic animations \hs{menuSlideIn} and \hs{appFadeOut} in parallel. These animations respectively introduce the menu screen and fade out the application in the background.
 
-In the next paragraphs we explain how to construct these basic and composed animations.
+In the next sections we explain how to construct these basic and composed animations.
 
 \subsection{Basic Animations}
 
 A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements: a lens specifying which property in our UI should change, the target value for this property and, lastly, the duration specifying how many seconds the animation should last.
 
-\paragraph{Note on Lenses} We utilize the lens notation \texttt{x . y . z} to target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z: Property } } }}. This type of lenses were introduced by Twan van Laarhoven \cite{vlLenses}, and this idea has been packaged into various Haskell libraries, such as \texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
+\paragraph{Note on Lenses} We utilize the lens notation \texttt{x . y . z} to target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z: Property } } }}. This type of lenses were introduced by Twan van Laarhoven \cite{vlLenses}, and newer versions of this idea have been packaged into various Haskell libraries, such as \texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
 
-To implement the navigation bar underline animation, we need two basic components for the underline on each button. We reduce the width of the first button for 0.25 seconds, and increase the width of the second button for 0.25 seconds. These animations are expressed in respectively \hs{line1Outro} and \hs{line2Intro} below, and shown visually in Figure~\ref{fig:basic}.
+To implement the navigation bar underline animation, we need two basic components for the underline on each button. We reduce the underline width of the first button for 0.25 seconds, and increase the underline width of the second button for 0.25 seconds. These animations are expressed in respectively \hs{line1Outro} and \hs{line2Intro} below, and shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
 line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)

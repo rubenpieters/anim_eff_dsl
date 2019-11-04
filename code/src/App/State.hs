@@ -21,8 +21,6 @@ import Lens.Micro hiding (set)
 import Lens.Micro.TH
 import Graphics.Gloss hiding (circle, scale, color)
 
-import Debug.Trace
-
 data Application = Application
   { _mainWindow :: MainWindow
   , _menu :: Menu
@@ -167,8 +165,8 @@ onlyDoneMonad = do
 
 onlyDone :: (Basic Application f, Get Application f, Set Application f, Applicative f, Parallel f, IfThenElse f) => f ()
 onlyDone = ifThenElse doneItemsGt0
-  (traceShow "B1" $ do showAll ; hideNotDone ; return ())
-  (traceShow "B2" $ hideNotDone)
+  (do showAll ; hideNotDone ; return ())
+  (hideNotDone)
 
 notDoneItemsGt0 :: (Get Application f, Functor f) => f Bool
 notDoneItemsGt0 = do

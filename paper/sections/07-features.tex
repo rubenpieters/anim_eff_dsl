@@ -1,9 +1,9 @@
 \section{Extra Features}
 \label{sec:features}
 
-In addition to the previous features, we want to support some additional ones: extending with custom operations, inspecting animations, and extending with custom combinators.
+The features seen in Section~\ref{sec:motivation} form the basis of \dsl{} as a library. However, many animation libraries such as GreenSock Animation Platform provide a much more extensive list of features.
 
-TODO: motivation of features by comparing with GSAP and refer to that section
+To add support for similar features, we design \dsl{} with extensibility and inspectability in mind. This means that \dsl{} can be extended with custom operations and that information can be derived from inspecting specified animations. To be able to support arbitrary expressiveness in combination with those features, we also need to stress the possibility to extend \dsl{} with custom combinators.
 
 \subsection{Extensibility}
 \label{sec:customop}
@@ -31,21 +31,21 @@ checkIcon = do
 
 \subsection{Inspectability}
 
-\dsl{} is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuAnimation} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed the duration of two \hs{0.5} second animations in parallel.
+\dsl{} is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuIntro} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed the duration of two \hs{0.5} second animations in parallel.
 
 \begin{spec}
-menuAnimDuration = duration menuAnimation
--- menuAnimDuration = 0.5 
+menuIntroDuration = duration menuIntro
+-- menuIntroDuration = 0.5 
 \end{spec}
 
-Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{getValue} which returns a \hs{Float}. If the result of this value is used as the duration parameter, then we cannot know upfront how long the animation will last. Requesting to calculate the duration of this animation results in a type error.
+Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{get}, the dual of \hs{set} in the previous section, returning a \hs{Float}. If the result of this value is used as the duration parameter of an animation, then we cannot know upfront how long this animation will last. Requesting to calculate the duration of such an animation results in a type error.
 
 \begin{spec}
 complicatedAnimation = do
-  v <- getValue
+  v <- get
   basic lens (For v) (To 10)
 
-compAnimDuration = duration complicatedAnimation
+complicatedAnimationDuration = duration complicatedAnimation
 -- type error
 \end{spec}
 
@@ -68,12 +68,10 @@ onlyDone = do
   if cond then onlyDoneNaive else hideNotDone
 \end{spec}
 
-However, if we also want to inspect this computation the previous formulation is problematic. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express. With this combinator we can express \hs{onlyDone} in an inspectable manner.
+However, if we also want to inspect this computation the previous formulation is problematic, which we will explain in more detail in Section~\ref{sec:interaction}. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express. With this combinator we can express \hs{onlyDone} in an inspectable manner.
 
 \begin{spec}
-onlyDone = ifThenElse doneItemsGt0
-  onlyDoneNaive
-  hideNotDone
+onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone
 \end{spec}
 
 For this new combinator, we can define custom ways to inspect it. For example, we might want to retrieve the \emph{maximum} duration of an animation. Since retrieving the actual duration is not sensible as both branches might have different durations.

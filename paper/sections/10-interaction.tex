@@ -1,4 +1,4 @@
-\section{Interaction Between Extensibility and Inspectability}
+\section{Interaction Between Inspectability and Expressivity}
 \label{sec:interaction}
 
 A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of \dsl{}. In this section we take a look at an example of balancing the wanted expressiveness vs inspectability by introducing custom combinators.
@@ -42,12 +42,20 @@ onlyDone = ifThenElse doneItemsGt0
   (hideNotDone)
 \end{code}
 
-To retrieve the maximum duration, we use a different \hs{newtype} definition, \hs{MaxDuration}, to signify that we are not simply calculating the duration of the animation. In the instance definition we retrieve the durations of the \texttt{then} and \texttt{else} branches and add the higher value to the duration of the preceding animation inside the condition.
+To retrieve the maximum duration, we use a different \hs{newtype} definition, \hs{MaxDuration}, to signify that we are not simply calculating the duration of the animation. In the instance definition for \hs{IfThenElse} we retrieve the durations of the \texttt{then} and \texttt{else} branches and add the higher value to the duration of the preceding animation inside the condition.
 
 \begin{code}
- instance IfThenElse (Const MaxDuration) where
-   ifThenElse (Const (MaxDur durCondition))
-              (Const (MaxDur durThen))
-              (Const (MaxDur durElse)) =
-   Const (MaxDur (durCondition + max durThen durElse))
+instance IfThenElse (Const MaxDuration) where
+  ifThenElse (Const (MaxDur durCondition))
+             (Const (MaxDur durThen))
+             (Const (MaxDur durElse)) =
+    Const (MaxDur (durCondition + max durThen durElse))
 \end{code}
+
+Now, we can retrieve the maximum duration of the \hs{onlyDone} animation.
+
+\begin{spec}
+menuIntroDuration :: Duration
+menuIntroDuration = duration menuIntro
+-- menuIntroDuration = MaxFor 1.0
+\end{spec}

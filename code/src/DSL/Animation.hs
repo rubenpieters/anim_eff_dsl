@@ -10,7 +10,8 @@ import Util.Types
 import Control.Arrow (left)
 import Control.Monad (ap, liftM)
 import Control.Monad.Identity
-import Lens.Micro
+import Lens.Micro hiding (set)
+import qualified Lens.Micro as Lens (set)
 
 newtype Animation obj m a = Animation {
   runAnimation ::
@@ -105,7 +106,7 @@ instance (Monad m) => Parallel (Animation obj m) where
 
 instance (Applicative m) => Set obj (Animation obj m) where
   set lens a = Animation $ \obj t -> let
-    newObj = obj & lens .~ a
+    newObj = Lens.set lens a obj
     in pure (newObj, Right (), Just t)
 
 instance (Applicative m) => Get obj (Animation obj m) where

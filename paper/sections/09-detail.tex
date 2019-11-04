@@ -7,7 +7,7 @@ This section goes over the definition of the operations used earlier and redefin
 
 \subsection{Specifying Basic Animations}
 
-Mtl-style effects are based on typeclasses defining the available operations for a particular effect. For example, we specify the \hs{basic} operation using the following typeclass.
+Mtl-style effects are based on typeclasses defining the available operations for a particular effect. For example, we specify the \hs{basic} operation using the \hs{Basic} typeclass defined below.
 
 \begin{code}
 class Basic obj f where
@@ -175,7 +175,9 @@ instance (Monad m) => Par (Animation obj m) where
             Left (fmap (\b -> combine a b) aniB)
           (Left aniA, Left aniB) ->
             Left (liftP2 combine aniA aniB)
-    return (obj2, newAnim, newRem)
+    case (newRem, newAnim) of
+      (Just rem, Left anim) -> runAnimation anim obj2 rem
+      (_, _) -> return (obj2, newAnim, newRem)
 \end{code}
 
 \subsubsection{Examples}
@@ -216,25 +218,58 @@ instance Par (Const Duration) where
 
 \subsubsection{Examples}
 
-The duration function is a specialization of the unwrapper function of the \hs{Const} data type, namely \hs{getConst}. We can feed our previously defined animations to this function and obtain the duration of the animations as a result.
+The duration function is a specialization of the unwrapper function of the \hs{Const} data type, namely \hs{getConst}. We can feed our previously defined animations \hs{selectBtn2Anim} and \hs{menuIntro} from Section~\ref{sec:motivation} to this function and obtain the duration of the animations as a result.
 
 \begin{code}
 duration :: Const Duration a -> Duration
 duration = getConst
 
-playerMoveAnimDuration :: Duration
-playerMoveAnimDuration = duration playerMoveAnimation
--- playerMoveAnimDuration = For 1.0
+selectBtn2AnimDuration :: Duration
+selectBtn2AnimDuration = duration selectBtn2Anim
+-- selectBtn2AnimDuration = For 1.0
 
-menuAnimDuration :: Duration
-menuAnimDuration = duration menuAnimation
--- menuAnimDuration = For 0.5
+menuIntroDuration :: Duration
+menuIntroDuration = duration menuIntro
+-- menuIntroDuration = For 0.5
 \end{code}
 
 When we try to retrieve the duration of an animation with a monad constraint, we receive an error from the compiler: it cannot find a \hs{Monad} instance for \hs{Const Duration}.
 
 \begin{spec}
-compAnimDuration :: Duration
-compAnimDuration = duration complicatedAnimation
+complicatedAnimationDuration :: Duration
+complicatedAnimationDuration = duration complicatedAnimation
 -- No instance for (Monad (Const Duration))
 \end{spec}
+
+\subsection{Adding a Custom Operation}
+
+Adding a custom operation is done as in any other mtl-style approach: by defining a new class containing this operation. For example, if we want to add a \hs{set} operation, then we create a corresponding \hs{Set} class.
+
+\begin{code}
+class Set obj f where
+  set :: Lens' obj a -> a -> f ()
+\end{code}
+
+Now, an animation containing the \hs{set} operation will additionally have a \hs{Set} constraint added to it.
+
+\begin{code}
+checkIcon :: (Set CompleteIcon f, ...) => f ()
+checkIcon = do
+  ...
+  set (checkmark . color) completeGreen
+  ...
+\end{code}
+
+To inspect or run such an animation, we also need to provide instances for the \hs{Animation} and \hs{Const} data types. In the \hs{Animation} instance, we alter the previous state by setting the value targeted by the \hs{lens} to \hs{a}. The duration of a \hs{set} animation is 0, which is what is returned in the \hs{Duration} instance.
+
+\begin{code}
+instance (Applicative m) => Set obj (Animation obj m) where
+  set lens a = Animation $ \obj t -> let
+    newObj = Lens.set lens a obj
+    in pure (newObj, Right (), Just t)
+
+instance Set obj (Const Duration) where
+  set _ _ = Const (For 0)
+\end{code}
+
+This section gave an overview of the features provided by \dsl{}, however combining inspectability while allowing freedom of expressivity is not always straightforward. Therefore, we look at an example of the interaction of these two features in the next section.
