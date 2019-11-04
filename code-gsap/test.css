@@ -1,0 +1,22 @@
+html, body {
+	height: 100%;
+}
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.box {
+	width: 50px;
+	height: 50px;
+	margin-bottom: 10px;
+	color: white; font-size: 20px;
+	display: flex; justify-content: center;
+	align-items: center;
+}
+
+#box1 { background: blue; }
+#box2 { background: #000;}
+#box3 { background: red;}

@@ -54,7 +54,7 @@ complicatedAnimationDuration = duration complicatedAnimation
 
 Similarly to providing custom operations, \dsl{} also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since \dsl{} has the additional requirement of being inspectable, the \hs{>>=} combinator can end up being a liability because it only provide a very limited amount of inspectability.
 
-In the \hs{onlyDone} animation, we show all done todo items, while hiding all not done items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below.
+In the \hs{onlyDone} animation, we show all done todo items, while hiding all not done items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below, while the implementation of \hs{showAll} and \hs{hideNotDone} is omitted.
 
 \begin{spec}
 onlyDoneNaive = do showAll ; hideNotDone
@@ -64,7 +64,7 @@ However, this animation is a bit naive since it executes the \hs{showAll} animat
 
 \begin{spec}
 onlyDone = do
-  cond <- doneItemsGt0
+  cond <- doneItemsGt0 -- check if there are more than 0 'done' items
   if cond then onlyDoneNaive else hideNotDone
 \end{spec}
 
