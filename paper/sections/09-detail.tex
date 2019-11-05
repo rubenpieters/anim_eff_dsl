@@ -14,20 +14,11 @@ class Basic obj f where
 
 Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => Basic obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
 
-Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{Basic Application f} constraint.
+Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{Basic Application f} constraint. As an example, we redefine \hs{line1Outro} with its type signature. 
 
 \begin{code}
 line1Outro :: (Basic Application f) => f ()
 line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
-
-line2Intro :: (Basic Application f) => f ()
-line2Intro = basic (navbar . underline2 . width) (For 0.25) (To 28)
-
-menuSlideIn :: (Basic Application f) => f ()
-menuSlideIn = basic (menu . width) (For 0.5) (To 75)
-
-appFadeOut :: (Basic Application f) => f ()
-appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.5)
 \end{code}
 
 \subsection{Specifying Composed Animations}
