@@ -3,8 +3,6 @@
 
 This section goes over the definition of the operations used earlier and redefines the animations to show the resulting type signature. We develop \dsl{} in the mtl-style, which derives its name from the Haskell \texttt{mtl} library\footnote{\url{http://hackage.haskell.org/package/mtl}} implementing monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}. This style is also called the finally tagless approach \cite{DBLP:journals/jfp/CaretteKS09}. However, \dsl{} does not force the monadic constraint on its class definitions and thus provides opportunities for inspectability.
 
-% The DSL also incorporates interpretable (non-monadic) effects as seen in previous approaches \cite{DBLP:journals/corr/abs-1905-06544} \cite{DBLP:conf/icfp/Lindley14}.
-
 \subsection{Specifying Basic Animations}
 
 Mtl-style effects are based on typeclasses defining the available operations for a particular effect. For example, we specify the \hs{basic} operation using the \hs{Basic} typeclass defined below.

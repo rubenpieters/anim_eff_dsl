@@ -18,31 +18,43 @@ function parallel(tl1, tl2) {
     .add(tl2.play(), 0);
 }
 
-const bothTo50 = parallel(
+/*const bothTo50 = parallel(
   new TweenMax("#box1", 1, { x: 50 }),
   new TweenMax("#box2", 1, { x: 50 }));
 
 const bothTo100 = parallel(
-  new TweenMax("#box1", 1, { x: 50 }),
-  new TweenMax("#box2", 1, { x: 50 }));
+  new TweenMax("#box1", 1, { x: 100 }),
+  new TweenMax("#box2", 1, { x: 100 }));
 
 const bothTo0 = parallel(
   new TweenMax("#box1", 1, { x: 0 }),
   new TweenMax("#box2", 1, { x: 0 }));
 
-const bothAnimation = sequential(bothTo50, bothTo0);
+//const bothAnimation = sequential(bothTo50, bothTo0);
 
 //bothAnimation.play();
-console.log(bothAnimation.totalDuration());
+//console.log(bothAnimation.totalDuration());
 
 let cond = true;
 
 const conditionalAnim = new TimelineMax({ paused: true })
   .add(bothTo50.play())
-  .add(() => { if (cond) { bothTo0.play() } else { bothTo100.play() } });
+  .add(() => { if (cond) { bothTo0.play(); } else { bothTo100.play(); } })
+  .add(bothTo100.play(), "+=1");
 
 conditionalAnim.play();
-console.log(conditionalAnim.totalDuration());
+console.log(conditionalAnim.totalDuration());*/
+
+let cond = true;
+
+const bothDelayed = new TimelineMax({ paused: true })
+  .add(new TweenMax("#box1", 1, { x: 50 }), 0)
+  .add(() => { if (cond) { new TweenMax("#box1", 1, { x: 100 });
+               } else { new TweenMax("#box1", 1, { x: 0 }); } })
+  .add(new TweenMax("#box2", 1, { x: 50 }), "-=0.5");
+
+
+bothDelayed.play();
 
 /*const cond = true;
 

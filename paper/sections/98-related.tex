@@ -2,25 +2,21 @@
 \label{sec:related}
 
 \subsection{Functional Reactive Programming}
-The origins of functional reactive programming lie in the creation of animations \cite{DBLP:conf/icfp/ElliottH97}. Since then, many developments have been based on this idea to create purely functional GUIs. It is a natural question to ask how this work relates to the idea of functional reactive programming, since there seems to be some common ground.
+The origins of functional reactive programming (FRP) lie in the creation of animations \cite{DBLP:conf/icfp/ElliottH97}. Since then, many developments have been based on this idea to create purely functional GUIs. It is a natural question to ask how this work relates to the idea of FRP, since there seems to be some common ground.
 
-This DSL is intended to be usable on top of an underlying framework such as functional reactive programming, rather than instead of it. The essential operations of the DSL, \hs{basic}, \hs{sequential}, and \hs{parallel}, can be translated into FRP behaviour or behaviour combinators and the use can be embedded inside an FRP framework.
+First, there is a distinction to be made between an \emph{animation} and a \emph{micro-animation}. Under the former, we understand mostly animations which are easily described by a picture function parametrized by time \hs{Time -> Picture}. Micro-animations are a subset of animations, but are not as easily described by such a function because many small animations can be playing at the same time for which the timing depends on user interaction.
 
-The flexibility of the DSL enables it to be used on top of other frameworks as well, for example immediate mode or event-based GUIs.
+\dsl{} is focused on describing micro-animations as a primary concern, and is intended to be used on top of a paradigm such as FRP or traditional event-driven frameworks to ease the creation of micro-animations. For the case of interaction with FRP, we suspect that the \hs{basic}, \hs{sequential} and \hs{parallel} components can be given an interpretation in terms of FRP behaviours and events.
 
 \subsection{Animation Frameworks}
 
-Typical micro-animation libraries for web applications (with CSS or JavaScript) or animation construction in game engines provide a variety of configurable pre-made operations while composing complex animations or integrating new types of operations is difficult. This DSL focuses on the creation of complex sequences of events while still being able to embed any complex atomic operations. We hope that this DSL design provides inspiration for micro-animation libraries to provide more powerful combinators for composing complex animations.
-
-
-
-% Other UI Animation Libraries:
-% https://www.codementor.io/hayeskier/7-best-animation-libraries-for-ui-designers-2018-kmg7byy1g
-% https://greensock.com/docs/
-% https://animejs.com/documentation/#cssSelector
+Typical micro-animation libraries for web applications (with CSS or JavaScript) or animation construction in game engines provide a variety of configurable pre-made operations while composing complex animations or integrating new types of operations is difficult. \dsl{} focuses on the creation of complex sequences of events while still providing the ability to embed new animation primitives. We have looked at GSAP as an example of such libraries and some of the limits in combining extensibility with callbacks and inspectability. \dsl{} is an exercise in improving this combination of features forward in a direction which is more predictable for the user.
 
 \subsection{Planning-Based Animations}
 
-This DSL shares similarities with approaches which specify an animation as a plan which needs to be executed \cite{DBLP:conf/chi/KurlanderL95} \cite{DBLP:conf/eics/MirlacherPB12}. In essence an animation is outlined by a series of actions specified upfront, which is the plan of the animation. The coordinator, which manages and advances the animations, is implemented as part of the hosting application. Our DSL realizes these plan-based animations with only a few core principles and features the possibility of adding custom operations and inspection.
+\dsl{} shares similarities with approaches which specify an animation as a plan which needs to be executed \cite{DBLP:conf/chi/KurlanderL95} \cite{DBLP:conf/eics/MirlacherPB12}. In essence an animation is outlined by a series of actions specified upfront, which is the plan of the animation. The coordinator, which manages and advances the animations, is implemented as part of the hosting application. \dsl{} realizes these plan-based animations with only a few core principles and features the possibility of adding custom operations and inspection. A detailed comparison with these approaches is difficult, since their papers are very light on details of the actual implementation aspect.
 
-The DSL also shares a weakness with this approach in the resolution of conflicting actions. Imagine we specify an animation to both change the \hs{width} value of a component to \hs{0} and \hs{100} in parallel over the same duration. It is unclear what the resulting animation should look like, and as implemented in this paper will not result in a smooth animation. We could have used a \hs{basic} operation which specifies relative movement, which would avoid this issue, but at the cost of usability of the DSL for the programmer. The modularity of the DSL enables using this operation in scenarios where this issue might occur, while still allowing the more user-friendly operation in all other scenarios.
+\subsection{Inspectable DSLs}
+
+There are other DSLs which focus on inspectability aspects, such as for parsers \cite{DBLP:journals/scp/Hughes00} \cite{DBLP:journals/corr/CapriottiK14} \cite{DBLP:conf/icfp/Lindley14}, non-determinism \cite{DBLP:journals/corr/abs-1905-06544}, remote execution \cite{DBLP:conf/haskell/Gibbons16} \cite{DBLP:conf/haskell/GillSDEFGRSS15} or build systems \cite{DBLP:journals/pacmpl/MokhovMJ18}. However, none of them are focused on providing both extensibility and expressiveness, as we use the terms in this paper, as additional features.
+

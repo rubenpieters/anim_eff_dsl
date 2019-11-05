@@ -3,7 +3,7 @@
 
 The features seen in Section~\ref{sec:motivation} form the basis of \dsl{} as a library. However, many animation libraries such as GreenSock Animation Platform provide a much more extensive list of features.
 
-To add support for similar features, we design \dsl{} with extensibility and inspectability in mind. This means that \dsl{} can be extended with custom operations and that information can be derived from inspecting specified animations. To be able to support arbitrary expressiveness in combination with those features, we also need to stress the possibility to extend \dsl{} with custom combinators.
+To add support for similar features, we design \dsl{} with extensibility and inspectability in mind. This means that \dsl{} can be extended with custom operations and information can be derived from inspecting specified animations. To be able to support arbitrary expressiveness in combination with those features, we also need to stress the possibility to extend \dsl{} with custom combinators.
 
 \subsection{Extensibility}
 \label{sec:customop}
@@ -22,12 +22,12 @@ checkIcon = do
   basic (checkmark . scale) (For 0.05) (To 1)
 \end{spec}
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\figscale\textwidth]{pictures/todo}
-\caption{The \hs{checkIcon} animation.}
-\label{fig:}
-\end{figure}
+%\begin{figure}[h]
+%\centering
+%\includegraphics[width=\figscale\textwidth]{pictures/todo}
+%\caption{The \hs{checkIcon} animation.}
+%\label{fig:}
+%\end{figure}
 
 \subsection{Inspectability}
 
@@ -74,11 +74,11 @@ However, if we also want to inspect this computation the previous formulation is
 onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone
 \end{spec}
 
-For this new combinator, we can define custom ways to inspect it. For example, we might want to retrieve the \emph{maximum} duration of an animation. Since retrieving the actual duration is not sensible as both branches might have different durations.
+For this new combinator, we can define custom ways to inspect it. Since each branch might have a different duration, it does not make sense to extract a duration from it. Instead we might want to extract the \emph{maximum} duration of the animation.
 
 \begin{spec}
 onlyDoneMaxDuration = maxDuration onlyDone
 -- onlyDoneMaxDuration = 1
 \end{spec}
 
-These sections gave a taste of the features of \dsl{} and what using it feels like. In the following sections, we delve deeper into the internals of the implementation.
+These sections gave a taste of the features of \dsl{}. In the following sections, we delve deeper into the internals of the implementation.
