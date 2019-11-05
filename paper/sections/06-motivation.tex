@@ -57,24 +57,24 @@ In the next sections we explain how to construct these basic and composed animat
 
 \subsection{Basic Animations}
 
-A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements: a lens specifying which property in our UI should change, the target value for this property and, lastly, the duration specifying how many seconds the animation should last.
+A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements: a lens specifying which property in our UI should change, the target value for this property and, lastly, the duration specifying how many seconds the animation should last. Since this operation creates an animation which moves a property \emph{to} a target linearly, it is called \hs{linearTo}.
 
 \paragraph{Note on Lenses} We utilize the lens notation \texttt{x . y . z} to target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z: Property } } }}. This type of lenses were introduced by Twan van Laarhoven \cite{vlLenses}, and newer versions of this idea have been packaged into various Haskell libraries, such as \texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
 
 To implement the navigation bar underline animation, we need two basic components for the underline on each button. We reduce the underline width of the first button for 0.25 seconds, and increase the underline width of the second button for 0.25 seconds. These animations are expressed in respectively \hs{line1Outro} and \hs{line2Intro} below, and shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
-line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
+line1Outro = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
 
-line2Intro = basic (navbar . underline2 . width) (For 0.25) (To 28)
+line2Intro = linearTo (navbar . underline2 . width) (For 0.25) (To 28)
 \end{spec}
 
 We also define the \hs{menuSlideIn} and \hs{appFadeOut} animations below, since we will use these in the next sections. For the former, we increase the width of the menu over a duration of 0.5 seconds, and for the latter we increase the alpha value of the obscuring box over a duration of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
-menuSlideIn = basic (menu . width) (For 0.5) (To 75)
+menuSlideIn = linearTo (menu . width) (For 0.5) (To 75)
 
-appFadeOut = basic (obscuringBox . alpha) (For 0.5) (To 0.65)
+appFadeOut = linearTo (obscuringBox . alpha) (For 0.5) (To 0.65)
 \end{spec}
 
 \begin{figure}[!htbp]

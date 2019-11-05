@@ -6,7 +6,7 @@ A Haskell DSL is typically a monadic one due to the expressive power of the \hs{
 We will revisit the \hs{onlyDone} animation from Section~\ref{sec:customcomb}. The definition using \hs{do}-notation would impose a \hs{Monad} constraint on \hs{f}, meaning that the animation is not inspectable.
 
 \begin{spec}
-onlyDone :: (Basic Application f, Get Application f,
+onlyDone :: (LinearTo Application f, Get Application f,
   Set Application f, Monad f, Parallel f) => f ()
 onlyDone = do
   cond <- doneItemsGt0
@@ -34,7 +34,7 @@ instance (Monad f) => IfThenElse (Animation obj f) where
 Now, we can express the inspectable version of \hs{onlyDone} by using the \hs{ifThenElse} combinator.
 
 \begin{code}
-onlyDone :: (Basic Application f, Get Application f,
+onlyDone :: (LinearTo Application f, Get Application f,
   Set Application f, Applicative f, Parallel f, IfThenElse f)
   => f ()
 onlyDone = ifThenElse doneItemsGt0

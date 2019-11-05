@@ -5,20 +5,20 @@ This section goes over the definition of the operations used earlier and redefin
 
 \subsection{Specifying Basic Animations}
 
-Mtl-style effects are based on typeclasses defining the available operations for a particular effect. For example, we specify the \hs{basic} operation using the \hs{Basic} typeclass defined below.
+Mtl-style effects are based on typeclasses defining the available operations for a particular effect. For example, we specify the \hs{linearTo} operation using the \hs{LinearTo} typeclass defined below.
 
 \begin{code}
-class Basic obj f where
-  basic :: Traversal' obj Float -> Duration -> Target -> f ()
+class LinearTo obj f where
+  linearTo :: Traversal' obj Float -> Duration -> Target -> f ()
 \end{code}
 
-Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => Basic obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
+Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => LinearTo obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
 
-Using the \hs{basic} function created by the \hs{Basic} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{Basic Application f} constraint. As an example, we redefine \hs{line1Outro} with its type signature. 
+Using the \hs{linearTo} function created by the \hs{LinearTo} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{LinearTo Application f} constraint. As an example, we redefine \hs{line1Outro} with its type signature. 
 
 \begin{code}
-line1Outro :: (Basic Application f) => f ()
-line1Outro = basic (navbar . underline1 . width) (For 0.25) (To 0)
+line1Outro :: (LinearTo Application f) => f ()
+line1Outro = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
 \end{code}
 
 \subsection{Specifying Composed Animations}
@@ -34,10 +34,10 @@ sequential :: (Applicative f) => f () -> f () -> f ()
 sequential f1 f2 = liftA2 (\_ _ -> ()) f1 f2
 \end{code}
 
-The type signature for \hs{selectBtn2Anim} contains an additional \hs{Applicative f} constraint in addition to the \hs{Basic Application f} constraint.
+The type signature for \hs{selectBtn2Anim} contains an additional \hs{Applicative f} constraint in addition to the \hs{LinearTo Application f} constraint.
 
 \begin{code}
-selectBtn2Anim :: (Basic Application f, Applicative f) => f ()
+selectBtn2Anim :: (LinearTo Application f, Applicative f) => f ()
 selectBtn2Anim = line1Outro `sequential` line2Intro
 \end{code}
 
@@ -54,7 +54,7 @@ class Parallel f where
 parallel :: (Parallel f) => f () -> f () -> f ()
 parallel f1 f2 = liftP2 (\_ _ -> ()) f1 f2
 
-menuIntro :: (Basic Application f, Parallel f) => f ()
+menuIntro :: (LinearTo Application f, Parallel f) => f ()
 menuIntro = menuSlideIn `parallel` appFadeOut
 \end{code}
 
@@ -62,7 +62,7 @@ menuIntro = menuSlideIn `parallel` appFadeOut
 
 To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. We give an explanation of our implementation in the following paragraph.
 
-An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when, for example, we are at the end of an animation and the delta time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{Basic}, \hs{Monad} and \hs{Par}.
+An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when, for example, we are at the end of an animation and the delta time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{LinearTo}, \hs{Monad} and \hs{Par}.
 
 \begin{code}
 newtype Animation obj m a = Animation {
@@ -79,13 +79,13 @@ newtype Animation obj m a = Animation {
 }
 \end{code}
 
-\subsubsection{Basic Instance}
+\subsubsection{LinearTo Instance}
 
-In the implementation for the \hs{basic} function we do three main things: construct the new object state, calculate the remainder of the animation, and calculate the remaining duration of the frame time. The new object state is created by applying the helper function \hs{updateValue} on the old state via the traversal. The remaining animation and duration are both dependent on a condition. If the current duration minus the frame time is bigger than zero, then there is a remainder for this basic animation and all time delta is used up. If it is not bigger than zero, then this basic animation is finished playing and there is still remaining time delta.
+In the implementation for the \hs{linearTo} function we do three main things: construct the new object state, calculate the remainder of the animation, and calculate the remaining duration of the frame time. The new object state is created by applying the helper function \hs{updateValue} on the old state via the traversal. The remaining animation and duration are both dependent on a condition. If the current duration minus the frame time is bigger than zero, then there is a remainder for this basic animation and all time delta is used up. If it is not bigger than zero, then this basic animation is finished playing and there is still remaining time delta.
 
 \begin{code}
-instance (Applicative m) => Basic obj (Animation obj m) where
-  basic traversal (For duration) (To target) =
+instance (Applicative m) => LinearTo obj (Animation obj m) where
+  linearTo traversal (For duration) (To target) =
     Animation $ \obj t -> let
     -- construct new object state
     newObj = over traversal (updateValue t duration target) obj
@@ -94,7 +94,7 @@ instance (Applicative m) => Basic obj (Animation obj m) where
     -- create remainder animation / time delta
     (remainingAnim, remainingDelta) =
       if newDuration > 0
-      then ( Left (basic traversal (For newDuration) (To target))
+      then ( Left (linearTo traversal (For newDuration) (To target))
            , Nothing
            )
       else (Right (), Just (-newDuration))
@@ -177,7 +177,7 @@ TODO: examples of running animations by linking with gloss? or tuple world examp
 
 Inspecting an animation is done by interpreting \dsl{} to a different data type, which provides instances for the typeclasses with different semantics. This section implements support for calculating the duration of an animation.
 
-\subsubsection{Inspecting Basic}
+\subsubsection{Inspecting LinearTo}
 
 The data type we utilize for inspection is the \hs{Const} functor, defined below.
 
@@ -185,11 +185,11 @@ The data type we utilize for inspection is the \hs{Const} functor, defined below
 newtype Const a b = Const { getConst :: a }
 \end{spec}
 
-To inspect animations we provide an instance for the operations which interprets them into this data type. In the case of the \hs{basic} operation, we embed the duration within a \hs{Const} wrapper.
+To inspect animations we provide an instance for the operations which interprets them into this data type. In the case of the \hs{linearTo} operation, we embed the duration within a \hs{Const} wrapper.
 
 \begin{code}
-instance Basic obj (Const Duration) where
-  basic _ duration _ = Const duration
+instance LinearTo obj (Const Duration) where
+  linearTo _ duration _ = Const duration
 \end{code}
 
 \subsubsection{Inspecting Applicative}

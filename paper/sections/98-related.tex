@@ -6,7 +6,7 @@ The origins of functional reactive programming (FRP) lie in the creation of anim
 
 First, there is a distinction to be made between an \emph{animation} and a \emph{micro-animation}. Under the former, we understand mostly animations which are easily described by a picture function parametrized by time \hs{Time -> Picture}. Micro-animations are a subset of animations, but are not as easily described by such a function because many small animations can be playing at the same time for which the timing depends on user interaction.
 
-\dsl{} is focused on describing micro-animations as a primary concern, and is intended to be used on top of a paradigm such as FRP or traditional event-driven frameworks to ease the creation of micro-animations. For the case of interaction with FRP, we suspect that the \hs{basic}, \hs{sequential} and \hs{parallel} components can be given an interpretation in terms of FRP behaviours and events.
+\dsl{} is focused on describing micro-animations as a primary concern, and is intended to be used on top of a paradigm such as FRP or traditional event-driven frameworks to ease the creation of micro-animations. For the case of interaction with FRP, we suspect that the \hs{linearTo}, \hs{sequential} and \hs{parallel} components can be given an interpretation in terms of FRP behaviours and events.
 
 \subsection{Animation Frameworks}
 

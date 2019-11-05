@@ -5,9 +5,9 @@ There are many different JavaScript animation libraries\footnote{Some examples: 
 
 \subsection{Working with GSAP}
 
-GSAP provides primitives which are similar to the \hs{basic} and \hs{sequential} operations in \dsl{}. While it does not have a primitive for \hs{parallel} composition, we can implement it using the features provided by GSAP.
+GSAP provides primitives which are similar to the \hs{linearTo} and \hs{sequential} operations in \dsl{}. While it does not have a primitive for \hs{parallel} composition, we can implement it using the features provided by GSAP.
 
-In GSAP we can create \texttt{TweenMax} objects, which is the equivalent of the \hs{basic} operation. The arguments are also similar: a parameter which indicates which object to change, a duration, and the target value for the property. Below we create the animation \texttt{right} which moves \texttt{box1} to the right.
+In GSAP we can create \texttt{TweenMax} objects, which is the equivalent of the \hs{linearTo} operation. The arguments are also similar: a parameter which indicates which object to change, a duration, and the target value for the property. Below we create the animation \texttt{right} which moves \texttt{box1} to the right.
 
 \begin{js}
 const right = new TweenMax("#box1", 1, { x: 50 });

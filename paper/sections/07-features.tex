@@ -8,18 +8,18 @@ To add support for similar features, we design \dsl{} with extensibility and ins
 \subsection{Extensibility}
 \label{sec:customop}
 
-The \hs{basic} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are many different situations which require different primitives to express our desired animation.
+The \hs{linearTo} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are many different situations which require different primitives to express our desired animation.
 
 An example in our use case is the \hs{checkIcon} animation, which is part of the \hs{markAsDone} animation, where it is required to set the color of the checkmark to a specific value. We can define an additional \hs{set} operation and embed it inside a \dsl{} animation.
 
 \begin{spec}
 checkIcon = do
-  basic (checkmark . scale) (For 0.05) (To 0)
+  linearTo (checkmark . scale) (For 0.05) (To 0)
   set (checkmark . color) completeGreen
-  (basic (circle . extra) (For 0.2) (To 360))
+  (linearTo (circle . extra) (For 0.2) (To 360))
     `parallel`
-    (basic (checkmark . scale) (For 0.2) (To 1.2))
-  basic (checkmark . scale) (For 0.05) (To 1)
+    (linearTo (checkmark . scale) (For 0.2) (To 1.2))
+  linearTo (checkmark . scale) (For 0.05) (To 1)
 \end{spec}
 
 %\begin{figure}[h]
@@ -43,7 +43,7 @@ Of course, it is not possible to inspect every animation. In the following situa
 \begin{spec}
 complicatedAnimation = do
   v <- get
-  basic lens (For v) (To 10)
+  linearTo lens (For v) (To 10)
 
 complicatedAnimationDuration = duration complicatedAnimation
 -- type error
