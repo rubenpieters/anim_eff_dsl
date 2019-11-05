@@ -1,4 +1,4 @@
-\section{Extra Features}
+\section{Extensibility, Inspectability and Expressiveness}
 \label{sec:features}
 
 The features seen in Section~\ref{sec:motivation} form the basis of \dsl{} as a library. However, many animation libraries such as GreenSock Animation Platform provide a much more extensive list of features.
@@ -52,9 +52,9 @@ complicatedAnimationDuration = duration complicatedAnimation
 \subsection{Expressiveness}
 \label{sec:customcomb}
 
-Similarly to providing custom operations, \dsl{} also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since \dsl{} has the additional requirement of being inspectable, the \hs{>>=} combinator can end up being a liability because it only provide a very limited amount of inspectability.
+Similarly to providing custom operations, \dsl{} also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since \dsl{} has the additional requirement of being inspectable, the \hs{>>=} combinator ends up being a liability because it only provides a very limited amount of inspectability.
 
-In the \hs{onlyDone} animation, we show all done todo items, while hiding all not done items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below, while the implementation of \hs{showAll} and \hs{hideNotDone} is omitted.
+In the \hs{onlyDone} animation, we show all \emph{done todo} items, while hiding all \emph{not done} todo items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below, while the implementation of \hs{showAll} and \hs{hideNotDone} is omitted.
 
 \begin{spec}
 onlyDoneNaive = do showAll ; hideNotDone
@@ -81,4 +81,4 @@ onlyDoneMaxDuration = maxDuration onlyDone
 -- onlyDoneMaxDuration = 1
 \end{spec}
 
-These sections gave a taste of the features of \dsl{}. In the following sections, we delve deeper into the internals of the implementation.
+Section~\ref{sec:motivation} and \ref{sec:features} gave a look and feel of the features of \dsl{}. In the following sections, we delve deeper into the internals of the implementation.
