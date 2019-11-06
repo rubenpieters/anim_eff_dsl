@@ -4,11 +4,12 @@
 % minted
 \usepackage{minted}
 % minted config
+\usemintedstyle{friendly}
 \newenvironment{code}{\VerbatimEnvironment\begin{minted}{haskell}}{\end{minted}}
 \newenvironment{spec}{\VerbatimEnvironment\begin{minted}{haskell}}{\end{minted}}
 \newenvironment{js}{\VerbatimEnvironment\begin{minted}{javascript}}{\end{minted}}
 \newcommand{\hs}{\mintinline{haskell}}
-\setminted[haskell]{escapeinside=@@}
+\setminted[haskell]
 
 % 
 \usepackage[misc]{ifsym}

@@ -49,6 +49,12 @@ complicatedAnimationDuration = duration complicatedAnimation
 -- type error
 \end{spec}
 
+Calculating a duration is mostly a stepping stone towards supporting other interesting features. One such example is sequentially composing animations with a relative offset. For example, to compose a first animation \hs{anim1} with a second animation \hs{anim2} which starts 0.5 seconds before the end of \hs{anim1}.
+
+\begin{spec}
+relSeqAnim = relSequential anim1 anim2 (-0.5)
+\end{spec}
+
 \subsection{Expressiveness}
 \label{sec:customcomb}
 

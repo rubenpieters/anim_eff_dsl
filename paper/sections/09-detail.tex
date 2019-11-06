@@ -67,14 +67,14 @@ An animation takes in the current state of our application and the amount of tim
 \begin{code}
 newtype Animation obj m a = Animation {
   runAnimation ::
-    obj -> -- previous state
-    Float -> -- time delta
-    m -- result is wrapped in m
-      ( obj -- next state
+    obj ->                    -- previous state
+    Float ->                  -- time delta
+    m                         -- result is wrapped in m
+      ( obj                   -- next state
       , Either
           (Animation obj m a) -- animation remainder
-          a -- animation result
-      , Maybe Float -- remaining time delta
+          a                   -- animation result
+      , Maybe Float           -- remaining time delta
       )
 }
 \end{code}

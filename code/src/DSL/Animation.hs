@@ -2,7 +2,14 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes #-}
 
+{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 module DSL.Animation where
+
+import DSL.Duration
+import Data.Functor.Const
 
 import DSL.Functor
 import Util.Types
@@ -136,3 +143,17 @@ fetchInbetweens delta k obj (Animation f) acc = let
   in case eFa of
      Left anim -> fetchInbetweens delta (k - 1) obj' anim (acc ++ [obj])
      Right _ -> acc ++ [obj, obj']
+
+relSequential :: (c (Const Duration), c g, Applicative g) => (forall f. c f => f ()) -> g () -> Float -> g ()
+relSequential anim1 anim2 offset = let
+  dur = getDuration (duration anim1)
+  in anim1 `sequential` anim2
+
+test1 :: (Basic Float f) => f ()
+test1 = basic id (For 1) (To 0)
+
+test2 :: (Basic Float f) => f ()
+test2 = basic id (For 1) (To 1)
+
+--test3 :: (Basic Float f, Applicative f) => f ()
+--test3 = relSequential test1 test2 (-0.5)

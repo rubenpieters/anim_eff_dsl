@@ -35,14 +35,12 @@ Since we have specified the option \texttt{paused} with \texttt{true}, we must c
 function sequential(tl1, tl2) {
   return new TimelineMax({ paused: true })
     .add(tl1.play())
-    .add(tl2.play());
-}
+    .add(tl2.play()); }
 
 function parallel(tl1, tl2) {
   return new TimelineMax({ paused: true })
     .add(tl1.play(), 0)
-    .add(tl2.play(), 0);
-}
+    .add(tl2.play(), 0); }
 \end{js}
 
 \subsection{Callbacks and Inspectability}
@@ -68,7 +66,7 @@ const bothAnimDuration = bothAnimation.totalDuration()
 // bothAnimDuration = 2
 \end{js}
 
-However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else} construction, then the duration returned is not what might be expected. For example, if we create a conditional animation \texttt{conditionalAnim}, then it returns a duration of 1.
+However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else} construction, then the duration returned is not what might be expected. For example, if we create a conditional animation \texttt{conditionalAnim}, then it returns a duration of 1. This is different from the expected total duration of the animation, which is 2. Of course, in general the duration of the animations in both branches could differ, which is what makes it difficult to provide a procedure for calculating the duration of an animation in this form.
 
 \begin{js}
 const conditionalAnim = new TimelineMax({ paused: true })
@@ -105,3 +103,27 @@ const relativeCond = new TimelineMax({ paused: true })
 Predicting in what animations this behaviour results in becomes much more complicated when conditional animations are embedded deep inside complex timelines and cause erroneous duration calculations.
 
 As a a result, being more conscious of control flow structures and their impact on inspectability such as in \dsl{} will help in providing more predictable interaction between these features.
+
+\subsection{Relative Sequential Composition in \dsl{}}
+
+\dsl{} enables you to correctly specify relative sequential composition, though the usability of the feature is not optimal yet. The definition for providing relative sequential composition is defined in \hs{relSequential}, for which we have to enable \hs{AllowAmbiguousTypes} (among other extensions) and pass the polymorphic constraint \hs{c} explicitly at the call-site.
+
+\begin{spec}
+relSequential :: forall c g.
+  (c (Const Duration), c g, Applicative g) =>
+  (forall f. c f => f ()) -> g () -> Float -> g ()
+relSequential anim1 anim2 offset = let
+  dur = getDuration (duration anim1)
+  in anim1 `sequential` (delay (dur + offset) *> anim2)
+\end{spec}
+
+Since this definition requires instances instantiated with \hs{Const Duration}, this will only work for animations where the duration can be analyzed. Of course we can define a similar function, for example \hs{relMaxSequential}, which uses the maximum duration of an animation instead. Using this, we can correctly compose conditional animations sequentially using relative positioning.
+
+\begin{spec}[mathescape=true]
+class (LinearTo Float f, IfThenElse f) => Combined f where
+instance (LinearTo Float f, IfThenElse f) => Combined f where
+
+relCond :: (LinearTo Float f, IfThenElse f, Applicative f) => f ()
+relCond = relMaxSequential @Combined anim1 anim2 (-0.5)
+\end{spec}
+
