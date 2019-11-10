@@ -122,7 +122,7 @@ To obtain the \hs{selectBtn2} animation, we combine the \hs{line1Outro} and \hs{
 selectBtn2Anim = line1Outro `sequential` line2Intro
 \end{spec}
 
-To obtain the \hs{menuIntro} animation, we combine the \hs{menuSlideIn} and \hs{appFadeOut} animations with the \hs{parallel} combinator. This constructs a new animation wich plays both the \hs{menuSlideIn} and \hs{appFadeOut} animations at the same time.
+To obtain the \hs{menuIntro} animation, we combine the \hs{menuSlideIn} and \hs{appFadeOut} animations with the \hs{parallel} combinator. This constructs a new animation which plays both the \hs{menuSlideIn} and \hs{appFadeOut} animations at the same time.
 
 \begin{spec}
 menuIntro = menuSlideIn `parallel` appFadeOut
