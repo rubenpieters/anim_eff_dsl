@@ -1,19 +1,32 @@
 \section{Interaction Between Callbacks and Inspectability}
 \label{sec:evaluation}
 
-There are many different JavaScript animation libraries\footnote{Examples: \url{https://greensock.com}, \url{https://animejs.com}, and \url{https://popmotion.io}.}. Many of these libraries provide callbacks to provide extensibility, by which the user can add custom behaviour the library has not foreseen. We take as representative example the GreenSock Animation Platform (GSAP), which is a widely recommended and mature JavaScript animation library providing a variety of features.
+Many JavaScript animation libraries\footnote{Examples:
+\url{https://greensock.com}, \url{https://animejs.com}, and
+\url{https://popmotion.io}.} exist, most of which allow the user to add custom
+behavior (which the library has not foreseen) through callbacks. A good example
+is the GreenSock Animation Platform (GSAP), a widely recommended and mature
+JavaScript animation library with a variety of features.
 
 \subsection{Working with GSAP}
 
-GSAP provides primitives which are similar to the \hs{linearTo} and \hs{sequential} operations in \dsl{}. While it does not have a primitive for \hs{parallel} composition, we can implement it using the features provided by GSAP.
+GSAP provides primitives similar to the \hs{linearTo} and
+\hs{sequential} operations in \dsl{}. While it does not have a primitive for
+\hs{parallel} composition, we can define in terms of other GSAP features.
 
-In GSAP we can create \texttt{TweenMax} objects, which is the equivalent of the \hs{linearTo} operation. The arguments are also similar: a parameter which indicates which object to change, a duration, and the target value for the property. Below we create the animation \texttt{right} which moves \texttt{box1} to the right.
+\texttt{TweenMax} objects are the GSAP counterpart of the
+\hs{linearTo} operation. Their arguments are similar: the object to change, the
+duration, and the target value for the
+property. For example, animation \texttt{right} moves
+\texttt{box1} to the right:
 
 \begin{js}
 const right = new TweenMax("#box1", 1, { x: 50 });
 \end{js}
 
-Constructing a sequential animation is done by using a timeline. First a timeline is created and we can add animations with the \texttt{add} method. Below, we create the animation \texttt{rightThenDown} which moves \texttt{box1} to the right and then moves it down.
+A sequential animation is created by creating a timeline and \texttt{add}ing
+animations to it.  Below, we create the animation \texttt{rightThenDown} which
+moves \texttt{box1} to the right and then moves it down.
 
 \begin{js}
 const rightThenDown = new TimelineMax({ paused: true })
@@ -21,7 +34,12 @@ const rightThenDown = new TimelineMax({ paused: true })
   .add(new TweenMax("#box1", 1, { y: 50 }));
 \end{js}
 
-To create an animation which moves both \texttt{box1} and \texttt{box2} in parallel to the right, we utilize the optional position parameter. If we provide both additions to the timeline with the same static position \texttt{0}, then both animations run in parallel. Below we create a \texttt{both} animation which moves both \texttt{box1} and \texttt{box2} in parallel to an \texttt{x}-value of 50.
+
+The \texttt{add} method takes the position on the timeline as an optional
+paramter. Hence, if we position both animations at point \texttt{0} on the timeline,
+they will run in parallel. For example, the \texttt{both} animation below 
+moves both \texttt{box1} and \texttt{box2} in parallel to an \texttt{x}-value
+of 50.
 
 \begin{js}
 const both = new TimelineMax({ paused: true })
@@ -29,7 +47,11 @@ const both = new TimelineMax({ paused: true })
   .add(new TweenMax("#box2", 1, { x: 50 }), 0);
 \end{js}
 
-Since we have specified the option \texttt{paused} with \texttt{true}, we must call the \texttt{play} method to actually run the animation, for example \texttt{both.play()}. Using this behaviour, and the ability to nest timelines, we can extract similar functionality as \hs{sequential} and \hs{parallel} in \dsl{}.
+Since we have specified the option \texttt{paused} with \texttt{true}, we must
+call the \texttt{play} method to actually run the animation, for example
+\texttt{both.play()}. Using this behaviour, and the ability to nest timelines,
+we can define similar functionality as \hs{sequential} and \hs{parallel} in
+\dsl{}.
 
 \begin{js}
 function sequential(tl1, tl2) {
@@ -45,11 +67,20 @@ function parallel(tl1, tl2) {
 
 \subsection{Callbacks and Inspectability}
 
-The \texttt{add} method is overloaded to also accept callbacks. We made use of this in the previous section, since \texttt{tl.play()} was shorthand for the callback \texttt{() => tl.play()}. This is how GSAP achieves extensibility, since these callbacks provide us with the capability of embedding arbitrary effects inside any animation.
+The GSAP \texttt{add} method is overloaded to also accept callbacks. We have
+used this in the previous section, since \texttt{tl.play()} is shorthand for
+the callback \texttt{() => tl.play()}. This is how GSAP achieves extensibility,
+since these callbacks allow embedding arbitrary effects inside animations.
 
-GSAP also provides features related to inspectability. In fact, it provides a \texttt{totalDuration} method to return the total duration of an animation. However, callbacks and inspectability do not always work nicely together. This section illustrates an example of this.
+GSAP also provides features related to inspectability. For example, it provides a
+\texttt{totalDuration} method to return the total duration of an animation.
+However, as we will see, callbacks and inspectability do not always work nicely together.
 
-Animations created with the previously defined \texttt{sequential} and \texttt{parallel} functions correctly give their total duration when queried. For example, we define an animation which moves both boxes in parallel to \texttt{x = 50} and then back to \texttt{x = 0} in parallel. The duration is correctly returned as 2.
+Animations created with the previously defined \texttt{sequential} and
+\texttt{parallel} functions correctly give their total duration when queried.
+For example, we define an animation which moves both boxes in parallel to
+\texttt{x = 50} and then back to \texttt{x = 0} in parallel. The duration is
+correctly returned as 2.
 
 \begin{js}
 const bothTo50 = parallel(
@@ -66,7 +97,14 @@ const bothAnimDuration = bothAnimation.totalDuration();
 // bothAnimDuration = 2
 \end{js}
 
-However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else} construction, then the duration returned is not what might be expected. For example, if we create a conditional animation \texttt{conditionalAnim}, then it returns a duration of 1. This is different from the expected total duration of the animation, which is 2. Of course, in general the duration of the animations in both branches could differ, which is what makes it difficult to provide a procedure for calculating the duration of an animation in this form.
+However, if we want to provide animations similar to \hs{onlyDone}, which
+contains an \hs{if-then-else}, then the duration returned is not what we
+expect. For example, if we create a conditional animation
+\texttt{conditionalAnim}, then it returns a duration of 1. This is different
+from the expected total duration of the animation, which is 2. (Of course, in
+general the duration of the animations in both branches could differ, which is
+what makes it difficult to provide a procedure for calculating the duration of
+an animation in this form.)
 
 \begin{js}
 const conditionalAnim = new TimelineMax({ paused: true })
@@ -80,9 +118,15 @@ const conditionalAnimDuration = conditionalAnim.totalDuration()
 
 \subsection{Relevance of Duration in Other Features}
 
-While this wrongly calculated duration might be annoying, by itself it is something that can be worked around. However, it becomes more problematic when other features rely on this duration calculation.
+While this wrongly calculated duration is annoying, by itself it is something
+that can be worked around. However, it becomes more problematic when other
+features rely on this duration calculation.
 
-This is the case for adding animations with relative positions to timelines. Instead of adding animations to static positions in the timeline, they can be added relatively to the previous animation. For example, we can specify the position parameter \texttt{-=0.5} to specify that an animation should be started 0.5 seconds before the end of the last animation.
+This is the case for adding animations with relative positions to timelines.
+Instead of adding animations to static positions in the timeline, they can be
+added relatively to the previous animation. For example, we can specify the
+position parameter \texttt{-=0.5} to specify that an animation should be
+started 0.5 seconds before the end of the last animation.
 
 \begin{js}
 const bothDelayed = new TimelineMax({ paused: true })
@@ -90,7 +134,12 @@ const bothDelayed = new TimelineMax({ paused: true })
   .add(new TweenMax("#box2", 1, { x: 50 }), "-=0.5");
 \end{js}
 
-This feature behaves somewhat unexpectedly when combined with adding a conditional animation. In the below animation \texttt{relativeCond} we add a basic animation followed by a conditional animation. Then we add an animation with a relative position, the result is that the relative position is calculated with respect to the duration of the animations before it, which was a duration of 1.
+This feature behaves somewhat unexpectedly when combined with a
+conditional animation. In the \texttt{relativeCond} animation below we add a
+basic animation followed by a conditional animation. Then we add an animation
+with a relative position. The result is that the relative position is
+calculated with respect to the duration of the animations before it, which was
+a duration of 1.
 
 \begin{js}
 const relativeCond = new TimelineMax({ paused: true })
@@ -100,14 +149,21 @@ const relativeCond = new TimelineMax({ paused: true })
   .add(new TweenMax("#box2", 1, { x: 50 }), "-=0.5");
 \end{js}
 
-Predicting in what animations this behaviour results in becomes much more complicated when conditional animations are embedded deep inside complex timelines and cause erroneous duration calculations.
-
-As a result, being more conscious of control flow structures and their impact on inspectability such as in \dsl{} will help in providing more predictable interaction between these features.
+Predicting the resulting behavior becomes much more complicated when
+conditional animations are embedded deep inside complex timelines and cause
+erroneous duration calculations.  Clearly, being more explicit about control
+flow structures and their impact on inspectability like in \dsl{} helps
+providing more predictable interaction between these features.
 
 \subsection{Relative Sequential Composition in \dsl{}}
 
-\dsl{} enables you to correctly specify relative sequential composition, though the usability of the feature is not optimal yet. The definition for providing relative sequential composition is defined in \hs{relSequential}, for which we have to enable \hs{AllowAmbiguousTypes} (among other extensions) and pass the polymorphic constraint \hs{c} explicitly at the call-site.
-
+While not yet ideal from a usability perspective,\footnote{It
+requires
+\hs{AllowAmbiguousTypes} (among other extensions) and explicitly instantiating the
+constraint \hs{c} at the call-site.
+}
+ \dsl{} does enable correctly
+specifying relative sequential compositions by means of \hs{relSequential}.
 \begin{spec}
 relSequential :: forall c g.
   (c (Const Duration), c g, Applicative g) =>
@@ -117,7 +173,14 @@ relSequential anim1 anim2 offset = let
   in anim1 `sequential` (delay (dur + offset) *> anim2)
 \end{spec}
 
-Since this definition requires instances instantiated with \hs{Const Duration}, this will only work for animations where the duration can be analyzed. Of course we can define a similar function, for example \hs{relMaxSequential}, which uses the maximum duration of an animation instead. Using this, we can correctly compose conditional animations sequentially using relative positioning.
+Because this definition requires instances instantiated with \hs{Const Duration},
+it only works for animations whose duration can be analyzed. 
+% Of course we can define a similar function, for example
+% \hs{relMaxSequential}, which uses the maximum duration of an animation
+% instead. 
+
+Now we can correctly compose conditional animations sequentially using
+relative positioning.
 
 \begin{spec}
 class (LinearTo Float f, IfThenElse f) => Combined f where
@@ -126,4 +189,5 @@ instance (LinearTo Float f, IfThenElse f) => Combined f where
 relCond :: (LinearTo Float f, IfThenElse f, Applicative f) => f ()
 relCond = relMaxSequential @Combined anim1 anim2 (-0.5)
 \end{spec}
+
 

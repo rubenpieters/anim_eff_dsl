@@ -13,12 +13,10 @@ all possible animations, micro-animations are not easily described by such a
 function because many small micro-animations can be active at the same time and
 their timing depends on user interaction.
 
-In this work, we have not focused on the underlying implementation platform for
-\dsl{}, but in principle it should be implementable on top of both FRP and
-traditional event-driven frameworks. Our current imnlementation is based on the
-latter, but it is interesting feature work to create an implementation of the
-\hs{linearTo}, \hs{sequential} and \hs{parallel} operations in terms of FRP
-behaviours and events.
+We have only supplied an implementation of \dsl{} on top of a traditional
+event-based framework, but it is interesting feature work to investigate an
+implementation of the \hs{linearTo}, \hs{sequential} and \hs{parallel}
+operations in terms of FRP behaviours and events.
 
 \paragraph{Animation Frameworks}
 
@@ -47,10 +45,10 @@ details of the actual implementation aspect.
 
 \paragraph{Inspectable DSLs}
 
-There are other DSLs which focus on inspectability aspects, such as for parsers
-\cite{DBLP:journals/scp/Hughes00,DBLP:journals/corr/CapriottiK14,DBLP:conf/icfp/Lindley14},
-non-determinism \cite{DBLP:journals/corr/abs-1905-06544}, remote execution
-\cite{DBLP:conf/haskell/Gibbons16,DBLP:conf/haskell/GillSDEFGRSS15} or build
-systems \cite{DBLP:journals/pacmpl/MokhovMJ18}. However, none of these 
-focus on providing both extensibility and expressiveness as additional features.
+Some DSLs for
+parsing~\cite{DBLP:journals/scp/Hughes00,DBLP:journals/corr/CapriottiK14,DBLP:conf/icfp/Lindley14},
+non-determinism~\cite{DBLP:journals/corr/abs-1905-06544}, remote
+execution~\cite{DBLP:conf/haskell/Gibbons16,DBLP:conf/haskell/GillSDEFGRSS15}
+and build systems~\cite{DBLP:journals/pacmpl/MokhovMJ18} focus on inspectability aspects, yet
+none provide extensibility and expressiveness as well.
 
