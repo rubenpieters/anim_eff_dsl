@@ -20,7 +20,6 @@ to_compile_processed.lhs
 *.fls
 *.out
 *.toc
-*.fmt
 *.fot
 *.cb
 *.cb2
