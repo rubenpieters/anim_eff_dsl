@@ -119,7 +119,7 @@ relSequential anim1 anim2 offset = let
 
 Since this definition requires instances instantiated with \hs{Const Duration}, this will only work for animations where the duration can be analyzed. Of course we can define a similar function, for example \hs{relMaxSequential}, which uses the maximum duration of an animation instead. Using this, we can correctly compose conditional animations sequentially using relative positioning.
 
-\begin{spec}[mathescape=true]
+\begin{spec}
 class (LinearTo Float f, IfThenElse f) => Combined f where
 instance (LinearTo Float f, IfThenElse f) => Combined f where
 

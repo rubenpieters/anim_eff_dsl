@@ -1,5 +1,5 @@
 ## ignore tex, since it is output of lhs2tex
-/*.tex
+/paper.tex
 
 ## don't commit result pdf
 /*.pdf
