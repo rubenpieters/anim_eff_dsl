@@ -31,7 +31,7 @@ checkIcon = do
 
 \subsection{Inspectability}
 
-\dsl{} is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, we might want to know the duration of \hs{menuIntro} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed the duration of two \hs{0.5} second animations in parallel.
+\dsl{} is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, if we want to know the duration of \hs{menuIntro} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed the duration of two \hs{0.5} second animations in parallel.
 
 \begin{spec}
 menuIntroDuration = duration menuIntro
