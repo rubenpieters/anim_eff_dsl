@@ -60,7 +60,7 @@ menuIntro = menuSlideIn `parallel` appFadeOut
 
 \subsection{Running Animations}
 
-To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. We give an explanation of our implementation in the following paragraph.
+To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. We give an explanation of our implementation in the following paragraph. The full details can be found in our prototype implementation\footnote{\url{https://github.com/rubenpieters/anim_eff_dsl/tree/master/code}}.
 
 An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when, for example, we are at the end of an animation and the delta time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{LinearTo}, \hs{Monad} and \hs{Par}.
 
@@ -80,101 +80,9 @@ newtype Animation obj m a = Animation { runAnimation ::
 
 In the implementation for the \hs{linearTo} function we do three main things: construct the new object state, calculate the remainder of the animation, and calculate the remaining duration of the frame time. The new object state is created by applying the helper function \hs{updateValue} on the old state via the traversal. The remaining animation and duration are both dependent on a condition. If the current duration minus the frame time is bigger than zero, then there is a remainder for this basic animation and all time delta is used up. If it is not bigger than zero, then this basic animation is finished playing and there is still remaining time delta.
 
-\begin{code}
-instance (Applicative m) => LinearTo obj (Animation obj m) where
-  linearTo traversal (For duration) (To target) =
-    Animation $ \obj t -> let
-    -- construct new object state
-    newObj = over traversal (updateValue t duration target) obj
-    -- calculate remaining duration of this basic animation
-    newDuration = duration - t
-    -- create remainder animation / time delta
-    (remainingAnim, remainingDelta) =
-      if newDuration > 0
-      then ( Left (linearTo traversal (For newDuration) (To target))
-           , Nothing
-           )
-      else (Right (), Just (-newDuration))
-    in pure (newObj, remainingAnim, remainingDelta)
-\end{code}
-
-The \hs{updateValue} helper function updates the value within the traversal depending on the time delta, duration and target value. The result value is clamped to make sure we do not overshoot the target when the time delta is larger than the remaining duration of the animation.
-
-\begin{code}
-updateValue ::
-  Float -> -- time delta
-  Float -> -- duration
-  Float -> -- target value
-  Float -> -- current value
-  Float -- new value
-updateValue t duration target current = let
-  speed = (target - current) * t / duration
-  newValue = current + speed
-  in if target > current
-    then min target newValue
-    else max target newValue
-\end{code}
-
-\subsubsection{Monad Instance}
-
-In the \hs{Monad} instance, we define how animations run in sequence. In the \hs{return} case, we embed an animation into the \hs{Animation} data type. In the \hs{>>=} case, we run the animation function inside the first argument. From this, we obtain a new state, a remaining animation, and remaining time delta. What happens next is dependent on the content of the remainders. If no remaining animation is left, we continue running the animation in the continuation \hs{k} by applying the result \hs{a}. If there is a remaining animation, we repackage this remainder with the continuation. Additionally, we merely \hs{return} the next animation if there is no time delta left. If there was time delta left, then the animation keeps running in this timestep.
-
-\begin{code}
-instance (Monad m) => Monad (Animation obj m) where
-  return a = Animation $ \obj t -> return (obj, Right a, Just t)
-  (Animation f) >>= k = Animation $ \obj t -> do
-    -- run first animation and obtain result
-    (newObj, animResult, mRemainingDelta) <- f obj t
-    case (animResult, mRemainingDelta) of
-      (Left anim, Nothing) -> -- return repackaged animation
-        return (newObj, Left (anim >>= k), Nothing)
-      (Right a, Nothing) -> -- return animation in k
-        return (newObj, Left (k a), Nothing)
-      (Left anim, Just remainingDelta) -> -- run repackaged animation
-        runAnimation (anim >>= k) newObj remainingDelta
-      (Right a, Just remainingDelta) -> -- run animation in k
-        runAnimation (k a) newObj remainingDelta
-\end{code}
-
-\subsubsection{Par Instance}
-
-In the \hs{Par} instance, we define how animations run in parallel. To do this, we apply both animation functions \hs{f1} and \hs{f2} after each other on the given state \hs{obj}. Deciding how to proceed the animation is done in a similar manner as the \hs{Monad} implementation, but is more laborious to implement since we need to take two remaining animations and two remaining time deltas into consideration.
-
-\begin{code}
-instance (Monad m) => Par (Animation obj m) where
-  liftP2 combine (Animation f1) (Animation f2) =
-    Animation $ \obj t -> do
-    -- apply animation functions
-    (obj1, remAnim1, mRem1) <- f1 obj t
-    (obj2, remAnim2, mRem2) <- f2 obj1 t
-    -- calculate remaining time delta
-    let newRem = case (mRem1, mRem2) of
-          (Nothing, _) -> Nothing
-          (_, Nothing) -> Nothing
-          (Just rem1, Just rem2) -> Just (min rem1 rem2)
-    let newAnim = case (remAnim1, remAnim2) of
-          (Right a, Right b) ->
-            Right (combine a b)
-          (Left aniA, Right b) ->
-            Left (fmap (\a -> combine a b) aniA)
-          (Right a, Left aniB) ->
-            Left (fmap (\b -> combine a b) aniB)
-          (Left aniA, Left aniB) ->
-            Left (liftP2 combine aniA aniB)
-    case (newRem, newAnim) of
-      (Just rem, Left anim) -> runAnimation anim obj2 rem
-      (_, _) -> return (obj2, newAnim, newRem)
-\end{code}
-
-\subsubsection{Examples}
-
-TODO: examples of running animations by linking with gloss? or tuple world example with visual explanation?
-
-\subsubsection{LinearTo}
-
 \paragraph{Examples}
 
-To illustrate the behaviour of running animations, we show how the implementation operates in a very simplified setting. The application state is a tuple, \hs{type State = (Float, Float)}, where we call the first component \hs{x} and the second component \hs{y}. We define a simple animation \hs{moveRight} which transforms the \hs{x}-value to 50 over a time of 1 second.
+To illustrate the behaviour of running animations, we show how the implementation operates in a very simplified setting where the application state is a tuple, \hs{type State = (Float, Float)}. The first component is the \hs{x}-value and the second component the \hs{y}-value. We define a simple animation \hs{moveRight} which transforms the \hs{x}-value to 50 over a time of 1 second.
 
 \begin{code}
 moveRight :: (LinearTo State f) => f ()
@@ -203,13 +111,13 @@ Running an animation results in a triple containing the new state, the remainder
 
 The resulting state is \hs{(50, 0)}, which is the result of running \hs{moveRight} fully, the remaining delta time is \hs{0.5} since only 0.5 seconds were required to finish the animation, and the animation has finished with the result \hs{()}.
 
-\subsubsection{Sequential}
+\subsubsection{Monad Instance}
 
-The essence of the \hs{f}~\hs{>>=}~\hs{k} case is straightforward: run the first animation \hs{f}, then pass its result to the continuation \hs{k} and run that animation. Of course, running the first animation does not necessarily give us a result \hs{a}. Running an animation gives us either a result or an animation remainder, plus we have to take into account the potential remaining delta time. When we have an animation remainder instead of a result, we need to repackage this remaining animation as \hs{remainder}~\hs{>>=}~\hs{k} instead of using \hs{k}~\hs{a}. Additionally, if the remaining delta time is finished we do not continue running the continuation and instead return the current state and animation remainder.
+For sequential animations, we need a \hs{Monad} instance which in turn requires an implementation for \hs{return} and \hs{>>=}. The \hs{return} embeds the result \hs{a} inside the \hs{Animation} data type. The essence of the \hs{f}~\hs{>>=}~\hs{k} case is straightforward: first, run the animation \hs{f}, then pass its result to the continuation \hs{k} and run that animation. Of course, running \hs{f} does not necessarily give us a result \hs{a}. Running an animation gives us either a result or an animation remainder, plus we have to take into account the potential remaining delta time. When we have an animation remainder instead of a result, we need to repackage this remaining animation as \hs{remainder}~\hs{>>=}~\hs{k} instead of using \hs{k}~\hs{a}. Additionally, if the remaining delta time is finished we do not continue running the continuation and instead return the current state and animation remainder.
 
 \paragraph{Examples}
 
-Now let us define an additional animation \hs{moveUp} which transforms the \hs{y} value to 50 over a duration of 1 second. Additionally, we define an animation \hs{moveRightThenUp} which composes the \hs{moveRight} and \hs{moveUp} animations in sequence.
+Now let us define an additional animation \hs{moveUp} which transforms the \hs{y}-value to 50 over a duration of 1 second. Additionally, we define an animation \hs{moveRightThenUp} which composes the \hs{moveRight} and \hs{moveUp} animations in sequence.
 
 \begin{code}
 moveUp :: (LinearTo State f) => f ()
@@ -220,20 +128,30 @@ moveRightThenUp = moveRight `sequential` moveUp
 \end{code}
 
 Running the \hs{moveRightThenUp} animation for 0.5 seconds gives a similar result to simply running \hs{moveRight} for 0.5 seconds. We obtain the new state \hs{(25, 0)}, an animation remainder \hs{anim2} and there is no remaining delta time. Now, the animation remainder is the rest of the \hs{moveRightThenUp} animation, which is half of the \hs{moveRight} animation and the full \hs{moveUp} animation. So, when we run this animation remainder for 1 second, it will run the second half of \hs{moveRight} and the first half of \hs{moveUp}.
-
-\begin{code}
-(state2, remAnim2, remDelta2) =
-  runIdentity (runAnimation anim2 state1 1)
--- state2 = (50.0, 25.0)
--- remAnim2 = Left anim3
--- remDelta2 = Nothing
-\end{code}
-
 This results in the state \hs{(50, 25)}, the animation remainder \hs{anim3} and no remaining delta time. This animation remainder is of course the second half of the \hs{moveUp} animation. If we continue to run that remainder, for example for 1 second, then we get the final state \hs{(50, 50)} and the animation result \hs{()}.
 
-\subsubsection{Parallel}
+%\begin{code}
+%(state2, remAnim2, remDelta2) =
+%  runIdentity (runAnimation anim2 state1 1)
+%-- state2 = (50.0, 25.0)
+%-- remAnim2 = Left anim3
+%-- remDelta2 = Nothing
+%\end{code}
 
+\subsubsection{Parallel Instance}
 
+For parallel animations, we need to implement the \hs{liftP2} function. In this implementation we run the two animations \hs{f1} and \hs{f2} both on the starting state. Now, there are different combinations possible on whether \hs{f1} and \hs{f2} have finished with a result, there is still an animation remainder, and whether there is a remaining time delta. We check which of the two animations have finished and repackage it either into a result or a new remainder, using the combine function where appropriate. To decide on whether to continue running the animation, we check if the lowest of the two delta times is nonzero since that means the longest of the two animations was not able to utilize the full delta time.
+
+\paragraph{Examples}
+
+Now, we will run the animations \hs{moveRight} and \hs{moveUp} in parallel, which means that both the \hs{x} and \hs{y}-value will be increasing simultaneously.
+
+\begin{code}
+moveRightAndUp :: (LinearTo State f, Parallel f) => f ()
+moveRightAndUp = moveRight `parallel` moveUp
+\end{code}
+
+The result of running this animation for 0.5 seconds gives the state \hs{(25, 25)} and no remaining delta time, if we continue running the obtained animation remainder we get the state \hs{(50, 50)} and 0.5 seconds of remaining delta time.
 
 \subsection{Inspecting Animations}
 

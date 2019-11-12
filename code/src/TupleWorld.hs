@@ -58,3 +58,10 @@ resultSeq3 = case resultSeq2 ^. _2 of
   Left anim -> runIdentity (runAnimation anim (resultSeq2 ^. _1) 1)
   Right _ -> error "no animation remainder"
 
+resultPar1 :: (State, Either (Animation State Identity ()) (), Maybe Float)
+resultPar1 = runIdentity (runAnimation anim4 state0 0.5)
+
+resultPar2 :: (State, Either (Animation State Identity ()) (), Maybe Float)
+resultPar2 = case resultPar1 ^. _2 of
+  Left anim -> runIdentity (runAnimation anim (resultPar1 ^. _1) 1)
+  Right _ -> error "no animation remainder"
