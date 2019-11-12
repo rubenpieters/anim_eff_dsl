@@ -4,7 +4,7 @@
 \subsection{Functional Reactive Programming}
 The origins of functional reactive programming (FRP) lie in the creation of animations \cite{DBLP:conf/icfp/ElliottH97}. Since then, many developments have been based on this idea to create purely functional GUIs. It is a natural question to ask how this work relates to the idea of FRP, since there seems to be some common ground.
 
-First, we distinguish \emph{animations} from \emph{micro-animations}. The former consists mostly of animations which are easily described by a picture function parametrized by time \hs{Time -> Picture}. The latter are a subset of animations, but are not as easily described by such a function because many small micro-animations can be active at the same time, for which the timing depends on user interaction.
+First, we distinguish \emph{animations} from \emph{micro-animations}. The former consists mostly of animations described by a picture function parametrized by time \hs{Time -> Picture}. The latter are a subset of animations, but are not as easily described by such a function because many small micro-animations can be active at the same time, for which the timing depends on user interaction.
 
 \dsl{} is focused on describing micro-animations as a primary concern, and is intended to be used on top of a paradigm such as FRP or traditional event-driven frameworks to ease the creation of micro-animations. For the case of interaction with FRP, we leave it as future work to give an implementation of the \hs{linearTo}, \hs{sequential} and \hs{parallel} operations in terms of FRP behaviours and events.
 
