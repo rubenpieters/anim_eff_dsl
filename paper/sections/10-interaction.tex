@@ -1,7 +1,7 @@
 \section{Interaction Between Inspectability and Expressivity}
 \label{sec:interaction}
 
-A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of \dsl{}. In this section we take a look at an example of balancing the wanted expressiveness vs inspectability by introducing custom combinators.
+A Haskell DSL is typically a monadic one due to the expressive power of the \hs{>>=} combinator. However, this power also hinders the inspectability of \dsl{}. In this section we take a look at an example of balancing the wanted expressiveness versus inspectability by introducing custom combinators.
 
 We revisit the \hs{onlyDone} animation from Section~\ref{sec:customcomb}. The following definition imposes a \hs{Monad} constraint on \hs{f}, making the animation non-inspectable.
 
