@@ -12,7 +12,7 @@ class LinearTo obj f where
   linearTo :: Traversal' obj Float -> Duration -> Target -> f ()
 \end{code}
 
-Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => LinearTo obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we omit the class constraint, which allows other constraints such as \hs{Applicative} to be used as well.
+Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => LinearTo obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we omit the \hs{Monad} constraint, which allows other constraints such as \hs{Applicative} to be used as well.
 
 Using the \hs{linearTo} function created by the \hs{LinearTo} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{LinearTo Application f} constraint. As an example, we redefine \hs{line1Outro} with its type signature. 
 
@@ -140,7 +140,7 @@ This results in the state \hs{(50, 25)}, the animation remainder \hs{anim3} and 
 
 \subsubsection{Parallel Instance}
 
-For parallel animations, we need to implement the \hs{liftP2} function. In this implementation we run the two animations \hs{f1} and \hs{f2} both on the starting state. Now, there are different combinations possible on whether \hs{f1} and \hs{f2} have finished with a result, there is still an animation remainder, and whether there is a remaining time delta. We check which of the two animations have finished and repackage it either into a result or a new remainder, using the combine function where appropriate. To decide on whether to continue running the animation, we check if the lowest of the two delta times is nonzero since that means the longest of the two animations was not able to utilize the full delta time.
+For parallel animations, we need to implement the \hs{liftP2} function. In this implementation we run the animations \hs{f1} and \hs{f2} both on the starting state. Now, there are different combinations depending on whether \hs{f1} and \hs{f2} finished with a result or an animation remainder, and the remaining time delta. We check which of the animations have finished and repackage it either into a result or a new remainder, using the result combination function where appropriate. To decide on whether to continue running the animation, we check if the lowest of the two delta times is nonzero since that means the longest of the two animations was not able to utilize the full delta time.
 
 \paragraph{Examples}
 

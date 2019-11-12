@@ -1,7 +1,7 @@
 \section{Interaction Between Callbacks and Inspectability}
 \label{sec:evaluation}
 
-There are many different JavaScript animation libraries\footnote{Some examples: \url{https://greensock.com}, \url{https://animejs.com/}, and \url{https://popmotion.io}.}. Many of these libraries provide callbacks to provide extensibility, by which the user can add custom behaviour the library has not foreseen. We take as representative example the GreenSock Animation Platform (GSAP), which is a widely recommended and mature JavaScript animation library providing a variety of features.
+There are many different JavaScript animation libraries\footnote{Examples: \url{https://greensock.com}, \url{https://animejs.com}, and \url{https://popmotion.io}.}. Many of these libraries provide callbacks to provide extensibility, by which the user can add custom behaviour the library has not foreseen. We take as representative example the GreenSock Animation Platform (GSAP), which is a widely recommended and mature JavaScript animation library providing a variety of features.
 
 \subsection{Working with GSAP}
 
@@ -62,7 +62,7 @@ const bothTo0 = parallel(
 
 const bothAnimation = sequential(bothTo50, bothTo0);
 
-const bothAnimDuration = bothAnimation.totalDuration()
+const bothAnimDuration = bothAnimation.totalDuration();
 // bothAnimDuration = 2
 \end{js}
 
