@@ -12,7 +12,7 @@ class LinearTo obj f where
   linearTo :: Traversal' obj Float -> Duration -> Target -> f ()
 \end{code}
 
-Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => LinearTo obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we leave the class of effect open to leave the possibility for a different constraint.
+Note that in traditional mtl-style, we would write the class definition as \hs{class Monad f => LinearTo obj f}. However, this constraint is not necessarily applicable for our DSL since we want to provide inspectable animations. The inspection capabilities of monads are limited, so we omit the class constraint, which allows other constraints such as \hs{Applicative} to be used as well.
 
 Using the \hs{linearTo} function created by the \hs{LinearTo} typeclass enables us to specify basic animations. Now we can accompany the \hs{line1Outro}, \hs{line2Intro}, \hs{menuSlideIn}, and \hs{appFadeOut} animations from Section~\ref{sec:motivation} with their type signatures. The signature of each animation is \hs{f}~\hs{()}, but with a \hs{LinearTo Application f} constraint. As an example, we redefine \hs{line1Outro} with its type signature. 
 
@@ -62,7 +62,7 @@ menuIntro = menuSlideIn `parallel` appFadeOut
 
 To interpret our DSL into an actual animation we need to provide a data type which implements the typeclasses from the previous sections. We give an explanation of our implementation in the following paragraph. The full details can be found in our prototype implementation\footnote{\url{https://github.com/rubenpieters/anim_eff_dsl/tree/master/code}}.
 
-An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when, for example, we are at the end of an animation and the delta time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{LinearTo}, \hs{Monad} and \hs{Par}.
+An animation takes in the current state of our application and the amount of time elapsed since the previous frame, as a result we obtain the next state of the application and the remaining part of the animation --- or the result of the animation if it is finished. Note that the result is wrapped in a type constructor \hs{m} since we can embed custom effects. This is modeled with the type \hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{(}\hs{obj,}~\hs{m}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}. This seems fine, except that we also need to return the remaining duration of the time that is unused. We need this when, for example, we are at the end of an animation and the delta time between frames is longer than that animation. Then, this remaining duration can be used to see how much of the next animation we need to run. Thus, we get the following definition for which we need to provide an instance for each of the type classes \hs{LinearTo}, \hs{Monad} and \hs{Par}.
 
 \begin{code}
 newtype Animation obj m a = Animation { runAnimation ::
@@ -174,7 +174,7 @@ instance LinearTo obj (Const Duration) where
 
 \subsubsection{Inspecting Applicative}
 
-While the \hs{Const} data type does not provide a \hs{Monad} instance, it does provide an \hs{Applicative} instance. This means that it is not possible to inspect animations with a \hs{Monad} constraint, but it is possible for animations with an \hs{Applicative} constraint.
+While the \hs{Const} data type does not provide a \hs{Monad} instance, it does provide an \hs{Applicative} instance. This means that it is not possible to inspect animations with a \hs{Monad} constraint, but it is possible for animations with an \hs{Applicative} constraint. The \hs{Const} data type is not the culprit here, but rather the \hs{>>=} method of the \hs{Monad} class which contains a continuation function \hs{a}~\hs{->}~\hs{m}~\hs{b}, which is the limiting factor of inspection.
 
 \subsubsection{Inspecting Par}
 
@@ -223,10 +223,7 @@ Now, an animation containing the \hs{set} operation will additionally have a \hs
 
 \begin{code}
 checkIcon :: (Set CompleteIcon f, ...) => f ()
-checkIcon = do
-  ...
-  set (checkmark . color) completeGreen
-  ...
+checkIcon = do ...; set (checkmark . color) completeGreen; ...
 \end{code}
 
 To inspect or run such an animation, we also need to provide instances for the \hs{Animation} and \hs{Const} data types. In the \hs{Animation} instance, we alter the previous state by setting the value targeted by the \hs{lens} to \hs{a}. The duration of a \hs{set} animation is 0, which is what is returned in the \hs{Duration} instance.

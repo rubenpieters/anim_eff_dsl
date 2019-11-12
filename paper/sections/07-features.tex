@@ -8,9 +8,9 @@ To add support for similar features, we design \dsl{} with extensibility and ins
 \subsection{Extensibility}
 \label{sec:customop}
 
-The \hs{linearTo} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are many different situations which require different primitives to express our desired animation.
+The \hs{linearTo} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are different situations which require different primitives to express our desired animation. For example, GSAP provides a primitive to morph one shape into another.
 
-An example in our use case is the \hs{checkIcon} animation, which is part of the \hs{markAsDone} animation, where it is required to set the color of the checkmark to a specific value. We can define an additional \hs{set} operation and embed it inside a \dsl{} animation.
+An example in our use case is the \hs{checkIcon} animation, which is part of the \hs{markAsDone} animation, where it is required to set the color of the checkmark to a specific value. We can define an additional \hs{set} operation and embed it inside a \dsl{} animation. In this animation we use Haskell's \hs{do}-notation to specify sequential animations.
 
 \begin{spec}
 checkIcon = do
@@ -60,7 +60,7 @@ relSeqAnim = relSequential anim1 anim2 (-0.5)
 
 Similarly to providing custom operations, \dsl{} also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since \dsl{} has the additional requirement of being inspectable, the \hs{>>=} combinator ends up being a liability because it only provides a very limited amount of inspectability.
 
-In the \hs{onlyDone} animation, we show all \emph{done todo} items, while hiding all \emph{not done} todo items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below, while the implementation of \hs{showAll} and \hs{hideNotDone} is omitted.
+In the \hs{onlyDone} animation, we show all \emph{done} to-do items, while hiding all \emph{not done} to-do items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below, while the implementation of \hs{showAll} and \hs{hideNotDone} is omitted.
 
 \begin{spec}
 onlyDoneNaive = do showAll ; hideNotDone
@@ -70,11 +70,11 @@ However, this animation is a bit naive since it executes the \hs{showAll} animat
 
 \begin{spec}
 onlyDone = do
-  cond <- doneItemsGt0 -- check if there are more than 0 'done' items
+  cond <- doneItemsGt0    -- check if more than 0 'done' items
   if cond then onlyDoneNaive else hideNotDone
 \end{spec}
 
-However, if we also want to inspect this computation the previous formulation is problematic, which we will explain in more detail in Section~\ref{sec:interaction}. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express. With this combinator we can express \hs{onlyDone} in an inspectable manner.
+However, if we also want to inspect this computation the previous formulation is problematic since it is specified using a construction which is too general, we explain this in more detail in Section~\ref{sec:interaction}. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express. With this combinator we can express \hs{onlyDone} in an inspectable manner.
 
 \begin{spec}
 onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone

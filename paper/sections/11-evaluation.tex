@@ -45,7 +45,7 @@ function parallel(tl1, tl2) {
 
 \subsection{Callbacks and Inspectability}
 
-The \texttt{add} methodis overloaded to also accept callbacks. We made use of this in the previous section, since \texttt{tl.play()} was shorthand for the callback \texttt{() => tl.play()}. This is how GSAP achieves extensibility, since these callbacks provides us with the capability of embedding arbitrary effects inside any animation.
+The \texttt{add} method is overloaded to also accept callbacks. We made use of this in the previous section, since \texttt{tl.play()} was shorthand for the callback \texttt{() => tl.play()}. This is how GSAP achieves extensibility, since these callbacks provide us with the capability of embedding arbitrary effects inside any animation.
 
 GSAP also provides features related to inspectability. In fact, it provides a \texttt{totalDuration} method to return the total duration of an animation. However, callbacks and inspectability do not always work nicely together. This section illustrates an example of this.
 
