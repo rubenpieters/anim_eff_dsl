@@ -27,7 +27,7 @@ We used the combinators \hs{sequential} and \hs{parallel} for creating composed 
 
 \subsubsection{Sequential Composition}
 
-Instead of defining our own class for sequential animations, we reuse the \hs{Functor}-\hs{Applicative}-\hs{Monad} hierarchy intended for sequencing effects. As a result, the \hs{sequential} function becomes a specialization of the \hs{liftA2} function\footnote{\url{https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html##v:liftA2}}.
+Instead of defining our own class for sequential animations, we reuse the \hs{Functor}-\hs{Applicative}-\hs{Monad} hierarchy intended for sequencing effects. As a result, the \hs{sequential} function becomes a specialization of the \hs{liftA2} function\footnote{\url{https://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html\#v:liftA2}}.
 
 \begin{code}
 sequential :: (Applicative f) => f () -> f () -> f ()

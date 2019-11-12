@@ -6,11 +6,6 @@
 
 \input{sections/02-commands.tex}
 
-\ifx\tocompile
-\input{sections/03-code.tex}
-\else
-\fi
-
 \begin{document}
 
 \author{Ruben~P. Pieters $^{\textrm{\Letter}}$ \orcidID{0000-0003-0537-9403} \and
