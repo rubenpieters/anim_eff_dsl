@@ -166,7 +166,7 @@ needed; this means that the result can be unwrapped with
 
 Running \hs{right} for 0.5 seconds uses all available time and yields the new state
 \hs{(25, 0)}. The remainder of
-the animation is essentially \hs{linearTo x (For 0.5) (To 50)}. Let us run this
+the animation is the \hs{right} animation with its duration reduced by \hs{0.5}, or essentially \hs{linearTo x (For 0.5) (To 50)}. Let us run this
 remainder for 1 second.
 
 \begin{code}
