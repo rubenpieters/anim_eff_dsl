@@ -1,8 +1,8 @@
 \section{Future Work}
 \label{sec:future}
 
-This paper was presented in mtl-style, since it is more lightweight for presentation purposes, mainly on the aspect of extensibility with regards to different classes of computations such as \hs{Applicative}/\hs{Selective}/\hs{Monad}. However, we believe that the implementation of some features we had in mind such as embedding animations defined for sub-components into animations for super-components or sequential animations with relative positioning, as in Section~\ref{sec:evaluation} were hampered by this choice. We would like to have a more detailed comparison with an initial encoding approach, as is typical in approaches based on algebraic effects and handlers, for an implementation of these features.
-
 The current status of \dsl{} is a conceptual design in the space of animation libraries. A logical next step is to put it to the test and aim for the implementation of features provided by a mature animation library such as GSAP.
+
+Another avenue of future work is to explore trade-offs between the mtl-style, as used in this paper, or an initial encoding approach, as is typical in approaches based on algebraic effects and handlers. The mtl-style was chosen since it is simpler presentation-wise, mainly on the extensibility aspect with regards to different computation classes. However, we believe that implementation of some features, such as the relative sequencing, is simpler in the initial approach.
 
 An aspect that was not touched in this paper is \emph{conflict management}. A conflict appears when the same two properties are targeted by different animations in parallel. For example, if we want to change a certain value both to 0 and 100 in parallel, how should this animation look like? \dsl{} does no conflict management, and the animation might look stuttery. GSAP, for example, resolves this by only enabling the most recently added animation, however this strategy is not straightforwardly mapped to the context of \dsl{}.

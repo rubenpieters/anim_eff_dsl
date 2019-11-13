@@ -1,7 +1,7 @@
 \section{Extensibility, Inspectability and Expressiveness}
 \label{sec:features}
 
-The features seen in Section~\ref{sec:motivation} form the basis of \dsl{} as a library. However, many animation libraries such as GreenSock Animation Platform provide a much more extensive list of features.
+The features seen in Section~\ref{sec:motivation} form the basis of \dsl{}. However, animation libraries such as GSAP provide a much more extensive list of features.
 
 To add support for similar features, we design \dsl{} with extensibility and inspectability in mind. This means that \dsl{} can be extended with custom operations and information can be derived from inspecting specified animations. To be able to support arbitrary expressiveness in combination with those features, we also need to stress the possibility to extend \dsl{} with custom combinators.
 
@@ -10,7 +10,7 @@ To add support for similar features, we design \dsl{} with extensibility and ins
 
 The \hs{linearTo} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are different situations which require different primitives to express our desired animation. For example, GSAP provides a primitive to morph one shape into another.
 
-An example in our use case is the \hs{checkIcon} animation, which is part of the \hs{markAsDone} animation, where it is required to set the color of the checkmark to a specific value. We can define an additional \hs{set} operation and embed it inside a \dsl{} animation. In this animation we use Haskell's \hs{do}-notation to specify sequential animations.
+An example in the to-do list app is the \hs{checkIcon} animation, part of the \hs{markAsDone} animation, where we want to set the color of the checkmark to a new value. We define a custom \hs{set} operation and embed it inside a \dsl{} animation. In this animation we use Haskell's \hs{do}-notation to specify sequential animations.
 
 \begin{spec}
 checkIcon = do
