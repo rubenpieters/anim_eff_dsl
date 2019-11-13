@@ -34,13 +34,13 @@ is more predictable for the user.
 
 \dsl{} shares similarities with approaches which specify an animation as a plan
 which needs to be executed
-\cite{DBLP:conf/chi/KurlanderL95,DBLP:conf/eics/MirlacherPB12}. In essence an
-animation is outlined by a series of actions specified upfront, which is the
-plan of the animation. The coordinator, who manages and advances the
+\cite{DBLP:conf/chi/KurlanderL95,DBLP:conf/eics/MirlacherPB12}. An
+animation is specified by a series of steps to be executed, the
+plan of the animation. The coordinator, which manages and advances the
 animations, is implemented as part of the hosting application. \dsl{} realizes
 these plan-based animations with only a few core principles and features the
 possibility of adding custom operations and inspection. A detailed comparison
-with these approaches is difficult, since their papers are very light on
+with these approaches is difficult, since their works are very light on
 details of the actual implementation aspect.
 
 \paragraph{Inspectable DSLs}
@@ -50,5 +50,5 @@ parsing~\cite{DBLP:journals/scp/Hughes00,DBLP:journals/corr/CapriottiK14,DBLP:co
 non-determinism~\cite{DBLP:journals/corr/abs-1905-06544}, remote
 execution~\cite{DBLP:conf/haskell/Gibbons16,DBLP:conf/haskell/GillSDEFGRSS15}
 and build systems~\cite{DBLP:journals/pacmpl/MokhovMJ18} focus on inspectability aspects, yet
-none provide extensibility and expressiveness as well.
+none of them provide extensibility and expressiveness in addition to inspection.
 
