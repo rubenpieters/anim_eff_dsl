@@ -82,34 +82,30 @@ In the implementation for the \hs{linearTo} function we do three main things: co
 
 \paragraph{Examples}
 
-To illustrate the behaviour of running animations, we show how the implementation operates in a very simplified setting where the application state is a tuple, \hs{type State = (Float, Float)}. The first component is the \hs{x}-value and the second component the \hs{y}-value. We define a simple animation \hs{moveRight} which transforms the \hs{x}-value to 50 over a time of 1 second.
+To illustrate the behaviour of running animations, we show how the implementation operates in a very simplified setting where the application state is a tuple, \hs{type State = (Float, Float)}. The first component is the \hs{x}-value and the second component the \hs{y}-value. We define a simple animation \hs{right} which transforms the \hs{x}-value to 50 over a time of 1 second.
 
 \begin{code}
-moveRight :: (LinearTo State f) => f ()
-moveRight = linearTo x (For 1) (To 50)
+right :: (LinearTo State f) => f ()
+right = linearTo x (For 1) (To 50)
 \end{code}
 
-We run the animation for 0.5 seconds by applying the \hs{runAnimation} function to the animation \hs{moveRight}, together with the initial state (\hs{state0 = (0,0)}) and the duration \hs{0.5}. We set the type constructor \hs{m} inside the \hs{Animation} data type to \hs{Identity} since no additional effects are present, which means that the result has to be unwrapped using \hs{runIdentity}.
+We run the animation for 0.5 seconds by applying the \hs{runAnimation} function to the animation \hs{right}, together with the initial state (\hs{state0 = (0,0)}) and the duration \hs{0.5}. We set the type constructor \hs{m} inside the \hs{Animation} data type to \hs{Identity} since no additional effects are present, which means that the result has to be unwrapped using \hs{runIdentity}.
 
 \begin{code}
 (state1, remAnim1, remDelta1) =
-  runIdentity (runAnimation anim1 state0 0.5)
--- state1 = (25.0, 0.0)
--- remAnim1 = Left anim2
--- remDelta1 = Nothing
+  runIdentity (runAnimation right state0 0.5)
+-- state1 = (25.0, 0.0) | remAnim1 = Left anim2 | remDelta1 = Nothing
 \end{code}
 
-Running an animation results in a triple containing the new state, the remainder of the animation and the remaining delta time. The new state is \hs{(25, 0)} caused by running half of the \hs{moveRight} animation and the remaining delta is \hs{Nothing} since all delta time is used. The remainder of the animation is the second half of the \hs{moveRight} animation. We run this remainder for 1 second to see what happens when not all delta time can be used by an animation.
+Running an animation results in a triple containing the new state, the remainder of the animation and the remaining delta time. The new state is \hs{(25, 0)} caused by running half of the \hs{right} animation and the remaining delta is \hs{Nothing} since all delta time is used. The remainder of the animation is the second half of the \hs{right} animation. We run this remainder for 1 second to see what happens when not all delta time can be used by an animation.
 
 \begin{code}
 (state2, remAnim2, remDelta2) =
   runIdentity (runAnimation anim2 state1 1)
--- state2 = (50.0, 0.0)
--- remAnim2 = Right ()
--- remDelta2 = Just 0.5
+-- state2 = (50.0, 0.0) | remAnim2 = Right () | remDelta2 = Just 0.5
 \end{code}
 
-The resulting state is \hs{(50, 0)}, which is the result of running \hs{moveRight} fully, the remaining delta time is \hs{0.5} since only 0.5 seconds were required to finish the animation, and the animation has finished with the result \hs{()}.
+The resulting state is \hs{(50, 0)}, which is the result of running \hs{right} fully, the remaining delta time is \hs{0.5} since only 0.5 seconds were required to finish the animation, and the animation has finished with the result \hs{()}.
 
 \subsubsection{Monad Instance}
 
@@ -117,18 +113,18 @@ For sequential animations, we need a \hs{Monad} instance which in turn requires 
 
 \paragraph{Examples}
 
-Now let us define an additional animation \hs{moveUp} which transforms the \hs{y}-value to 50 over a duration of 1 second. Additionally, we define an animation \hs{moveRightThenUp} which composes the \hs{moveRight} and \hs{moveUp} animations in sequence.
+Now let us define an additional animation \hs{up} which transforms the \hs{y}-value to 50 over a duration of 1 second. Additionally, we define an animation \hs{rightThenUp} which composes the \hs{right} and \hs{up} animations in sequence.
 
 \begin{code}
-moveUp :: (LinearTo State f) => f ()
-moveUp = linearTo y (For 1) (To 50)
+up :: (LinearTo State f) => f ()
+up = linearTo y (For 1) (To 50)
 
-moveRightThenUp :: (LinearTo State f, Applicative f) => f ()
-moveRightThenUp = moveRight `sequential` moveUp
+rightThenUp :: (LinearTo State f, Applicative f) => f ()
+rightThenUp = right `sequential` up
 \end{code}
 
-Running the \hs{moveRightThenUp} animation for 0.5 seconds gives a similar result to simply running \hs{moveRight} for 0.5 seconds. We obtain the new state \hs{(25, 0)}, an animation remainder \hs{anim2} and there is no remaining delta time. Now, the animation remainder is the rest of the \hs{moveRightThenUp} animation, which is half of the \hs{moveRight} animation and the full \hs{moveUp} animation. So, when we run this animation remainder for 1 second, it will run the second half of \hs{moveRight} and the first half of \hs{moveUp}.
-This results in the state \hs{(50, 25)}, the animation remainder \hs{anim3} and no remaining delta time. This animation remainder is of course the second half of the \hs{moveUp} animation. If we continue to run that remainder, for example for 1 second, then we get the final state \hs{(50, 50)} and the animation result \hs{()}.
+Running the \hs{rightThenUp} animation for 0.5 seconds gives a similar result to simply running \hs{right} for 0.5 seconds. We obtain the new state \hs{(25, 0)}, an animation remainder \hs{anim2} and there is no remaining delta time. Now, the animation remainder is the rest of the \hs{rightThenUp} animation, which is half of the \hs{right} animation and the full \hs{up} animation. So, when we run this animation remainder for 1 second, it will run the second half of \hs{right} and the first half of \hs{up}.
+This results in the state \hs{(50, 25)}, the animation remainder \hs{anim3} and no remaining delta time. This animation remainder is of course the second half of the \hs{up} animation. If we continue to run that remainder, for example for 1 second, then we get the final state \hs{(50, 50)} and the animation result \hs{()}.
 
 %\begin{code}
 %(state2, remAnim2, remDelta2) =
@@ -144,11 +140,11 @@ For parallel animations, we need to implement the \hs{liftP2} function. In this 
 
 \paragraph{Examples}
 
-Now, we will run the animations \hs{moveRight} and \hs{moveUp} in parallel, which means that both the \hs{x} and \hs{y}-value will be increasing simultaneously.
+Now, we will run the animations \hs{right} and \hs{up} in parallel, which means that both the \hs{x} and \hs{y}-value will be increasing simultaneously.
 
 \begin{code}
-moveRightAndUp :: (LinearTo State f, Parallel f) => f ()
-moveRightAndUp = moveRight `parallel` moveUp
+rightAndUp :: (LinearTo State f, Parallel f) => f ()
+rightAndUp = right `parallel` up
 \end{code}
 
 The result of running this animation for 0.5 seconds gives the state \hs{(25, 25)} and no remaining delta time, if we continue running the obtained animation remainder we get the state \hs{(50, 50)} and 0.5 seconds of remaining delta time.
@@ -215,8 +211,7 @@ complicatedAnimationDuration = duration complicatedAnimation
 Adding a custom operation is done as in any other mtl-style approach: by defining a new class containing this operation. For example, if we want to add a \hs{set} operation, then we create a corresponding \hs{Set} class.
 
 \begin{code}
-class Set obj f where
-  set :: Lens' obj a -> a -> f ()
+class Set obj f where set :: Lens' obj a -> a -> f ()
 \end{code}
 
 Now, an animation containing the \hs{set} operation will additionally have a \hs{Set} constraint added to it.
