@@ -37,9 +37,7 @@ Now we can reformulate \hs{onlyDone} in terms of this \hs{ifThenElse} combinator
 onlyDone :: (LinearTo Application f, Get Application f,
   Set Application f, Applicative f, Parallel f, IfThenElse f)
   => f ()
-onlyDone = ifThenElse doneItemsGt0
-  (do showAll ; hideNotDone)
-  (hideNotDone)
+onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone
 \end{code}
 
 Not much changes for \hs{Animation}, which implements \hs{ifThenElse} in terms of
@@ -60,16 +58,14 @@ value to the duration of the preceding animation inside the condition.
 
 \begin{code}
 instance IfThenElse (Const MaxDuration) where
-  ifThenElse (Const (MaxDur durCondition))
-             (Const (MaxDur durThen))
+  ifThenElse (Const (MaxDur durCond)) (Const (MaxDur durThen))
              (Const (MaxDur durElse)) =
-    Const (MaxDur (durCondition + max durThen durElse))
+    Const (MaxDur (durCond + max durThen durElse))
 \end{code}
 
 This allows us to retrieve the maximum duration of the \hs{onlyDone} animation.
 
 \begin{spec}
 onlyDoneMaxDuration :: MaxDuration
-onlyDoneMaxDuration = maxDuration onlyDone
--- onlyDoneMaxDuration = MaxDur 1.0
+onlyDoneMaxDuration = maxDuration onlyDone -- = MaxDur 1.0
 \end{spec}

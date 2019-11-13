@@ -84,26 +84,22 @@ const bothTo0 = parallel(
   new TweenMax("#box2", 1, { x: 0 }));
 
 const bothAnimation = sequential(bothTo50, bothTo0);
-
-const bothAnimDuration = bothAnimation.totalDuration();
-// bothAnimDuration = 2
+const bothAnimDuration = bothAnimation.totalDuration(); // = 2
 \end{js}
 
-However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else}, then the duration returned is not what we expect. The \texttt{add} method is overloaded to take a callback as parameter, which we used this in the previous section since \texttt{tl.play()} is shorthand for the callback \texttt{() => tl.play()}. Using the callback parameter we can embed arbitrary effects and control flow. For example, we can create a conditional animation \texttt{conditionalAnim}, for which a duration of 1 is returned.This is different from the expected total duration of the animation, which is 2. (Of course, in general the duration of the animations in both branches could differ, which is what makes it difficult to provide a procedure for calculating the duration of an animation in this form.)
+However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else}, then the duration returned is not what we expect. The \texttt{add} method is overloaded to take a callback as parameter, which we used in the previous section since \texttt{tl.play()} is shorthand for the callback \texttt{() => tl.play()}. Using the callback parameter we can embed arbitrary effects and control flow. For example, we can create a conditional animation \texttt{condAnim}, for which a duration of 1 is returned.This is different from the expected total duration of the animation, which is 2. (Of course, in general the duration of the animations in both branches could differ, which is what makes it difficult to provide a procedure for calculating the duration of an animation in this form.)
 
 \begin{js}
-const conditionalAnim = new TimelineMax({ paused: true })
+const condAnim = new TimelineMax({ paused: true })
   .add(bothTo50.play())
   .add(() => { if (cond) { bothTo0.play()   }
                else      { bothTo100.play() } });
-
-const conditionalAnimDuration = conditionalAnim.totalDuration()
-// conditionalAnimDuration = 1
+const condAnimDuration = condAnim.totalDuration() // = 1
 \end{js}
 
 \subsection{Relevance of Duration in Other Features}
 
-A wrongly calculated duration by itself is somewhat annoying, but it can be worked around. It becomes more problematic when another feature relies on this calculation. The relative sequencing feature needs the duration of the first animation, so the second animation can be added with the correct offset. For example, we can specify the position parameter \texttt{-=0.5} to specify that it should start 0.5 seonds before the end of the previous animation.
+A wrongly calculated duration becomes more problematic when another feature relies on this calculation. The relative sequencing feature needs the duration of the first animation, so the second animation can be added with the correct offset. For example, we can specify the position parameter \texttt{-=0.5} to specify that it should start 0.5 seonds before the end of the previous animation.
 
 \begin{js}
 const bothDelayed = new TimelineMax({ paused: true })

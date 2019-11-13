@@ -27,15 +27,15 @@ cases, we leave the freedom to opt foran alternative like \hs{Applicative f} in
 other cases.
 
 The \hs{linearTo} function of the \hs{LinearTo} typeclass specifies basic
-animations like \hs{line1Outro}, \hs{line2Intro},
+animations like \hs{line1Out}, \hs{line2In},
 \hs{menuSlideIn}, and \hs{appFadeOut} animations from
 Section~\ref{sec:motivation}. 
-As an example, we redefine \hs{line1Outro} with its type signature; the others 
+As an example, we redefine \hs{line1Out} with its type signature; the others 
 are similar. 
 
 \begin{code}
-line1Outro :: (LinearTo Application f) => f ()
-line1Outro = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
+line1Out :: (LinearTo Application f) => f ()
+line1Out = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
 \end{code}
 
 \subsection{Specifying Composed Animations}
@@ -69,7 +69,7 @@ constraint.
 
 \begin{code}
 selectBtn2Anim :: (LinearTo Application f, Applicative f) => f ()
-selectBtn2Anim = line1Outro `sequential` line2Intro
+selectBtn2Anim = line1Out `sequential` line2In
 \end{code}
 
 \subsubsection{Parallel Composition}
@@ -125,14 +125,11 @@ the following type definition.
 
 \begin{code}
 newtype Animation obj m a = Animation { runAnimation ::
-    obj ->                    -- previous state
-    Float ->                  -- time delta
-    m                         -- result is wrapped in m
-      ( obj                   -- next state
-      , Either
-          (Animation obj m a) -- animation remainder
-          a                   -- animation result
-      , Maybe Float )}        -- remaining time delta
+    obj ->                           -- previous state
+    Float ->                         -- time delta
+    m ( obj                          -- next state
+      , Either (Animation obj m a) a -- remainder / result
+      , Maybe Float )}               -- remaining time delta
 \end{code}
 
 \subsubsection{LinearTo Instance}
@@ -156,16 +153,15 @@ right = linearTo x (For 1) (To 50)
 \end{code}
 
 We run the animation for 0.5 seconds by applying the \hs{runAnimation} function
-on \hs{right}, together with the initial state (\hs{state0 =
+on \hs{right}, together with the initial state (\hs{s0 =
 (0,0)}) and the duration \hs{0.5}. We also instantiate the \hs{m} type constructor \hs{m} inside
 the \hs{Animation} data type with \hs{Identity} as no additional effects are
 needed; this means that the result can be unwrapped with
 \hs{runIdentity}.
 
 \begin{code}
-(state1, remAnim1, remDelta1) =
-  runIdentity (runAnimation right state0 0.5)
--- state1 = (25.0, 0.0) | remAnim1 = Left anim2 | remDelta1 = Nothing
+(s1, remAn1, remDel1) = runIdentity (runAnimation right s0 0.5)
+-- s1 = (25.0, 0.0) | remAn1 = Left anim2 | remDel1 = Nothing
 \end{code}
 
 Running \hs{right} for 0.5 seconds uses all available time and yields the new state
@@ -174,9 +170,8 @@ the animation is essentially \hs{linearTo x (For 0.5) (To 50)}. Let us run this
 remainder for 1 second.
 
 \begin{code}
-(state2, remAnim2, remDelta2) =
-  runIdentity (runAnimation anim2 state1 1)
--- state2 = (50.0, 0.0) | remAnim2 = Right () | remDelta2 = Just 0.5
+(s2, remAn2, remDel2) = runIdentity (runAnimation anim2 s1 1)
+-- s2 = (50.0, 0.0) | remAn2 = Right () | remDel2 = Just 0.5
 \end{code}
 
 Now the animation finishes in state \hs{(50, 0)} with result \hs{()} and remaining time \hs{0.5}.
@@ -199,14 +194,6 @@ rightThenUp = right `sequential` up
 
 Running the \hs{rightThenUp} animation for 0.5 seconds gives a similar result to simply running \hs{right} for 0.5 seconds. We obtain the new state \hs{(25, 0)}, an animation remainder \hs{anim2} and there is no remaining delta time. Now, the animation remainder is the rest of the \hs{rightThenUp} animation, which is half of the \hs{right} animation and the full \hs{up} animation. So, when we run this animation remainder for 1 second, it will run the second half of \hs{right} and the first half of \hs{up}.
 This results in the state \hs{(50, 25)}, the animation remainder \hs{anim3} and no remaining delta time. This animation remainder is of course the second half of the \hs{up} animation. If we continue to run that remainder, for example for 1 second, then we get the final state \hs{(50, 50)} and the animation result \hs{()}.
-
-%\begin{code}
-%(state2, remAnim2, remDelta2) =
-%  runIdentity (runAnimation anim2 state1 1)
-%-- state2 = (50.0, 25.0)
-%-- remAnim2 = Left anim3
-%-- remDelta2 = Nothing
-%\end{code}
 
 \subsubsection{Parallel Instance}
 
@@ -246,7 +233,7 @@ instance LinearTo obj (Const Duration) where
 
 While the \hs{Const} data type does not provide a \hs{Monad} instance, it does provide an \hs{Applicative} instance. This means that it is not possible to inspect animations with a \hs{Monad} constraint, but it is possible for animations with an \hs{Applicative} constraint. The \hs{Const} data type is not the culprit here, but rather the \hs{>>=} method of the \hs{Monad} class which contains a continuation function \hs{a}~\hs{->}~\hs{m}~\hs{b}, which is the limiting factor of inspection.
 
-\subsubsection{Inspecting Par}
+\subsubsection{Inspecting Parallel}
 
 The duration of two animations in parallel is equal to the highest duration of the two. The \hs{Par} instance implementation for \hs{Const Duration} reflects this idea. 
 
@@ -264,19 +251,17 @@ duration :: Const Duration a -> Duration
 duration = getConst
 
 selectBtn2AnimDuration :: Duration
-selectBtn2AnimDuration = duration selectBtn2Anim
--- selectBtn2AnimDuration = For 1.0
+selectBtn2AnimDuration = duration selectBtn2Anim -- = For 1.0
 
 menuIntroDuration :: Duration
-menuIntroDuration = duration menuIntro
--- menuIntroDuration = For 0.5
+menuIntroDuration = duration menuIntro -- = For 0.5
 \end{code}
 
 When we try to retrieve the duration of an animation with a monad constraint, we receive an error from the compiler: it cannot find a \hs{Monad} instance for \hs{Const Duration}.
 
 \begin{spec}
-complicatedAnimationDuration :: Duration
-complicatedAnimationDuration = duration complicatedAnimation
+complicatedAnimDuration :: Duration
+complicatedAnimDuration = duration complicatedAnim
 -- No instance for (Monad (Const Duration))
 \end{spec}
 
@@ -292,7 +277,7 @@ Now, an animation containing the \hs{set} operation will additionally have a \hs
 
 \begin{code}
 checkIcon :: (Set CompleteIcon f, ...) => f ()
-checkIcon = do ...; set (checkmark . color) completeGreen; ...
+checkIcon = do ...; set (checkmark . color) green; ...
 \end{code}
 
 To inspect or run such an animation, we also need to provide instances for the \hs{Animation} and \hs{Const} data types. In the \hs{Animation} instance, we alter the previous state by setting the value targeted by the \hs{lens} to \hs{a}. The duration of a \hs{set} animation is 0, which is what is returned in the \hs{Duration} instance.

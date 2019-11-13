@@ -51,29 +51,25 @@ In this application, various user actions are accompanied with an animation:
 
 \subsection{Composing Animations}
 
-The philosophy of \dsl{} is to express animations by combining smaller animations into larger ones. To express an animation, we need to come up with a suitable decomposition. For example, the \hs{menuIntro} animation is composed by combining the two basic animations \hs{menuSlideIn} and \hs{appFadeOut} in parallel. These animations respectively introduce the menu screen and fade out the application in the background.
-
-The next sections explain the construction of basic and composed animations.
+In \dsl{} we express animations by composing smaller animations into larger ones. When creating an animation, we need to think of a suitable decomposition. For example, the \hs{menuIntro} animation both introduces the menu screen and fades out the background. Thus, it is composed of two basic animations \hs{menuSlideIn} and \hs{appFadeOut} in parallel. The next sections explain how to construct such basic and composed animations.
 
 \subsection{Basic Animations}
 
-A basic animation changes the value of an element in the UI over a period of time. To specify a basic animation we need three elements: a lens specifying which property in our UI should change, the duration specifying how many seconds the animation should last, and lastly the target value for this property. Since this operation creates an animation which moves a property \emph{to} a target linearly, it is called \hs{linearTo}. The duration is specified with the \hs{For} constructor while the target value is specified with the \hs{To} constructor.
+A basic animation changes the property of an element over a period of time. To specify a basic animation we need three elements: a lens specifying which property to change, the duration of the animation, and lastly the target value for this property. Since this operation creates an animation which moves a property \emph{to} a target linearly, it is called \hs{linearTo}. The duration is specified with the \hs{For} constructor while the target value is specified with the \hs{To} constructor.
 
 \paragraph{Note on Lenses} We utilize the lens notation \texttt{x . y . z} to target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z: Property } } }}. This type of lenses was introduced by Twan van Laarhoven \cite{vlLenses}, and newer versions of this idea have been packaged into various Haskell libraries, such as \texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
 
-To implement the navigation bar underline animation, we need two basic components for the underline on each button. We reduce the underline width of the first button for 0.25 seconds, and increase the underline width of the second button for 0.25 seconds. These animations are expressed in respectively \hs{line1Outro} and \hs{line2Intro} below, and shown visually in Figure~\ref{fig:basic}.
+To implement the navigation bar underline animation, we reduce the underline width of the first button for 0.25 seconds and increase the underline width of the second button for 0.25 seconds. These animations are expressed in respectively \hs{line1Out} and \hs{line2In} below, and shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
-line1Outro = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
-
-line2Intro = linearTo (navbar . underline2 . width) (For 0.25) (To 28)
+line1Out = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
+line2In = linearTo (navbar . underline2 . width) (For 0.25) (To 28)
 \end{spec}
 
-We also define the \hs{menuSlideIn} and \hs{appFadeOut} animations below, since we will use these in the next sections. For the former, we increase the width of the menu over a duration of 0.5 seconds, and for the latter we increase the alpha value of the obscuring box over a duration of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
+Other examples are the \hs{menuSlideIn} and \hs{appFadeOut} animations. For the former, we increase the width of the menu over a duration of 0.5 seconds, and for the latter we increase the alpha value of the obscuring box over a duration of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
 menuSlideIn = linearTo (menu . width) (For 0.5) (To 75)
-
 appFadeOut = linearTo (obscuringBox . alpha) (For 0.5) (To 0.65)
 \end{spec}
 
@@ -83,14 +79,14 @@ appFadeOut = linearTo (obscuringBox . alpha) (For 0.5) (To 0.65)
 \begin{subfigure}[h]{\textwidth}
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/line1OutroFig}
-\caption{The \hs{line1Outro} animation.}
+\caption{The \hs{line1Out} animation.}
 \label{fig:basic1_1}
 \end{subfigure}
 
 \begin{subfigure}[h]{\textwidth}
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/line2IntroFig}
-\caption{The \hs{line2Intro} animation.}
+\caption{The \hs{line2In} animation.}
 \label{fig:basic1_2}
 \end{subfigure}
 
@@ -116,10 +112,10 @@ appFadeOut = linearTo (obscuringBox . alpha) (For 0.5) (To 0.65)
 
 A composed animation combines several other animations into one new animation. We can do this either in \emph{sequence} or in \emph{parallel}.
 
-To obtain the \hs{selectBtn2} animation, we combine both the \hs{line1Outro} and \hs{line2Intro} animations with the \hs{sequential} combinator. This constructs a new animation which first plays the \hs{line1Outro} animation, and once it is finished plays the \hs{line2Intro} animation.
+To obtain the \hs{selectBtn2} animation, we combine both the \hs{line1Out} and \hs{line2In} animations with the \hs{sequential} combinator. This constructs a new animation which first plays the \hs{line1Out} animation, and once it is finished plays the \hs{line2In} animation.
 
 \begin{spec}
-selectBtn2Anim = line1Outro `sequential` line2Intro
+selectBtn2Anim = line1Out `sequential` line2In
 \end{spec}
 
 To obtain the \hs{menuIntro} animation, we combine both the \hs{menuSlideIn} and \hs{appFadeOut} animations with the \hs{parallel} combinator. This constructs a new animation which plays both the \hs{menuSlideIn} and \hs{appFadeOut} animations at the same time.

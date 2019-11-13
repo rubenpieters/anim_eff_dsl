@@ -13,13 +13,7 @@ The \hs{linearTo} operation and the \hs{sequential} and \hs{parallel} combinator
 An example in the to-do list app is the \hs{checkIcon} animation, part of the \hs{markAsDone} animation, where we want to set the color of the checkmark to a new value. We define a custom \hs{set} operation and embed it inside a \dsl{} animation. In this animation we use Haskell's \hs{do}-notation to specify sequential animations.
 
 \begin{spec}
-checkIcon = do
-  linearTo (checkmark . scale) (For 0.05) (To 0)
-  set (checkmark . color) completeGreen
-  (linearTo (circle . extra) (For 0.2) (To 360))
-    `parallel`
-    (linearTo (checkmark . scale) (For 0.2) (To 1.2))
-  linearTo (checkmark . scale) (For 0.05) (To 1)
+checkIcon = do ...; set (checkmark . color) green; ...
 \end{spec}
 
 %\begin{figure}[h]
@@ -34,19 +28,14 @@ checkIcon = do
 \dsl{} is inspectable, meaning that we can derive properties of expressed computations by \emph{inspecting them rather than running them}. For example, if we want to know the duration of \hs{menuIntro} without actually running it and keeping track of the time. We can do this by using a predefined \hs{duration} function, which calculates the duration by inspecting the animation. This gives a duration of \hs{0.5} seconds, which is indeed the duration of two \hs{0.5} second animations in parallel.
 
 \begin{spec}
-menuIntroDuration = duration menuIntro
--- menuIntroDuration = 0.5 
+menuIntroDuration = duration menuIntro -- = 0.5
 \end{spec}
 
 Of course, it is not possible to inspect every animation. In the following situation we have a custom operation \hs{get}, the dual of \hs{set} in the previous section, returning a \hs{Float}. If the result of this value is used as the duration parameter of an animation, then we cannot know upfront how long this animation will last. Requesting to calculate the duration of such an animation results in a type error.
 
 \begin{spec}
-complicatedAnimation = do
-  v <- get
-  linearTo lens (For v) (To 10)
-
-complicatedAnimationDuration = duration complicatedAnimation
--- type error
+complicatedAnim = do v <- get; linearTo lens (For v) (To 10)
+complicatedAnimDuration = duration complicatedAnim -- type error
 \end{spec}
 
 Calculating a duration is mostly a stepping stone towards supporting other interesting features. One such example is sequentially composing animations with a relative offset. For example, to compose a first animation \hs{anim1} with a second animation \hs{anim2} which starts 0.5 seconds before the end of \hs{anim1}.
@@ -63,7 +52,7 @@ Similarly to providing custom operations, \dsl{} also supports custom combinator
 In the \hs{onlyDone} animation, we show all \emph{done} to-do items, while hiding all \emph{not done} to-do items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below, while the implementation of \hs{showAll} and \hs{hideNotDone} is omitted.
 
 \begin{spec}
-onlyDoneNaive = do showAll ; hideNotDone
+onlyDoneNaive = do showAll; hideNotDone
 \end{spec}
 
 However, this animation is a bit naive since it executes the \hs{showAll} animation regardless of whether there are any hidden done items that actually need to appear. Instead, the intended animation is to only make done items appear when some were hidden. This is done by first checking whether there are any done items and based on that we play the naive version of \hs{onlyDone}, otherwise we just hide the not done items.
@@ -80,11 +69,10 @@ However, if we also want to inspect this computation the previous formulation is
 onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone
 \end{spec}
 
-For this new combinator, we can define custom ways to inspect it. Since each branch might have a different duration, it does not make sense to extract a duration from it. Instead we might want to extract the \emph{maximum} duration of the animation.
+For this new combinator, we can define custom ways to inspect it. Since each branch might have a different duration, we do not choose to extract the duration but rather the \emph{maximum} duration of the animation.
 
 \begin{spec}
-onlyDoneMaxDuration = maxDuration onlyDone
--- onlyDoneMaxDuration = 1
+onlyDoneMaxDuration = maxDuration onlyDone -- = 1
 \end{spec}
 
 Section~\ref{sec:motivation} and \ref{sec:features} gave a look and feel of the features of \dsl{}. In the following sections, we delve deeper into the internals of the implementation.
