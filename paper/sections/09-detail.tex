@@ -178,11 +178,22 @@ Now the animation finishes in state \hs{(50, 0)} with result \hs{()} and remaini
 
 \subsubsection{Monad Instance}
 
-For sequential animations, we need a \hs{Monad} instance which in turn requires an implementation for \hs{return} and \hs{>>=}. The \hs{return} embeds the result \hs{a} inside the \hs{Animation} data type. The essence of the \hs{f}~\hs{>>=}~\hs{k} case is straightforward: first, run the animation \hs{f}, then pass its result to the continuation \hs{k} and run that animation. Of course, running \hs{f} does not necessarily give us a result \hs{a}. Running an animation gives us either a result or an animation remainder, plus we have to take into account the potential remaining delta time. When we have an animation remainder instead of a result, we need to repackage this remaining animation as \hs{remainder}~\hs{>>=}~\hs{k} instead of using \hs{k}~\hs{a}. Additionally, if the remaining delta time is finished we do not continue running the continuation and instead return the current state and animation remainder.
+For sequential animations we provide a \hs{Monad} instance. Its \hs{return} embeds the
+result \hs{a} inside the \hs{Animation} data type. The essence of the
+\hs{f}~\hs{>>=}~\hs{k} case is straightforward: first, run the animation
+\hs{f}, then pass its result to the continuation \hs{k} and run that animation.
+Of course, running \hs{f} does not necessarily give us a result \hs{a}. Running
+an animation gives us either a result or an animation remainder; we also have
+to take into account the potential remaining time. When we have an
+animation remainder instead of a result, we need to repackage this remaining
+animation as \hs{remainder}~\hs{>>=}~\hs{k} instead of using \hs{k}~\hs{a}.
+Additionally, if there is no remaining time,  we do not continue
+running the continuation and instead return the current state and animation
+remainder.
 
 \paragraph{Examples}
 
-Now let us define an additional animation \hs{up} which transforms the \hs{y}-value to 50 over a duration of 1 second. Additionally, we define an animation \hs{rightThenUp} which composes the \hs{right} and \hs{up} animations in sequence.
+Let us define an additional animation \hs{up} which transforms the \hs{y}-value to 50 over a duration of 1 second. Additionally, we define an animation \hs{rightThenUp} which composes the \hs{right} and \hs{up} animations in sequence.
 
 \begin{code}
 up :: (LinearTo State f) => f ()
@@ -192,37 +203,61 @@ rightThenUp :: (LinearTo State f, Applicative f) => f ()
 rightThenUp = right `sequential` up
 \end{code}
 
-Running the \hs{rightThenUp} animation for 0.5 seconds gives a similar result to simply running \hs{right} for 0.5 seconds. We obtain the new state \hs{(25, 0)}, an animation remainder \hs{anim2} and there is no remaining delta time. Now, the animation remainder is the rest of the \hs{rightThenUp} animation, which is half of the \hs{right} animation and the full \hs{up} animation. So, when we run this animation remainder for 1 second, it will run the second half of \hs{right} and the first half of \hs{up}.
-This results in the state \hs{(50, 25)}, the animation remainder \hs{anim3} and no remaining delta time. This animation remainder is of course the second half of the \hs{up} animation. If we continue to run that remainder, for example for 1 second, then we get the final state \hs{(50, 50)} and the animation result \hs{()}.
+Running the \hs{rightThenUp} animation for 0.5 seconds gives a similar result
+to running \hs{right} for 0.5 seconds. We obtain the new state \hs{(25,
+0)}, an animation remainder \hs{anim2} and there is no remaining time.
+Now the animation remainder is the rest of the \hs{rightThenUp} animation,
+which is half of the \hs{right} animation and the full \hs{up} animation. So,
+when we run this animation remainder for 1 second, it will run the second half
+of \hs{right} and the first half of \hs{up}.  This results in the state
+\hs{(50, 25)}, the animation remainder \hs{anim3} and no remaining delta time.
+This animation remainder is of course the second half of the \hs{up} animation.
+If we continue to run that remainder, for example for 1 second, then we get the
+final state \hs{(50, 50)} and the animation result \hs{()}.
 
 \subsubsection{Parallel Instance}
 
-For parallel animations, we need to implement the \hs{liftP2} function. In this implementation we run the animations \hs{f1} and \hs{f2} both on the starting state. Now, there are different combinations depending on whether \hs{f1} and \hs{f2} finished with a result or an animation remainder, and the remaining time delta. We check which of the animations have finished and repackage it either into a result or a new remainder, using the result combination function where appropriate. To decide on whether to continue running the animation, we check if the lowest of the two delta times is nonzero since that means the longest of the two animations was not able to utilize the full delta time.
+For parallel animations the \hs{liftP2} implementation runs
+the animations \hs{f1} and \hs{f2} both on the starting
+state. We distinguish different cases depending on whether \hs{f1} and
+\hs{f2} finish with a result or an animation remainder, and the remaining
+time. We check which of the animations have finished and repackage them
+either into a result or a new remainder, using the result combination function
+where appropriate. To decide whether to continue running the animation, we
+check if the lowest of the two remaining times is nonzero since that means the
+longest of the two animations was not able to utilize the full delta time.
 
 \paragraph{Examples}
 
-Now, we will run the animations \hs{right} and \hs{up} in parallel, which means that both the \hs{x} and \hs{y}-value will be increasing simultaneously.
+Let us run the animations \hs{right} and \hs{up} in parallel, which means
+that both the \hs{x} and \hs{y}-value will increase simultaneously.
 
 \begin{code}
 rightAndUp :: (LinearTo State f, Parallel f) => f ()
 rightAndUp = right `parallel` up
 \end{code}
 
-The result of running this animation for 0.5 seconds gives the state \hs{(25, 25)} and no remaining delta time, if we continue running the obtained animation remainder we get the state \hs{(50, 50)} and 0.5 seconds of remaining delta time.
+The result of running this animation for 0.5 seconds gives the state \hs{(25,
+25)} and no remaining time. If we continue the animation
+remainder we get the state \hs{(50, 50)} and 0.5 seconds of remaining 
+time.
 
 \subsection{Inspecting Animations}
 
-Inspecting an animation is done by interpreting \dsl{} to a different data type, which provides instances for the typeclasses with different semantics. This section implements support for calculating the duration of an animation.
-
-\subsubsection{Inspecting LinearTo}
-
-The data type we utilize for inspection is the \hs{Const} functor, defined below.
+Inspecting an animation is done by interpreting \dsl{} to a different data
+type, which provides instances for the typeclasses with different semantics.
+In particular we show how to inspect the duration of an animation
+by means of the \hs{Const} functor.
 
 \begin{spec}
 newtype Const a b = Const { getConst :: a }
 \end{spec}
 
-To inspect animations we provide an instance for the operations which interprets them into this data type. In the case of the \hs{linearTo} operation, we embed the duration within a \hs{Const} wrapper.
+\subsubsection{Inspecting LinearTo}
+
+To inspect animations we provide an instance for the operations which
+interprets them into \hs{Const Duration}. In the case of the \hs{linearTo}
+operation, we simply embed the duration within a \hs{Const} wrapper.
 
 \begin{code}
 instance LinearTo obj (Const Duration) where
@@ -231,11 +266,19 @@ instance LinearTo obj (Const Duration) where
 
 \subsubsection{Inspecting Applicative}
 
-While the \hs{Const} data type does not provide a \hs{Monad} instance, it does provide an \hs{Applicative} instance. This means that it is not possible to inspect animations with a \hs{Monad} constraint, but it is possible for animations with an \hs{Applicative} constraint. The \hs{Const} data type is not the culprit here, but rather the \hs{>>=} method of the \hs{Monad} class which contains a continuation function \hs{a}~\hs{->}~\hs{m}~\hs{b}, which is the limiting factor of inspection.
+While the \hs{Const} data type does not provide a \hs{Monad} instance, it does
+provide an \hs{Applicative} instance. This means that it is not possible to
+inspect animations with a \hs{Monad} constraint, but it is possible for
+animations with an \hs{Applicative} constraint. The \hs{Const} data type is not
+the culprit here, but rather the \hs{>>=} method of the \hs{Monad} class which
+contains a continuation function \hs{a}~\hs{->}~\hs{m}~\hs{b}, which is the
+limiting factor of inspection.
 
 \subsubsection{Inspecting Parallel}
 
-The duration of two animations in parallel is equal to the highest duration of the two. The \hs{Par} instance implementation for \hs{Const Duration} reflects this idea. 
+The duration of two parallel animations is the maximum of their durations. 
+The \hs{Par} instance implementation for \hs{Const Duration} captures
+this. 
 
 \begin{code}
 instance Par (Const Duration) where
@@ -244,7 +287,11 @@ instance Par (Const Duration) where
 
 \paragraph{Examples}
 
-The duration function is a specialization of the unwrapper function of the \hs{Const} data type, namely \hs{getConst}. We can feed our previously defined animations \hs{selectBtn2Anim} and \hs{menuIntro} from Section~\ref{sec:motivation} to this function and obtain the duration of the animations as a result.
+The duration function is a specialization of the unwrapper function of the
+\hs{Const} data type, namely \hs{getConst}. We can feed our previously defined
+animations \hs{selectBtn2Anim} and \hs{menuIntro} from
+Section~\ref{sec:motivation} to this function and obtain the duration of the
+animations as a result.
 
 \begin{code}
 duration :: Const Duration a -> Duration
@@ -257,7 +304,9 @@ menuIntroDuration :: Duration
 menuIntroDuration = duration menuIntro -- = For 0.5
 \end{code}
 
-When we try to retrieve the duration of an animation with a monad constraint, we receive an error from the compiler: it cannot find a \hs{Monad} instance for \hs{Const Duration}.
+When we try to retrieve the duration of an animation with a monad constraint,
+we receive an error from the compiler: it cannot find a \hs{Monad} instance for
+\hs{Const Duration}.
 
 \begin{spec}
 complicatedAnimDuration :: Duration
@@ -267,13 +316,13 @@ complicatedAnimDuration = duration complicatedAnim
 
 \subsection{Adding a Custom Operation}
 
-Adding a custom operation is done as in any other mtl-style approach: by defining a new class containing this operation. For example, if we want to add a \hs{set} operation, then we create a corresponding \hs{Set} class.
+Adding a custom operation is done as in any other mtl-style approach: by defining a new class for this operation. For example, if we want to add a \hs{set} operation, then we create a corresponding \hs{Set} class.
 
 \begin{code}
 class Set obj f where set :: Lens' obj a -> a -> f ()
 \end{code}
 
-Now, an animation containing the \hs{set} operation will additionally have a \hs{Set} constraint added to it.
+Now, an animation that uses the \hs{set} operation will incur a \hs{Set} constraint.
 
 \begin{code}
 checkIcon :: (Set CompleteIcon f, ...) => f ()
