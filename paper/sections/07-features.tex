@@ -1,9 +1,16 @@
 \section{Extensibility, Inspectability and Expressiveness}
 \label{sec:features}
 
-The features seen in Section~\ref{sec:motivation} form the basis of \dsl{}. However, animation libraries such as GSAP provide a much more extensive list of features.
+The features seen in Section~\ref{sec:motivation} form the basis of \dsl{}.
+However, animation libraries such as GSAP provide a much more extensive list of
+features.
 
-To add support for similar features, we design \dsl{} with extensibility and inspectability in mind. This means that \dsl{} can be extended with custom operations and information can be derived from inspecting specified animations. To be able to support arbitrary expressiveness in combination with those features, we also need to stress the possibility to extend \dsl{} with custom combinators.
+To add support for similar features, we design \dsl{} with extensibility and
+inspectability in mind. This means that \dsl{} can be extended with custom
+operations and information can be derived from inspecting specified animations.
+To support arbitrary expressiveness in combination with those
+features, we also emphasize the possibility to extend \dsl{} with custom
+combinators.
 
 \subsection{Extensibility}
 \label{sec:customop}
@@ -47,32 +54,55 @@ relSeqAnim = relSequential anim1 anim2 (-0.5)
 \subsection{Expressiveness}
 \label{sec:customcomb}
 
-Similarly to providing custom operations, \dsl{} also supports custom combinators. For typical DSLs this is not a requirement since working with monadic computations provides the combinators \hs{>>=} and \hs{return} which are suitable for the required use cases. However, since \dsl{} has the additional requirement of being inspectable, the \hs{>>=} combinator ends up being a liability because it only provides a very limited amount of inspectability.
+Similarly to providing custom operations, \dsl{} also supports custom
+combinators. For typical monadic DSLs this is not needed as \hs{>>=} and \hs{return} 
+cover all use cases.
+However, since \dsl{} has the additional requirement of being inspectable, the
+\hs{>>=} combinator ends up being a liability because it only provides a very
+limited amount of inspectability.
 
-In the \hs{onlyDone} animation, we show all \emph{done} to-do items, while hiding all \emph{not done} to-do items. This could be implemented by first showing all items with the \hs{showAll} animation, since an item might have been hidden by a previous action, and then hiding all not done items with the \hs{hideNotDone} animation. The definition for this is given below, while the implementation of \hs{showAll} and \hs{hideNotDone} is omitted.
+In the \hs{onlyDone} animation, we show all \emph{done} items, while
+hiding all \emph{to-do} items. This could be implemented by first
+showing all items with the \hs{showAll} animation, since an item might have
+been hidden by a previous action, and then hiding all to-do items with the
+\hs{hideToDo} animation. The definition for this is given below, while the
+implementation of \hs{showAll} and \hs{hideToDo} is omitted.
 
 \begin{spec}
-onlyDoneNaive = do showAll; hideNotDone
+onlyDoneNaive = do showAll; hideToDo
 \end{spec}
 
-However, this animation is a bit naive since it executes the \hs{showAll} animation regardless of whether there are any hidden done items that actually need to appear. Instead, the intended animation is to only make done items appear when some were hidden. This is done by first checking whether there are any done items and based on that we play the naive version of \hs{onlyDone}, otherwise we just hide the not done items.
+However, this animation is a bit naive since it executes the \hs{showAll}
+animation regardless of whether there are any hidden done items that actually
+need to appear. Instead, the intended animation is to only make done items
+appear when any were hidden. This is done by first checking whether there are
+any done items and based on that we play the naive version of \hs{onlyDone},
+otherwise we just hide the not done items.
 
 \begin{spec}
 onlyDone = do
   cond <- doneItemsGt0    -- check if more than 0 'done' items
-  if cond then onlyDoneNaive else hideNotDone
+  if cond then onlyDoneNaive else hideToDo
 \end{spec}
 
-However, if we also want to inspect this computation the previous formulation is problematic since it is specified using a construction which is too general, we explain this in more detail in Section~\ref{sec:interaction}. Instead, we can define a custom combinator \hs{ifThenElse} which captures the form of animation we want to express. With this combinator we can express \hs{onlyDone} in an inspectable manner.
+However, if we also want to inspect this computation, this formulation
+is problematic since it is specified using a construction which is too general;
+we explain this in more detail in Section~\ref{sec:interaction}. Instead, we
+can define a custom combinator \hs{ifThenElse} to express \hs{onlyDone}
+in an inspectable manner.
 
 \begin{spec}
-onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone
+onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideToDo
 \end{spec}
 
-For this new combinator, we can define custom ways to inspect it. Since each branch might have a different duration, we do not choose to extract the duration but rather the \emph{maximum} duration of the animation.
+For this new combinator, we can define custom ways to inspect it. Since each
+branch might have a different duration, we do not choose to extract the
+duration but rather the \emph{maximum} duration of the animation.
 
 \begin{spec}
 onlyDoneMaxDuration = maxDuration onlyDone -- = 1
 \end{spec}
 
-Section~\ref{sec:motivation} and \ref{sec:features} gave a look and feel of the features of \dsl{}. In the following sections, we delve deeper into the internals of the implementation.
+Sections~\ref{sec:motivation} and \ref{sec:features} gave a look and feel of the
+features of \dsl{}. In the following sections, we delve deeper into the
+internals of the implementation.
