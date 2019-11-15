@@ -223,9 +223,9 @@ state. We distinguish different cases depending on whether \hs{f1} and
 \hs{f2} finish with a result or an animation remainder, and the remaining
 time. We check which of the animations have finished and repackage them
 either into a result or a new remainder, using the result combination function
-where appropriate. To decide whether to continue running the animation, we
-check if the lowest of the two remaining times is nonzero since that means the
-longest of the two animations was not able to utilize the full delta time.
+where appropriate. When the longest of the two parallel animations is finished
+while not fully using the remaining delta time, we continue running the remainder
+of the animation.
 
 \paragraph{Examples}
 
