@@ -1,11 +1,14 @@
 \section{Motivation}
 \label{sec:motivation}
 
-We present the use case of a simplified to-do list application. Also, we take this use case as an opportunity to showcase the functionality and features of \dsl{}.
+This section presents a simplified to-do list application to showcase the
+functionality and features of \dsl{}.
 
 \subsection{Running Example}
 
-The application has two screens: a main screen and a menu screen. The main screen contains a navigation bar and three to-do items. An overview of the application is given in Figure~\ref{fig:appOverview}.
+Our application has two screens: a main screen and a menu screen. The main
+screen contains a navigation bar and three items. An overview of the
+application is given in Figure~\ref{fig:appOverview}.
 
 \begin{figure}[!htbp]
 \centering
@@ -16,9 +19,20 @@ The application has two screens: a main screen and a menu screen. The main scree
 
 In this application, various user actions are accompanied with an animation:
 \begin{itemize}
-\item Each to-do item can be marked as \emph{done} or \emph{not done} by clicking on it. The checkmark icon changes shape and color to indicate the change in status. These are the \hs{markAsDone}/\hs{markAsNotDone} animations, of which \hs{markAsDone} is shown in Figure~\ref{fig:completeIconCheck}.
-\item To-do items can be filtered by their status by using the navigation bar buttons. The first button shows all items, the second shows all complete items, and the third shows all incomplete items. Both the navigation bar underline and the to-do items itself change shape to indicate the change in selection. These are the \hs{showAll}/\hs{onlyDone}/\hs{onlyNotDone} animations, of which \hs{onlyDone} is shown in Figure~\ref{fig:onlyDoneFig}.
-\item The menu screen shows/hides itself after clicking the hamburger icon. The menu expands inward from the left, to indicate the change in application state. These are the \hs{menuIntro}/\hs{menuOutro} animations, of which \hs{menuIntro} is shown in Figure~\ref{fig:menuIntroFig}.
+\item Each item can be marked as \emph{done} or \emph{} by clicking on it. The
+checkmark icon changes shape and color to indicate the change in status. These
+are the \hs{markAsDone}/\hs{markAsToDo} animations, of which \hs{markAsDone} is
+shown in Figure~\ref{fig:completeIconCheck}.
+\item Items can be filtered by their status by using the navigation bar
+buttons. The first button shows all items, the second shows all done items, and
+the third shows all to-do items. Both the navigation bar underline and the
+to-do items itself change shape to indicate the change in selection. These are
+the \hs{showAll}/\hs{onlyDone}/\hs{onlyToDo} animations, of which
+\hs{onlyDone} is shown in Figure~\ref{fig:onlyDoneFig}.
+\item The menu screen shows/hides itself after clicking the hamburger icon. The
+menu expands inward from the left, to indicate the change in application state.
+These are the \hs{menuIntro}/\hs{menuOutro} animations, of which \hs{menuIntro}
+is shown in Figure~\ref{fig:menuIntroFig}.
 \end{itemize}
 
 \begin{figure}[!htbp]
@@ -27,21 +41,21 @@ In this application, various user actions are accompanied with an animation:
 \begin{subfigure}[h]{\textwidth}
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/completeIconCheckFig}
-\caption{The \hs{markAsDone} animation, the checkmark changes shape and color.}
+\caption{\hs{markAsDone}: the checkmark changes shape and color.}
 \label{fig:completeIconCheck}
 \end{subfigure}
 
 \begin{subfigure}[h]{\textwidth}
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/onlyDoneFig}
-\caption{The \hs{onlyDone} animation, each of the not done to-do items fades out and the navbar underline changes.}
+\caption{\hs{onlyDone}: the to-do items fade out and the navbar underline changes.}
 \label{fig:onlyDoneFig}
 \end{subfigure}
 
 \begin{subfigure}[h]{\textwidth}
 \centering
 \includegraphics[width=\figscale\textwidth]{pictures/menuIntroFig}
-\caption{The \hs{menuIntro} animation, the menu appears while the background fades out.}
+\caption{\hs{menuIntro}: the menu appears while the background fades out.}
 \label{fig:menuIntroFig}
 \end{subfigure}
 
@@ -51,22 +65,45 @@ In this application, various user actions are accompanied with an animation:
 
 \subsection{Composing Animations}
 
-In \dsl{} we express animations by composing smaller animations into larger ones. When creating an animation, we need to think of a suitable decomposition. For example, the \hs{menuIntro} animation both introduces the menu screen and fades out the background. Thus, it is composed of two basic animations \hs{menuSlideIn} and \hs{appFadeOut} in parallel. The next sections explain how to construct such basic and composed animations.
+We express animations in \dsl{} by composing smaller animations into larger
+ones. When creating an animation, we need come up with a suitable decomposition.
+For example, the \hs{menuIntro} animation both introduces the menu screen and
+fades out the background. Thus, it is composed of two basic animations
+\hs{menuSlideIn} and \hs{appFadeOut} in parallel. The next sections explain how
+to construct such basic and composed animations.
 
 \subsection{Basic Animations}
 
-A basic animation changes the property of an element over a period of time. To specify a basic animation we need three elements: a lens specifying which property to change, the duration of the animation, and lastly the target value for this property. Since this operation creates an animation which moves a property \emph{to} a target linearly, it is called \hs{linearTo}. The duration is specified with the \hs{For} constructor while the target value is specified with the \hs{To} constructor.
+A basic animation changes the property of an element over a period of time. To
+specify a basic animation we need three elements: a lens specifying which
+property to change, the duration of the animation, and lastly the target value
+for this property. Since this operation creates an animation which changes a
+property \emph{to} a target linearly, it is called \hs{linearTo}. The duration
+is specified with the \hs{For} constructor while the target value is specified
+with the \hs{To} constructor.
 
-\paragraph{Note on Lenses} We utilize the lens notation \texttt{x . y . z} to target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z: Property } } }}. This type of lenses was introduced by Twan van Laarhoven \cite{vlLenses}, and newer versions of this idea have been packaged into various Haskell libraries, such as \texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
+\paragraph{Note on Lenses} We use the lens notation \texttt{x . y . z} to
+target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z:
+Property } } }}. This type of lenses was conceived by van Laarhoven
+\cite{vlLenses}, and later packaged into
+various Haskell libraries, such as
+\texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
 
-To implement the navigation bar underline animation, we reduce the underline width of the first button for 0.25 seconds and increase the underline width of the second button for 0.25 seconds. These animations are expressed in respectively \hs{line1Out} and \hs{line2In} below, and shown visually in Figure~\ref{fig:basic}.
+To implement the navigation bar underline animation, we reduce the underline
+width of the first button for 0.25 seconds and increase the underline width of
+the second button for 0.25 seconds. These animations are expressed in
+respectively \hs{line1Out} and \hs{line2In} below, and shown visually in
+Figure~\ref{fig:basic}.
 
 \begin{spec}
 line1Out = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
 line2In = linearTo (navbar . underline2 . width) (For 0.25) (To 28)
 \end{spec}
 
-Other examples are the \hs{menuSlideIn} and \hs{appFadeOut} animations. For the former, we increase the width of the menu over a duration of 0.5 seconds, and for the latter we increase the alpha value of the obscuring box over a duration of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
+Other examples are the \hs{menuSlideIn} and \hs{appFadeOut} animations. For the
+former, we increase the width of the menu over a duration of 0.5 seconds, and
+for the latter we increase the alpha value of the obscuring box over a duration
+of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
 
 \begin{spec}
 menuSlideIn = linearTo (menu . width) (For 0.5) (To 75)
@@ -104,7 +141,7 @@ appFadeOut = linearTo (obscuringBox . alpha) (For 0.5) (To 0.65)
 \label{fig:basic2_2}
 \end{subfigure}
 
-\caption{All of the defined basic animations.}
+\caption{Basic \hs{linearTo} animations.}
 \label{fig:basic}
 \end{figure}
 
