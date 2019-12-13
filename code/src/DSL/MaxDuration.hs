@@ -26,5 +26,8 @@ instance IfThenElse (Const MaxDuration) where
              (Const (MaxFor durElse)) =
     Const (MaxFor (durCondition + max durThen durElse))
 
+instance Delay (Const MaxDuration) where
+  delay x = Const (MaxFor x)
+
 maxDuration :: Const MaxDuration a -> MaxDuration
 maxDuration = getConst

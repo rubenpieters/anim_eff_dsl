@@ -17,5 +17,8 @@ instance Parallel (Const Duration) where
 instance Set obj (Const Duration) where
   set _ _ = Const (For 0)
 
+instance Delay (Const Duration) where
+  delay x = Const (For x)
+
 duration :: Const Duration a -> Duration
 duration = getConst

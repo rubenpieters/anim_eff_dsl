@@ -29,3 +29,6 @@ class Get obj f where
 
 class IfThenElse f where
   ifThenElse :: f Bool -> f a -> f a -> f a
+
+class Delay f where
+  delay :: Float -> f a
