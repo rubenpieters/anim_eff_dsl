@@ -2,8 +2,11 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ApplicativeDo #-}
+{-# LANGUAGE RebindableSyntax #-}
 
 module App.State where
+
+import Prelude
 
 import Util.Types
 import Util.Draw
@@ -159,14 +162,14 @@ doneItemsGt0 = do
 onlyDoneMonad :: (Basic Application f, Get Application f, Set Application f, Monad f, Parallel f) => f ()
 onlyDoneMonad = do
   cond <- doneItemsGt0
-  if cond
-    then do showAll ; hideNotDone
-    else hideNotDone
+  case cond of
+    True -> do showAll ; hideNotDone
+    False -> hideNotDone
 
 onlyDone :: (Basic Application f, Get Application f, Set Application f, Applicative f, Parallel f, IfThenElse f) => f ()
-onlyDone = ifThenElse doneItemsGt0
-  (do showAll ; hideNotDone ; return ())
-  (hideNotDone)
+onlyDone = if doneItemsGt0
+  then do showAll ; hideNotDone ; return ()
+  else hideNotDone
 
 notDoneItemsGt0 :: (Get Application f, Functor f) => f Bool
 notDoneItemsGt0 = do
@@ -174,8 +177,8 @@ notDoneItemsGt0 = do
   return (length (filter (\x -> x ^. completeIcon . checked) doneItems) > 0)
 
 onlyNotDone :: (Basic Application f, Get Application f, Set Application f, Applicative f, Parallel f, IfThenElse f) => f ()
-onlyNotDone = ifThenElse notDoneItemsGt0
-  (showAll *> hideDone)
-  (hideDone)
+onlyNotDone = if notDoneItemsGt0
+  then showAll *> hideDone
+  else hideDone
 
 
