@@ -139,7 +139,7 @@ constraint \hs{c} at the call-site.
 specifying relative sequential compositions by means of \hs{relSequential}.
 \begin{spec}
 relSequential :: forall c g.
-  (c (Const Duration), c g, Applicative g) =>
+  (c (Const Duration), c g, Applicative g, Delay g) =>
   (forall f. c f => f ()) -> g () -> Float -> g ()
 relSequential anim1 anim2 offset = let
   dur = getDuration (duration anim1)
@@ -152,7 +152,8 @@ it only works for animations whose duration can be analyzed.
 % \hs{relMaxSequential}, which uses the maximum duration of an animation
 % instead. 
 Now, we can correctly compose conditional animations sequentially using
-relative positioning.
+relative positioning. We use the \hs{relMaxSequential} function to sequence
+animations with a maximum duration.
 
 \begin{spec}
 class (LinearTo Float f, IfThenElse f) => Combined f where
