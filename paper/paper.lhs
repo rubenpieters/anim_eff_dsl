@@ -26,8 +26,6 @@ Tom Schrijvers \orcidID{0000-0001-8771-5559}}
 
 \input{sections/07-features.tex}
 
-\input{sections/08-application.tex}
-
 \input{sections/09-detail.tex}
 
 \input{sections/10-interaction.tex}

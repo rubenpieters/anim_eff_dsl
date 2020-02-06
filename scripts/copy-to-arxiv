@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# clean
+rm -r -f arxiv/
+
+# make in paper folder
+make -C paper/
+
+# create folders
+mkdir -p arxiv/sections
+mkdir -p arxiv/pictures
+
+# copy files
+cp paper/paper.tex arxiv/paper.tex
+cp paper/paper.bbl arxiv/paper.bbl
+cp paper/llncs.cls arxiv/llncs.cls
+cp paper/sections/* arxiv/sections
+cp paper/pictures/*.eps arxiv/pictures
+
+# edit
+sed -i 's/paper\_bib/paper\.bbl/' arxiv/paper.tex
+sed -i 's/usepackage{minted}/usepackage\[draft\]{minted}/' arxiv/sections/01-packages.tex
+
+# go in folder
+cd arxiv/
+
+# generate picture conversion
+pdflatex paper.tex
+
+# rename pdf pictures
+rename 's/(.*)-eps-converted-to\.pdf/$1\.pdf/' *
+
+# remove temp files
+rm paper.aux
+rm paper.log
+rm paper.out
+rm paper.pdf
+
+# go out of folder
+cd ..
+
+# zip
+zip -r arxiv.zip arxiv/
