@@ -3,7 +3,7 @@
 
 Haskell DSLs are typically monadic because the \hs{>>=} combinator provides
 great expressive power. Yet, this power also hinders inspectability. This section shows how to balance 
-expressiveness and inspectability with a custom combinator.
+expressiveness and inspectability with a custom combinator. This feature is \emph{opt-in}, meaning that this additional work is only required when inspectability is required. If that is no concern, then it suffices to work with the \hs{Monad} constraint.
 
 Let us revisit the \hs{onlyDone} animation from Section~\ref{sec:customcomb}. The following definition imposes a \hs{Monad} constraint on \hs{f}, making the animation non-inspectable.
 
@@ -31,7 +31,7 @@ This is similar to the \hs{handle} combinator from the \hs{DynamicIdiom} class
 \cite{DBLP:phd/ethos/Yallop10} and the \hs{ifS} combinator from the
 \hs{Selective} class \cite{Mokhov:2019:SAF:3352468.3341694}.
 
-Now we can reformulate \hs{onlyDone} in terms of this \hs{ifThenElse} combinator.
+Now we can reformulate \hs{onlyDone} in terms of this \hs{ifThenElse} combinator\footnote{Using GHC's \texttt{RebindableSyntax} extension, it is possible to use the builtin \hs{if ... then ... else ...} syntax.}.
 
 \begin{code}
 onlyDone :: (LinearTo Application f, Get Application f,

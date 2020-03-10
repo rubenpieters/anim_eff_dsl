@@ -35,7 +35,7 @@ The application discussed in the paper uses the gloss library for as its GUI sys
 > It is a shame that the inspectability design constraint means that
 > existing control operators cannot be used anymore.
 
-
+The inspectability feature is opt-in, this means that it is perfectly fine to use traditional Monad constraints on animations if inspectability is no concern. Another way to regain the existing if-then-else for animations with inspectability requirement is the use of GHC's RebindableSyntax extension. We have added these notes to the paper.
 
 > One (perhaps naive)
 > thing I wonder: why not simply run the animation and see how long it
