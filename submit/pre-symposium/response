@@ -46,12 +46,16 @@ The inspectability feature is opt-in, this means that it is perfectly fine to us
 > conditional operations and would probably give you the answer for any
 > interesting animation, in practice.
 
-
+Simulating a pure animation (one without any external effects) is certainly possible. However, when you simulate a conditional animation you will simulate one particular branch. The two animations in these branches could have different durations, and thus the result of this simulation can give you a wrong result if that is not the actual branch taken. This is where the inspectability aspect comes into play: we are statically 'evaluating' the duration of the animation and taking every possible branch into account. Hence we obtain a minimum or maximum duration, rather than just a duration. The ability to handle impure animations is also a requirement, since in our experience it is very useful to have the expressivity of embedding new effects within animations.
 
 > For those readers not familiar with the various details of thing like
 > "the Functor-Applicative-Monad hierarchy", sections 4.1 and 4.2 were
 > difficult to read. The `Animation` type and the related discussion in
-> 4.3 was very helpful to understand how animations really work. Section
+> 4.3 was very helpful to understand how animations really work.
+
+The 'sequential composition' paragraph of section 4.2 has been extended.
+
+> Section
 > 4.4, again, was difficult; I do not know what "interpreting PaSe to a
 > different data type" means and I couldn't figure out what was really
 > going on.
