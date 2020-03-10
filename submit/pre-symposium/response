@@ -60,7 +60,7 @@ The 'sequential composition' paragraph of section 4.2 has been extended.
 > different data type" means and I couldn't figure out what was really
 > going on.
 
-
+Reworked the introductory part of section 4.4 .
 
 > In 6.3, I didn't understand why the duration was important. In
 > particular, it would seem that if one wants to sequence animations,

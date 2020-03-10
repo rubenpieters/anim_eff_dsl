@@ -249,10 +249,7 @@ time.
 
 \subsection{Inspecting Animations}
 
-Inspecting an animation is done by interpreting \dsl{} to a different data
-type, which provides instances for the typeclasses with different semantics.
-In particular we show how to inspect the duration of an animation
-by means of the \hs{Const} functor.
+Animations in \dsl{} are specified in an abstract manner by utilizing type classes. For running animations, we instantiate an animation with the \hs{Animation} type. For inspecting animations, we instantiate an animation with a different type. A typical data type which is useful for this purpose is the \hs{Const} functor. This allows us to keep track of a value of type \hs{a}. The \hs{Const} functor also has a phantom type \hs{b}, which is used to trivially make it a functor in this argument.
 
 \begin{spec}
 newtype Const a b = Const { getConst :: a }
