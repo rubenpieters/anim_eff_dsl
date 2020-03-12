@@ -18,7 +18,7 @@
 > misleading. Its criticism of monad is certainly valid, but out of
 > place.
 
-
+We have reworked the introduction. It is now more focused on the trade-off between expressivity and inspectability, and its revelance to PaSe.
 
 > ----------------------- REVIEW 2 ---------------------
 > Overall, my feeling with this paper is that this is a good start on
