@@ -32,6 +32,8 @@ Tom Schrijvers \orcidID{0000-0001-8771-5559}}
 
 \input{sections/11-evaluation.tex}
 
+\input{sections/12-evaluation2.tex}
+
 \input{sections/97-future.tex}
 
 \input{sections/98-related.tex}
