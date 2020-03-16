@@ -87,7 +87,9 @@ const bothAnimation = sequential(bothTo50, bothTo0);
 const bothAnimDuration = bothAnimation.totalDuration(); // = 2
 \end{js}
 
-However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else}, then the duration returned is not what we expect. The \texttt{add} method is overloaded and can also take a callback as parameter. Using the callback parameter we can embed arbitrary effects and control flow. For example, we can create a conditional animation \texttt{condAnim}, for which a duration of 1 is returned.This is different from the expected total duration of the animation, which is 2. (Of course, in general the duration of the animations in both branches could differ, which is what makes it difficult to provide a procedure for calculating the duration of an animation in this form.)
+However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else}, then the duration returned is not what we expect. The \texttt{add} method is overloaded and can also take a callback as parameter. Using the callback parameter we can embed arbitrary effects and control flow. For example, we can create a conditional animation \texttt{condAnim}, for which a duration of 1 is returned. This is because any callbacks that are added to the timeline are considered to have duration 0, even if an animation is played in that callback.
+
+The resulting duration of 1 is different from the expected total duration of the animation, which is 2. Of course, in general the duration of the animations in both branches could differ, which is what makes it difficult to provide a procedure for calculating the duration of an animation in this form.
 
 \begin{js}
 const condAnim = new TimelineMax({ paused: true })
