@@ -48,6 +48,8 @@ The inspectability feature is opt-in, this means that it is perfectly fine to us
 
 Simulating a pure animation (one without any external effects) is certainly possible. However, when you simulate a conditional animation you will simulate one particular branch. The two animations in these branches could have different durations, and thus the result of this simulation can give you a wrong result if that is not the actual branch taken. This is where the inspectability aspect comes into play: we are statically 'evaluating' the duration of the animation and taking every possible branch into account. Hence we obtain a minimum or maximum duration, rather than just a duration. The ability to handle impure animations is also a requirement, since in our experience it is very useful to have the expressivity of embedding new effects within animations.
 
+We have added a paragraph in section 4.4 containing these thoughts.
+
 > For those readers not familiar with the various details of thing like
 > "the Functor-Applicative-Monad hierarchy", sections 4.1 and 4.2 were
 > difficult to read. The `Animation` type and the related discussion in
@@ -68,7 +70,9 @@ Reworked the introductory part of section 4.4 .
 > that was) and not need to know up front how long the first animation
 > was going to be.
 
+The feature in 6.3 is not ordinary sequencing, but relative sequencing. Relative sequencing differs as it is possible to state that an animation must start *before* the end time of another animation. This means that it is not possible to wait until the first animation is finished, as the sequenced animation must already have started at that point.
 
+We have added a paragraph in section 6.3 explaining this.
 
 > pg8: "opt foran" => "opt for an"
 

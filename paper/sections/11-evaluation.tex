@@ -107,6 +107,9 @@ const bothDelayed = new TimelineMax({ paused: true })
   .add(new TweenMax("#box2", 1, { x: 50 }), "-=0.5");
 \end{js}
 
+
+It is important to note how this differs from ordinary sequencing such as with \hs{sequential}. When we state that animation \texttt{B} must play 0.5 seconds before the end of animation \texttt{A}, then it is not possible to wait until animation \texttt{A} has finished to start running animation \textt{B}. This is because animation \texttt{B} \emph{should have started playing for 0.5 seconds already}. When we have the duration of animation \texttt{A} available, animation \texttt{B} can be appropriately scheduled.
+
 This feature behaves somewhat unexpectedly when combined with a
 conditional animation. In the \texttt{relativeCond} animation below we add a
 basic animation followed by a conditional animation. Then we add an animation

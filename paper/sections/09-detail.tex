@@ -255,6 +255,8 @@ Animations in \dsl{} are specified in an abstract manner by utilizing type class
 newtype Const a b = Const { getConst :: a }
 \end{spec}
 
+We might wonder why this extra work is necessary. After all, it is possible to obtain the duration of an animation by running the animation and keeping track of how long it takes. First, this is not an ideal approach for obtaining the duration. We might obtain erroneous results when doing this on conditional animations. Since only one branch of the conditional will be taken, while the other branch with a different duration might be taken in reality. Also, this approach is infeasible when there are effects embedded within the animation. Second, duration is one possible inspection target. Another example is tracking the used textures within an animation so they can be loaded automatically. For this to be possible we must run the inspection \emph{before} the animation runs for the first time, since the textures must be loaded first.
+
 \subsubsection{Inspecting LinearTo}
 
 To inspect animations we provide an instance for the operations which
