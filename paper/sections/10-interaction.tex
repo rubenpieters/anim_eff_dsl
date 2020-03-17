@@ -3,7 +3,7 @@
 
 Haskell DSLs are typically monadic because the \hs{>>=} combinator provides
 great expressive power. Yet, this power also hinders inspectability. This section shows how to balance 
-expressiveness and inspectability with a custom combinator. This feature is \emph{opt-in}, meaning that this additional work is only required when inspectability is required. If that is no concern, then it suffices to work with the \hs{Monad} constraint.
+expressiveness and inspectability with a custom combinator. This feature is \emph{opt-in} in that it is only required when inspectability is required. If that is no concern, then it is no problem to work with the \hs{Monad} constraint.
 
 Let us revisit the \hs{onlyDone} animation from Section~\ref{sec:customcomb}. The following definition imposes a \hs{Monad} constraint on \hs{f}, making the animation non-inspectable.
 
@@ -15,12 +15,12 @@ onlyDone = do
   if cond then onlyDoneNaive else hideNotDone
 \end{spec}
 
-However, it does seem like we should be able to extract some duration related
-information from it. For example, the maximum duration should be the largest
+However, there is duration-related information we can extract.
+For example, the \emph{maximum duration} is the largest
 duration of the two branches.
 
 To express this idea in \dsl{} we introduce an explicit combinator to replace
-the particular use of \hs{>>=}, namely an \hs{if-then-else} construction. 
+this particular use of \hs{>>=}, namely an \hs{if-then-else} construction. 
 
 \begin{code}
 class IfThenElse f where
@@ -40,8 +40,7 @@ onlyDone :: (LinearTo Application f, Get Application f,
 onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone
 \end{code}
 
-Not much changes for \hs{Animation}, which implements \hs{ifThenElse} in terms of
-the \hs{>>=} combinator. 
+We implement an appropriate \hs{Animation} instance for \hs{IfThenElse}.
 
 \begin{code}
 instance (Monad f) => IfThenElse (Animation obj f) where
@@ -50,9 +49,8 @@ instance (Monad f) => IfThenElse (Animation obj f) where
     if bool then thenBranch else elseBranch
 \end{code}
 
-What is new is that we can now also retrieve the maximum duration, using a new type
-\hs{MaxDuration} to signify that we are not simply calculating the duration of
-the animation. The instance for \hs{IfThenElse} retrieves the
+Now, we can retrieve the maximum duration, using the \hs{newtype}
+\hs{MaxDuration} to signify this. The instance for \hs{IfThenElse} retrieves the
 durations of the \texttt{then} and \texttt{else} branches and adds the greater
 value to the duration of the preceding animation inside the condition.
 

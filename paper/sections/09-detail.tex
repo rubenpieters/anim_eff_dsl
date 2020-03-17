@@ -223,7 +223,7 @@ time.
 
 \subsection{Inspecting Animations}
 
-Animations in \dsl{} are specified in an abstract manner by utilizing type classes. For running animations, we instantiate an animation with the \hs{Animation} type. For inspecting animations, we instantiate an animation with a different type. A typical data type which is useful for this purpose is the \hs{Const} functor. This allows us to keep track of a value of type \hs{a}. The \hs{Const} functor also has a phantom type \hs{b}, which is used to trivially make it a functor in this argument.
+To inspect animations we instantiate animations with \hs{Const}. It wraps an \hs{a} value and has a \hs{b} phantom type parameter to trivially make it a functor.
 
 \begin{spec}
 newtype Const a b = Const { getConst :: a }
@@ -233,9 +233,7 @@ We might wonder why this extra work is necessary. After all, it is possible to o
 
 \subsubsection{Inspecting LinearTo}
 
-To inspect animations we provide an instance for the operations which
-interprets them into \hs{Const Duration}. In the case of the \hs{linearTo}
-operation, we simply embed the duration within a \hs{Const} wrapper.
+To obtain the duration of a \hs{linearTo} animation, we embed the duration in the \hs{Const} wrapper.
 
 \begin{code}
 instance LinearTo obj (Const Duration) where
@@ -255,8 +253,7 @@ limiting factor of inspection.
 \subsubsection{Inspecting Parallel}
 
 The duration of two parallel animations is the maximum of their durations. 
-The \hs{Par} instance implementation for \hs{Const Duration} captures
-this. 
+The \hs{Par (Const Duration)} instance implements this. 
 
 \begin{code}
 instance Par (Const Duration) where
@@ -282,8 +279,8 @@ menuIntroDuration :: Duration
 menuIntroDuration = duration menuIntro -- = For 0.5
 \end{code}
 
-When we try to retrieve the duration of an animation with a monad constraint,
-we receive an error from the compiler: it cannot find a \hs{Monad} instance for
+When we try to retrieve the duration of a monadic animation,
+there is an error from the compiler: there is no \hs{Monad} instance for
 \hs{Const Duration}.
 
 \begin{spec}
@@ -294,13 +291,13 @@ complicatedAnimDuration = duration complicatedAnim
 
 \subsection{Adding a Custom Operation}
 
-Adding a custom operation is done as in any other mtl-style approach: by defining a new class for this operation. For example, if we want to add a \hs{set} operation, then we create a corresponding \hs{Set} class.
+Custom operation are added by defining a corresponding class. For example, if we want to add a \hs{set} operation, then we create the corresponding \hs{Set} class.
 
 \begin{code}
 class Set obj f where set :: Lens' obj a -> a -> f ()
 \end{code}
 
-Now, an animation that uses the \hs{set} operation will incur a \hs{Set} constraint.
+Now, an animation using the \hs{set} operation will incur a \hs{Set} constraint.
 
 \begin{code}
 checkIcon :: (Set CompleteIcon f, ...) => f ()
@@ -319,4 +316,3 @@ instance Set obj (Const Duration) where
   set _ _ = Const (For 0)
 \end{code}
 
-This section gave an overview of the features provided by \dsl{}, however combining inspectability while allowing freedom of expressivity is not always straightforward. Therefore, we look at an example of the interaction of these two features in the next section.

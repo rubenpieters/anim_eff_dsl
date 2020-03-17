@@ -10,10 +10,6 @@ JavaScript animation library with a variety of features.
 
 \subsection{Working with GSAP}
 
-GSAP provides primitives similar to the \hs{linearTo} and
-\hs{sequential} operations in \dsl{}. While it does not have a primitive for
-\hs{parallel} composition, we can define it in terms of other GSAP features.
-
 \texttt{TweenMax} objects are the GSAP counterpart of the
 \hs{linearTo} operation. Their arguments are similar: the object to change, the
 duration, and the target value for the
@@ -24,9 +20,7 @@ property. For example, animation \texttt{right} moves
 const right = new TweenMax("#box1", 1, { x: 50 });
 \end{js}
 
-A sequential animation is created by creating a timeline and \texttt{add}ing
-animations to it.  Below, we create the animation \texttt{rightThenDown} which
-moves \texttt{box1} to the right and then moves it down.
+We can add animations to a \texttt{TimeLineMax} to create a sequential animation. Below, we create  \texttt{rightThenDown} which moves \texttt{box1} to the right and then down.
 
 \begin{js}
 const rightThenDown = new TimelineMax({ paused: true })
@@ -36,10 +30,9 @@ const rightThenDown = new TimelineMax({ paused: true })
 
 
 The \texttt{add} method takes the position on the timeline as an optional
-paramter. Hence, if we position both animations at point \texttt{0} on the timeline,
-they will run in parallel. For example, the \texttt{both} animation below 
-moves both \texttt{box1} and \texttt{box2} in parallel to an \texttt{x}-value
-of 50.
+paramter. If we position both animations at point \texttt{0} on the timeline,
+they run in parallel. For example, the \texttt{both} animation below 
+moves both \texttt{box1} and \texttt{box2} in parallel.
 
 \begin{js}
 const both = new TimelineMax({ paused: true })
@@ -47,44 +40,23 @@ const both = new TimelineMax({ paused: true })
   .add(new TweenMax("#box2", 1, { x: 50 }), 0);
 \end{js}
 
-Since we have specified the option \texttt{paused} with \texttt{true}, we must
-call the \texttt{play} method to run an animation, as in
-\texttt{both.play()}. Using this behaviour, and the ability to nest timelines,
-we can provide the \dsl{} primitives.
+Timelines can also be embedded within other timelines.
 
 \begin{js}
-function sequential(tl1, tl2) {
-  return new TimelineMax({ paused: true })
-    .add(tl1.play())
-    .add(tl2.play()); }
-
-function parallel(tl1, tl2) {
-  return new TimelineMax({ paused: true })
-    .add(tl1.play(), 0)
-    .add(tl2.play(), 0); }
+const embedded = new TimelineMax({ paused: true })
+  .add(both.play())
+  .add(new TweenMax("#box1", 1, { y: 50 }), 0);
 \end{js}
 
 \subsection{Callbacks and Inspectability}
 
-GSAP also provides features related to inspectability. For example, we can use the
+GSAP provides features related to inspectability. For example, we can use the
 \texttt{totalDuration} method to return the total duration of an animation.
-Animations created with the previously defined \texttt{sequential} and
-\texttt{parallel} functions correctly give their total duration when queried.
-For example, we define an animation which moves both boxes in parallel to
-\texttt{x = 50} and then back to \texttt{x = 0} in parallel. The duration is
-correctly returned as 2.
+Ordinary animations correctly give their total duration when queried.
+For example, querying the duration of \texttt{embedded} correctly returns 2.
 
 \begin{js}
-const bothTo50 = parallel(
-  new TweenMax("#box1", 1, { x: 50 }),
-  new TweenMax("#box2", 1, { x: 50 }));
-
-const bothTo0 = parallel(
-  new TweenMax("#box1", 1, { x: 0 }),
-  new TweenMax("#box2", 1, { x: 0 }));
-
-const bothAnimation = sequential(bothTo50, bothTo0);
-const bothAnimDuration = bothAnimation.totalDuration(); // = 2
+const embeddedDuration = embedded.totalDuration(); // = 2
 \end{js}
 
 However, if we want to provide animations similar to \hs{onlyDone}, which contains an \hs{if-then-else}, then the duration returned is not what we expect. The \texttt{add} method is overloaded and can also take a callback as parameter. Using the callback parameter we can embed arbitrary effects and control flow. For example, we can create a conditional animation \texttt{condAnim}, for which a duration of 1 is returned. This is because any callbacks that are added to the timeline are considered to have duration 0, even if an animation is played in that callback.
@@ -93,9 +65,9 @@ The resulting duration of 1 is different from the expected total duration of the
 
 \begin{js}
 const condAnim = new TimelineMax({ paused: true })
-  .add(bothTo50.play())
-  .add(() => { if (cond) { bothTo0.play()   }
-               else      { bothTo100.play() } });
+  .add(both.play())
+  .add(() => { if (cond) { new TweenMax("#box1", 1, { x: 50 }) }
+               else { new TweenMax("#box2", 1, { x: 50 }) } });
 const condAnimDuration = condAnim.totalDuration() // = 1
 \end{js}
 
@@ -110,7 +82,7 @@ const bothDelayed = new TimelineMax({ paused: true })
 \end{js}
 
 
-It is important to note how this differs from ordinary sequencing such as with \hs{sequential}. When we state that animation \texttt{B} must play 0.5 seconds before the end of animation \texttt{A}, then it is not possible to wait until animation \texttt{A} has finished to start running animation \textt{B}. This is because animation \texttt{B} \emph{should have started playing for 0.5 seconds already}. When we have the duration of animation \texttt{A} available, animation \texttt{B} can be appropriately scheduled.
+This features differs from ordinary sequencing such as with \hs{sequential}. When we state that animation \texttt{B} must play 0.5 seconds before the end of animation \texttt{A}, then it is not possible to wait until animation \texttt{A} has finished to start running animation \textt{B}. This is because animation \texttt{B} \emph{should have started playing for 0.5 seconds already}. When we have the duration of animation \texttt{A} available, animation \texttt{B} can be appropriately scheduled.
 
 This feature behaves somewhat unexpectedly when combined with a
 conditional animation. In the \texttt{relativeCond} animation below we add a
