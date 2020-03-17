@@ -74,7 +74,39 @@ is well integrated with the browser and supports a rich set of features
 such as a variety of plugins, compatibility across browsers and support for
 animating a large range of DOM elements. Yet, for Pac-Man we only needed
 lenses for our own user-defined state.
-\item \textbf{Workflow} When creating animations it is important that they can be specified easily and in a concise manner. Creating pure animations, without any embedded effects, are equally convenient in GSAP as in PaSe. However, more complex interactions with effects and control flow are simpler in PaSe. We encountered this in the Pac-Man use case when implementing particle animations. A particle animation is an animation which creates an object, applies an animation on it, and after that animation that object is destroyed. We implemented a general wrapper for such animations which takes as input a function \hs{Int -> Animation}, where the \hs{Int} is the unique particle identifier, and a creation and deletion function for the particle. In the GSAP library we have to add the function to the timeline as a callback, which results in the duration being considered as \hs{0}. However, the deletion of the particle should occur after the particle animation. This means that we are forced to manually calculate and provide the duration for the particle animation.
-\item \textbf{Performance} In the Pac-Man use case, both libraries function equally acceptable for a game application: no visible glitches or lag at 60 frames per second (FPS). We have also implemented a benchmark similar to GSAP's speed test\footnote{\url{https://greensock.com/js/speed.html}}. This test benchmarks animations with a large amount of parallel components. GSAP is slightly more optimized as it handles 500 parallel animations at 60 FPS, while PaSe currently handles 400 parallel animations at 60 FPS. The tests were done on an Intel core i7-6600U at 2.60 GHz with 8B memory. There are still some approaches for improving performance such as fusing multiple parallel animations or improving the \hs{Animation} data structure that we have not applied yet.
-\item \textbf{Extensibility \& Inspectability} One of the main focus points of this paper is the extensibility and inspectability features of PaSe. Here we answer the question whether these concerns were relevant for this use case. The inspectability aspect was useful for extracting all used textures in the animations. By doing this we were able to automate the loading of the needed textures for the application. The particle effect mentioned earlier was created by using the extensibility feature, we created a new \hs{WithParticle} type class and implemented both an \hs{Animation} instance and a \hs{Const} instance for the texture inspection. GSAP has no counterpart to the inspectability feature, and thus we did not implement the automatic tracking of textures. The particle animation function was possible by using implicit arbitrary effects and callbacks.
+\item \textbf{Workflow} It is important that animations can
+be specified easily and concisely. Creating pure animations, without
+any embedded effects, are equally convenient in GSAP and in PaSe. However, more
+complex interactions with effects and control flow are simpler in PaSe. We
+saw this in the Pac-Man use case when implementing particle animations.
+A particle animation is an animation that creates an object, animates it
+and then destroys it again. We
+implemented a general wrapper for such animations which takes as input a
+function \hs{Int -> Animation}, where the \hs{Int} is the unique particle
+identifier, and a creation and deletion function for the particle. In the GSAP
+library we have to add the function to the timeline as a callback, which
+means its duration is considered to be \hs{0}. This is problematic
+because the deletion of
+the particle should occur after its animation. This means that we are
+forced to manually calculate and provide the duration for the particle
+animation.
+\item \textbf{Performance} Both libraries perform 
+equally acceptable on Pac-Man: no visible glitches or lag at 60
+frames per second (FPS) on an Intel core i7-6600U at 2.60 GHz with 8GB memory. We have also implemented a benchmark similar to GSAP's
+speed test\footnote{\url{https://greensock.com/js/speed.html}}. This test
+benchmarks animations with a large number of parallel components. GSAP is
+slightly more optimized as it handles 500 parallel animations at 60 FPS, while
+PaSe currently handles 400 parallel animations at 60 FPS.
+This could be remedied by further performance improvements of \dsl{},
+like fusing multiple parallel animations or improving the \hs{Animation} data structure, which are future work.
+\item \textbf{Extensibility \& Inspectability} Extensibility and inspectability
+are key features of PaSe. Both were useful for Pac-Man. Inspectability allowed 
+extracting all used textures in the animations to
+automate their loading. Extensibility enabled the definition of the 
+effect mentioned earlier. We
+created a new \hs{WithParticle} type class and implemented both an
+\hs{Animation} instance and a \hs{Const} instance for the texture inspection.
+GSAP does not support inspectability, and thus we did not
+implement the automatic tracking of textures. The particle animation function
+was implemented with callbacks and implicit side-effects, which TypeScript allows anywhere.
 \end{itemize}
