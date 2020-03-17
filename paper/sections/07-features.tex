@@ -1,10 +1,10 @@
 \section{Extensibility, Inspectability and Expressiveness}
 \label{sec:features}
 
-The features seen in Section~\ref{sec:motivation} form the basis of \dsl{}.
+The features in Section~\ref{sec:motivation} form the basis of \dsl{}.
 To provide support for additional features present in other animation libraries,
-we design \dsl{} with extensibility and
-inspectability in mind. This means that \dsl{} can be extended with new
+we design \dsl{} to be extensibile and
+inspectable. This means that \dsl{} can be extended with new
 operations and information can be derived from inspecting specified animations.
 To support arbitrary expressiveness in combination with those
 features, we also emphasize the possibility to extend \dsl{} with new
@@ -13,7 +13,7 @@ combinators.
 \subsection{Extensibility}
 \label{sec:customop}
 
-The \hs{linearTo} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are different situations which require different primitives to express our desired animation. For example, GSAP provides a primitive to morph one shape into another.
+The \hs{linearTo} operation and the \hs{sequential} and \hs{parallel} combinators form the basis for expressing a variety of animations. However, there are situations which require other primitives to express desired animations. For example, GSAP provides a primitive to morph one shape into another.
 
 An example in the to-do list app is the \hs{checkIcon} animation, part of the \hs{markAsDone} animation, where we want to set the color of the checkmark to a new value. We define a custom \hs{set} operation and embed it inside a \dsl{} animation. In this animation we use Haskell's \hs{do}-notation to specify sequential animations.
 
@@ -43,7 +43,7 @@ complicatedAnim = do v <- get; linearTo lens (For v) (To 10)
 complicatedAnimDuration = duration complicatedAnim -- type error
 \end{spec}
 
-Calculating a duration is mostly a stepping stone towards supporting other interesting features. One such example is sequentially composing animations with a relative offset. For example, to compose a first animation \hs{anim1} with a second animation \hs{anim2} which starts 0.5 seconds \emph{before} the end of \hs{anim1}.
+Calculating a duration is a stepping stone towards other interesting features. One such example is sequentially composing animations with a relative offset. For example, to compose a first animation \hs{anim1} with a second animation \hs{anim2} which starts 0.5 seconds \emph{before} the end of \hs{anim1}.
 
 \begin{spec}
 relSeqAnim = relSequential anim1 anim2 (-0.5)
