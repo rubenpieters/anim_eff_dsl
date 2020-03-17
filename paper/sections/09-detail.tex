@@ -1,7 +1,7 @@
 \section{Implementation of \dsl{}}
 \label{sec:detail}
 
-This section implements the earlier introduced operations and redefines the animations to show the resulting type signature. We
+This section implements the previously introduced operations and redefines the animations to show the resulting type signature. We
 develop \dsl{} in the style of the \texttt{mtl}
 library\footnote{\url{http://hackage.haskell.org/package/mtl}} which implements
 monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}.  This style is
@@ -20,9 +20,9 @@ class LinearTo obj f where
   linearTo :: Traversal' obj Float -> Duration -> Target -> f ()
 \end{code}
 
-The traditional mtl-style would add a \hs{Monad f} superclass constraint. Yet,
-because it hinders inspectability, we do not require it everywhere. Instead,
-while we can still choose to add an additional \hs{Monad f} constraint in selected
+The traditional mtl style would add a \hs{Monad f} superclass constraint. Yet,
+because it hinders inspectability, we avoid it where possible. Instead,
+while we can still choose to add a \hs{Monad f} constraint in selected
 cases, we leave the freedom to opt for an alternative like \hs{Applicative f} in
 other cases.
 
@@ -61,7 +61,7 @@ The \hs{liftA2} function from the \hs{Applicative} class, which has type \\\hs{A
 The \hs{>>=} function from the \hs{Monad} class (pronounced 'bind'), which has type \hs{Monad f}~\hs{=>}~\hs{f}~\hs{a}~\hs{->}~\hs{(}\hs{a}~\hs{->}~\hs{f}~\hs{b}\hs{)}, takes an animation \hs{f a} and then feeds the result of this animation into the function \hs{a}~\hs{->}~\hs{f}~\hs{b} to play the animation \hs{f}~\hs{b}.
 
 
-The \hs{sequential} function used earlier is a specialization of the \hs{liftA2} function. It does not require a \hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c} function, and is only applicable to animations return a trivial value of type \hs{()}.
+The \hs{sequential} function used earlier is a specialization of the \hs{liftA2} function. It does not require an \hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)} function, and is only applicable to animations that return a trivial value of type \hs{()}.
 
 \begin{code}
 sequential :: (Applicative f) => f () -> f () -> f ()
@@ -98,8 +98,7 @@ class Parallel f where
 parallel :: (Parallel f) => f () -> f () -> f ()
 parallel f1 f2 = liftP2 (\_ _ -> ()) f1 f2
 \end{code}
- and
-Now we can give a type signature for \hs{menuIntro}.
+With that in place we can give a type signature for \hs{menuIntro}.
 \begin{code}
 menuIntro :: (LinearTo Application f, Parallel f) => f ()
 menuIntro = menuSlideIn `parallel` appFadeOut
