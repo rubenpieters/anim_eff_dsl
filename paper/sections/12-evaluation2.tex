@@ -1,6 +1,10 @@
 \section{Use Case}
 
-This section compares an implementation of a simplified Pac-Man game in Haskell with \dsl{} and TypeScript with GSAP both quantitatively and qualitatively. The quantitative evaluation consists of a comparison of development time and lines of code (LOC). The qualitative compares different aspects of the animation libraries. A screenshot of the application can be seen in Figure~\ref{fig:pacman}.
+This section compares an implementation of a simplified Pac-Man game (Figure~\ref{fig:pacman}) in Haskell
+with \dsl{} and TypeScript with GSAP both quantitatively and qualitatively. The
+quantitative evaluation compares development time and lines
+of code. The qualitative one compares different aspects of the 
+libraries.
 
 \begin{figure}[h]{\textwidth}
 \centering
@@ -11,12 +15,29 @@ This section compares an implementation of a simplified Pac-Man game in Haskell 
 
 \subsection{Quantitative Evaluation}
 
-This section compares the PaSe and GSAP implementations with respect to certain quantitative criteria. We consider the development time and lines of code for each module.
+This section compares the PaSe and GSAP implementations on
+quantitative criteria. We consider the development time and lines of code for
+each module.
 
 \begin{itemize}
-\item \textbf{Development Time} We roughly kept track of the development time. The development of the Haskell application took $\sim$1.5 working days, while the TypeScript application took $\sim$1 working day. We consider this as the same development time as the Haskell application was developed first, and thus it also contains work shared by both applications.
-\item \textbf{Lines of Code} Table~\ref{tbl:loc} contains the lines of code data (including whitespace) for each of the applications. The total lines of code for each of the application is roughly the same. However, the Haskell implementation had to implement some extra code concerning sprites and textures, which was unneeded for the TypeScript application as we utilized the \texttt{Sprite} class of the \texttt{PixiJS} library.
-\item \textbf{Relative LOC} Table~\ref{tbl:loc} also contains the relative lines of code. The animation definitions module (AnimDefs) is slightly higher for the GSAP code. We had to embed effects in the animations due to differences in the used graphics library, and the extra verbosity of TypeScript had extra impact in this module. Using the timeline feature of GSAP, the experience for simple animations is comparable to PaSe. However for more complex animations and animations requiring embedded effects, there are some differences. We discuss this in more detail in the qualitative evaluation.
+\item \textbf{Development Time} The Haskell application was developed in
+$\sim$1.5 working days, while the TypeScript application took $\sim$1 working
+day. We consider this approximately the same development time as the Haskell application
+was developed first, and thus contains design work shared by both
+applications.
+\item \textbf{Lines of Code (LOC)} Table~\ref{tbl:loc} contains the LOC data
+(including whitespace) for both applications. Their total LOCs are roughly the same. However, the Haskell
+code implements its own functionality for sprites and
+textures while we used the existing
+\texttt{Sprite} class of the \texttt{PixiJS} library in TypeScript.
+\item \textbf{Relative LOC} Table~\ref{tbl:loc} also contains the relative
+LOCs. The GSAP animation definitions (AnimDefs) are slightly bigger because
+we had to embed effects in the animations due to differences
+in the used graphics library, and because of TypeScript's relative verbosity.
+Using the timeline feature of GSAP, the code for
+simple animations is comparable to PaSe. However for more complex animations
+and those requiring embedded effects, there are more differences that we
+discuss in more detail in the qualitative evaluation.
 \end{itemize}
 
 \begin{table}[t!]
