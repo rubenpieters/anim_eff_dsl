@@ -60,14 +60,13 @@ menu expands inward from the left, to indicate the application state change.
 
 Animations are built in compositional fashion. When creating an animation, we decompose it into smaller elements. For example, the \hs{menuIntro} animation both introduces the menu screen and fades out the background. Thus, it is composed of two basic animations \hs{menuSlideIn} and \hs{appFadeOut} in parallel. The next sections explain how to construct such basic and composed animations.
 
-\subsection{Basic Animations}
+\subsubsection{Basic Animations}
 
-Basic animations change the property of an element over a period of time. The
-\hs{linearTo} needs three inputs: a lens targeting the property, the duration,
+Basic animations change the property of an element over a period of time.
+The \hs{linearTo} function has three inputs: a lens targeting the property, the duration,
 and the target value for this property. This results in a linear change from
 the current value to its target, hence the name. The duration is specified
-with the \hs{For} constructor while the target value is specified with the
-\hs{To} constructor.
+with \hs{For} while the target value is specified with \hs{To}.
 
 \paragraph{Note on Lenses} We use lens notation \texttt{x . y . z} to
 target \texttt{z} inside a nested structure \hs{{ x: { y: { z:
@@ -132,7 +131,7 @@ appFadeOut = linearTo (obscuringBox . alpha) (For 0.5) (To 0.65)
 \label{fig:basic}
 \end{figure}
 
-\subsection{Composed Animations}
+\subsubsection{Composed Animations}
 
 A composed animation combines several other animations into one new animation. We can do this either in \emph{sequence} or in \emph{parallel}.
 

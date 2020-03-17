@@ -4,31 +4,30 @@
 This section implements the earlier introduced operations and redefines the animations to show the resulting type signature. We
 develop \dsl{} in the style of the \texttt{mtl}
 library\footnote{\url{http://hackage.haskell.org/package/mtl}} which implements
-monadic effects using typeclasses \cite{DBLP:conf/afp/Jones95}.  This style is
+monadic effects using type classes \cite{DBLP:conf/afp/Jones95}.  This style is
 also called the finally tagless approach \cite{DBLP:journals/jfp/CaretteKS09}.
 However, because the \dsl{} classes are not subclasses of \hs{Monad} they leave
 room for inspectability.
 
 \subsection{Specifying Basic Animations}
 
-The \texttt{mtl} library uses typeclasses to declare the basic operations of an
+The \texttt{mtl} library uses type classes to declare the basic operations of an
 effect. Similarly, we specify the \hs{linearTo} operation using
-the \hs{LinearTo} typeclass.
+the \hs{LinearTo} type class.
 
 \begin{code}
 class LinearTo obj f where
-  linearTo :: Traversal' obj Float -> Duration -> Target -> f ()
+  linearTo :: Traversal' s Float -> Duration -> Target -> f ()
 \end{code}
 
-The traditional mtl-style would add a \hs{Monad f} superclass constraint. Yet,
-because it hinders inspectability, we do not require it everywhere. Instead,
-while we can still choose to add an additional \hs{Monad f} constraint in selected
-cases, we leave the freedom to opt for an alternative like \hs{Applicative f} in
-other cases.
+The traditional mtl-style would add a \hs{Monad f} superclass constraint. Since
+it hinders inspectability, we delay the decision of this constraint to the user.
+This allows the definition of animations which are, for example \hs{Applicative},
+if inspectability is needed or \hs{Monad} if it is not.
 
-The \hs{linearTo} function of the \hs{LinearTo} typeclass specifies basic
+The \hs{linearTo} function is used to specify basic
 animations like \hs{line1Out}, \hs{line2In},
-\hs{menuSlideIn}, and \hs{appFadeOut} animations from
+\hs{menuSlideIn}, and \hs{appFadeOut} from
 Section~\ref{sec:motivation}. 
 As an example, we redefine \hs{line1Out} with its type signature; the others 
 are similar. 
@@ -54,14 +53,14 @@ general combinators.
 \subsubsection{Sequential Composition}
 
 We reuse the \hs{Functor}-\hs{Applicative}-\hs{Monad} hierarchy for
-sequencing animations. The main functions of interest from this hierarchy are \texttt{liftA2} and \hs{>>=}.
+sequencing animations.
 
-The \hs{liftA2} function from the \hs{Applicative} class, which has type \\\hs{Applicative f =>}~\hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)}~\hs{->}~\hs{f}~\hs{a}~\hs{->}~\hs{f}~\hs{b}~\hs{->}~\hs{f}~\hs{c}}, takes two animations \hs{f}~\hs{a} and \hs{f}~\hs{b} and returns a new animation which plays them in order. The final result of the animation is of type \hs{c}, which is obtained by using the function \hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}} and applying the results of the two played animations to it.
+ehe \hs{liftA2} function from the \hs{Applicative} class, which has type \\\hs{Applicative f =>}~\hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)}~\hs{->}~\hs{f}~\hs{a}~\hs{->}~\hs{f}~\hs{b}~\hs{->}~\hs{f}~\hs{c}}, takes two animations \hs{f}~\hs{a} and \hs{f}~\hs{b} and returns a new animation which plays them in order. The final result of the animation is of type \hs{c}, which is obtained by using the function \hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}} and applying the results of the two played animations to it.
 
-The \hs{>>=} function from the \hs{Monad} class (pronounced 'bind'), which has type \hs{Monad f}~\hs{=>}~\hs{f}~\hs{a}~\hs{->}~\hs{(}\hs{a}~\hs{->}~\hs{f}~\hs{b}\hs{)}, takes an animation \hs{f a} and then feeds the result of this animation into the function \hs{a}~\hs{->}~\hs{f}~\hs{b} to play the animation \hs{f}~\hs{b}.
+The \hs{>>=} function from the \hs{Monad} class, which has type \hs{Monad f}~\hs{=>}~\hs{f}~\hs{a}~\hs{->}\\\hs{(}\hs{a}~\hs{->}~\hs{f}~\hs{b}\hs{)}, takes an animation \hs{f a} and then feeds the result of this animation into the function \hs{a}~\hs{->}~\hs{f}~\hs{b} to play the animation \hs{f}~\hs{b}.
 
 
-The \hs{sequential} function used earlier is a specialization of the \hs{liftA2} function. It does not require a \hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c} function, and is only applicable to animations return a trivial value of type \hs{()}.
+The \hs{sequential} function is a specialization of the \hs{liftA2} function. It only applies to animations with a \hs{()} return value, and trivially combines the results.
 
 \begin{code}
 sequential :: (Applicative f) => f () -> f () -> f ()
@@ -79,17 +78,7 @@ selectBtn2Anim = line1Out `sequential` line2In
 
 \subsubsection{Parallel Composition}
 
-The \hs{parallel} function does not correspond to a member function in an
-existing Haskell typeclass. At first we might consider the \hs{<|>} combinator
-in the \hs{Alternative} class, but there is no sensible corresponding
-\hs{empty} animation; also the suggested 
-laws\footnote{\url{https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus}}
-do not make sense for animations.
-
-Instead, we create our own \hs{Parallel} typeclass below. Its function
-\hs{liftP2} has the same signature as \hs{liftA2}, but denotes
-parallel composition instead of sequential composition. The
-\hs{parallel} function is a specialization of \hs{liftP2}.
+We create our own \hs{Parallel} type class for the \hs{parallel} function\footnote{The \hs{Alternative} class (\url{https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus}) is not suitable as the laws are not the same.}. Its \hs{liftP2} function has the same signature as \hs{liftA2}, but denotes parallel rather than sequential composition. The \hs{parallel} function is a specialization of \hs{liftP2}.
 
 \begin{code}
 class Parallel f where
@@ -108,59 +97,51 @@ menuIntro = menuSlideIn `parallel` appFadeOut
 \subsection{Running Animations}
 
 Now we create a new \hs{Animation} datatype that instantiates the above
-typeclasses to interpret \dsl{} programs as actual animations. We briefly
+type classes to interpret \dsl{} programs as actual animations. We briefly
 summarize this implementation here and refer for more details to
-our prototype
-implementation.\footnote{\url{https://github.com/rubenpieters/anim_eff_dsl/tree/master/code}}
+our implementation.\footnote{\url{https://github.com/rubenpieters/anim_eff_dsl/tree/master/code}}
 
-The function type
-\hs{obj}~\hs{->}~\hs{Float}~\hs{->}~\hs{m}~\hs{(}\hs{obj,}~\hs{(Either}~\hs{(Animation}~\hs{obj}~\hs{a)}~\hs{a))}
-models an animation.
-It takes as inputs the the current application state and the
-time elapsed since the previous frame. As output it produces a new
-application state for the next frame together with either the remainder of the animation or, if there is no remainder, the result of
-the animation. Note that the output is wrapped in a type
+The \hs{Animation} data type, defined below, models an animation.
+It takes the current state \hs{s} and the
+time elapsed since the previous frame. It produces a new
+state for the next frame, the remaining unused time and either the remainder of the animation or, if there is no remainder, the result of the animation. Note that the output is wrapped in a type
 constructor \hs{m} to embed custom effects. 
-One more detail is missing in the output: the remaining unused time. We need
-this when, for example, there is more time between frames than the animation
+We need the unused time when there is more time between frames than the animation
 uses.
 Then, the remaining time
-can be used to run part of the next animation. All together, we get
-the following type definition.
+can be used to run the rest of the animation.
 
 \begin{code}
-newtype Animation obj m a = Animation { runAnimation ::
-    obj ->                           -- previous state
+newtype Animation s m a = Animation { runAnimation ::
+    s ->                             -- previous state
     Float ->                         -- time delta
-    m ( obj                          -- next state
-      , Either (Animation obj m a) a -- remainder / result
+    m ( s                            -- next state
+      , Either (Animation s m a) a   -- remainder / result
       , Maybe Float )}               -- remaining time delta
 \end{code}
 
 \subsubsection{LinearTo Instance}
 
-The \hs{linearTo} implementation of \hs{Animation} does three things: construct
-the new object state, calculate the remainder of the animation, and calculate
+The \hs{linearTo} implementation of \hs{Animation} constructs
+the new state, calculates the remainder of the animation, and calculates
 the unused time. The difference between the \hs{linearTo} duration and the
 frame time determines whether there is a remaining \hs{linearTo} animation or
 remaining time.
 
 \paragraph{Examples}
 
-Let us illustrate the behaviour on a simple application
-state that is a tuple, \hs{type State = (Float, Float)}, of an {x}-value and a {y}-value.
-The \hs{right} animation transforms the \hs{x}-value to 50 over a time of 1
-second.
+Let us illustrate the behaviour on a tuple state \hs{(Float, Float)}, of an \hs{x} and \hs{y}-value.
+The \hs{right} animation transforms the \hs{x}-value to 50 over 1 second.
 
 \begin{code}
-right :: (LinearTo State f) => f ()
+right :: (LinearTo (Float, Float) f) => f ()
 right = linearTo x (For 1) (To 50)
 \end{code}
 
-We run the animation for 0.5 seconds by applying the \hs{runAnimation} function
-on \hs{right}, together with the initial state (\hs{s0 =
-(0,0)}) and the duration \hs{0.5}. We also instantiate the \hs{m} type constructor \hs{m} inside
-the \hs{Animation} data type with \hs{Identity} as no additional effects are
+We run it for 0.5 seconds by applying it to the \hs{runAnimation} function,
+together with the initial state (\hs{s0 =
+(0,0)}) and the duration \hs{0.5}. We instantiate the \hs{m} type constructor
+inside \hs{Animation} with \hs{Identity} as no additional effects are
 needed; this means that the result can be unwrapped with
 \hs{runIdentity}.
 
@@ -187,24 +168,18 @@ For sequential animations we provide a \hs{Monad} instance. Its \hs{return} embe
 result \hs{a} inside the \hs{Animation} data type. The essence of the
 \hs{f}~\hs{>>=}~\hs{k} case is straightforward: first, run the animation
 \hs{f}, then pass its result to the continuation \hs{k} and run that animation.
-Of course, running \hs{f} does not necessarily give us a result \hs{a}. Running
-an animation gives us either a result or an animation remainder; we also have
-to take into account the potential remaining time. When we have an
-animation remainder instead of a result, we need to repackage this remaining
-animation as \hs{remainder}~\hs{>>=}~\hs{k} instead of using \hs{k}~\hs{a}.
-Additionally, if there is no remaining time,  we do not continue
-running the continuation and instead return the current state and animation
-remainder.
+We return the result of the animation, or, if there is an animation remainder,
+because the remaining time was used up, we return that remainder.
 
 \paragraph{Examples}
 
 Let us define an additional animation \hs{up} which transforms the \hs{y}-value to 50 over a duration of 1 second. Additionally, we define an animation \hs{rightThenUp} which composes the \hs{right} and \hs{up} animations in sequence.
 
 \begin{code}
-up :: (LinearTo State f) => f ()
+up :: (LinearTo (Float, Float) f) => f ()
 up = linearTo y (For 1) (To 50)
 
-rightThenUp :: (LinearTo State f, Applicative f) => f ()
+rightThenUp :: (LinearTo (Float, Float) f, Applicative f) => f ()
 rightThenUp = right `sequential` up
 \end{code}
 
@@ -222,10 +197,10 @@ final state \hs{(50, 50)} and the animation result \hs{()}.
 
 \subsubsection{Parallel Instance}
 
-For parallel animations the \hs{liftP2} implementation runs
-the animations \hs{f1} and \hs{f2} both on the starting
-state. We distinguish different cases depending on whether \hs{f1} and
-\hs{f2} finish with a result or an animation remainder, and the remaining
+The \hs{liftP2} implementation runs
+the animations \hs{f1} and \hs{f2} on the starting
+state. We match on the cases where \hs{f1} and
+\hs{f2} finish with a result or an animation remainder and remaining
 time. We check which of the animations have finished and repackage them
 either into a result or a new remainder, using the result combination function
 where appropriate. When the longest of the two parallel animations is finished
@@ -238,7 +213,7 @@ Let us run the animations \hs{right} and \hs{up} in parallel, which means
 that both the \hs{x} and \hs{y}-value will increase simultaneously.
 
 \begin{code}
-rightAndUp :: (LinearTo State f, Parallel f) => f ()
+rightAndUp :: (LinearTo (Float, Float) f, Parallel f) => f ()
 rightAndUp = right `parallel` up
 \end{code}
 
