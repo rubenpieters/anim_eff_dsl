@@ -56,12 +56,12 @@ general combinators.
 We reuse the \hs{Functor}-\hs{Applicative}-\hs{Monad} hierarchy for
 sequencing animations. The main functions of interest from this hierarchy are \texttt{liftA2} and \hs{>>=}.
 
-The \hs{liftA2} function from the \hs{Applicative} class, which has type \\\hs{Applicative f => (a -> b -> c) -> f a -> f b -> f c}, takes two animations \hs{f a} and \hs{f b} and returns a new animation which plays them in order. The final result of the animation is of type \hs{c}, which is obtained by using the function \hs{a -> b -> c} on the results of the two played animations.
+The \hs{liftA2} function from the \hs{Applicative} class, which has type \\\hs{Applicative f =>}~\hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)}~\hs{->}~\hs{f}~\hs{a}~\hs{->}~\hs{f}~\hs{b}~\hs{->}~\hs{f}~\hs{c}}, takes two animations \hs{f}~\hs{a} and \hs{f}~\hs{b} and returns a new animation which plays them in order. The final result of the animation is of type \hs{c}, which is obtained by using the function \hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}} and applying the results of the two played animations to it.
 
-The \hs{>>=} function from the \hs{Monad} class (pronounced 'bind'), which has type \hs{Monad f => f a -> (a -> f b)}, takes an animation \hs{f a} and then feeds the result of this animation into the function \hs{a -> f b} to play the animation \hs{f b}.
+The \hs{>>=} function from the \hs{Monad} class (pronounced 'bind'), which has type \hs{Monad f}~\hs{=>}~\hs{f}~\hs{a}~\hs{->}~\hs{(}\hs{a}~\hs{->}~\hs{f}~\hs{b}\hs{)}, takes an animation \hs{f a} and then feeds the result of this animation into the function \hs{a}~\hs{->}~\hs{f}~\hs{b} to play the animation \hs{f}~\hs{b}.
 
 
-The \hs{sequential} function used earlier is a specialization of the \hs{liftA2} function. It does not require a \hs{a -> b -> c} function, and is only applicable to animations return a trivial value of type \hs{()}.
+The \hs{sequential} function used earlier is a specialization of the \hs{liftA2} function. It does not require a \hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c} function, and is only applicable to animations return a trivial value of type \hs{()}.
 
 \begin{code}
 sequential :: (Applicative f) => f () -> f () -> f ()
