@@ -30,7 +30,7 @@ We have reworked the introduction. It is now more focused on the trade-off betwe
 > GUI system so I am not even clear if these pictures are mockups or
 > actually captured by running code from the library.
 
-The application discussed in the paper uses the gloss library for as its GUI system. In the meantime we have also developed some other applications (another demo, an communication story example and a pacman game), some of which directly use the Haskell SDL bindings. We now emphasize these implementations more in the paper.
+The application discussed in the paper uses the gloss library as its graphics library. In the meantime we have also developed some other applications (another demo, an communication story example and a pacman game), some of which directly use the Haskell SDL bindings. We now emphasize these implementations more in the paper.
 
 > It is a shame that the inspectability design constraint means that
 > existing control operators cannot be used anymore.
@@ -82,13 +82,13 @@ Fixed.
 > something with the library that attempts to captures something useful
 > (possibly something useful in your own life, separatly from your
 > research work even) and then try to use it to get some feedback on the
-> design. Report on this application and see how it influences the
+> design.Report on this application and see how it influences the
 > design. Does the inspectability issue matter in practice? (Why?) Does
 > something else come up that needs some thought or care?
 
-
+We have since implemented a demo application, a communication story example and a pacman game. We have not encountered any noteworthy difficulties with respect to creating animations. In contrast, with GSAP, we did encounter a difficulty when implementing a general function for particle animations. We also recreated a GSAP benchmark of parallel animations, where PaSe scores slightly worse. We have added an evaluation section in the paper.
 
 > ----------------------- REVIEW 3 ---------------------
 > The paper introduces PaSe -- a DSL embedded in Haskell for expressing micro-animations. In particular the authors target two aspects: extensibility and inspectability. The paper is very well written and provides interesting insights into different aspects of PaSe. The only limitation of the paper is a lack of any kind of evaluation to demonstrate effectiveness and performance of the approach.
 
-
+We have since implemented a demo application, a communication story example and a pacman game. We have not encountered any noteworthy difficulties with respect to creating animations. In contrast, with GSAP, we did encounter a difficulty when implementing a general function for particle animations. We also recreated a GSAP benchmark of parallel animations, where PaSe scores slightly worse. We have added an evaluation section in the paper.

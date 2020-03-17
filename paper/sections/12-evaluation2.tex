@@ -4,7 +4,7 @@ This section compares an implementation of a simplified pacman game in Haskell w
 
 \begin{figure}[h]{\textwidth}
 \centering
-\includegraphics[width=\figscale\textwidth]{pictures/pacman}
+\includegraphics[width=.3\textwidth]{pictures/pacman}
 \caption{Screenshot of the pacman application.}
 \label{fig:pacman}
 \end{figure}
@@ -16,10 +16,10 @@ This section compares the PaSe and GSAP implementations with respect to certain 
 \begin{itemize}
 \item \textbf{Development Time} We roughly kept track of the development time. The development of the Haskell application took $\sim$1.5 working days, while the TypeScript application took $\sim$1 working day. We consider this as the same development time as the Haskell application was developed first, and thus it also contains work shared by both applications.
 \item \textbf{Lines of Code} Table~\ref{tbl:loc} contains the lines of code data (including whitespace) for each of the applications. The total lines of code for each of the application is roughly the same. However, the Haskell implementation had to implement some extra code concerning sprites and textures, which was unneeded for the TypeScript application as we utilized the \texttt{Sprite} class of the \texttt{PixiJS} library.
-\item \textbf{Relative LOC} Table~\ref{tbl:loc} also contains the relative lines of code. We note that the animation definitions module (AnimDefs) is slightly higher for the GSAP code. This is partly due to more verbosity due to having to embed more effectful code in the animations themselves because of a different design in the used graphics library, and partly because of a bit more verbosity in the TypeScript code. Using the timeline feature of GSAP, the experience for simple animations is comparable to PaSe. However for more complex animations and animations requiring embedded effects, there are some differences. We discuss this in more detail in the qualitative evaluation.
+\item \textbf{Relative LOC} Table~\ref{tbl:loc} also contains the relative lines of code. The animation definitions module (AnimDefs) is slightly higher for the GSAP code. We had to embed effects in the animations due to differences in the used graphics library, and the extra verbosity of TypeScript had extra impact in this module. Using the timeline feature of GSAP, the experience for simple animations is comparable to PaSe. However for more complex animations and animations requiring embedded effects, there are some differences. We discuss this in more detail in the qualitative evaluation.
 \end{itemize}
 
-\begin{table}
+\begin{table}[t!]
 \caption{Lines of code comparison (including whitespace)}
 \centering
 \label{tbl:loc}

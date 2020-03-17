@@ -1,12 +1,12 @@
 \section{Motivation}
 \label{sec:motivation}
 
-This section presents a simplified to-do list application to showcase the
-functionality and features of \dsl{}.
+We present a to-do list application to showcase the
+functionality of \dsl{}.
 
 \subsection{Running Example}
 
-Our application has two screens: a main screen and a menu screen. The main screen contains a navigation bar and three items. An overview of the application is given in Figure~\ref{fig:appOverview}. All figures are screenshots captured from an application built by combining \dsl{} with \texttt{gloss}.
+Our application has two screens: a main screen and a menu screen. The main screen contains a navigation bar and three items. An overview of the application is given in Figure~\ref{fig:appOverview}. These screenshots are captured from the application built by combining \dsl{} with \texttt{gloss}.
 
 \begin{figure}[!htbp]
 \centering
@@ -15,22 +15,17 @@ Our application has two screens: a main screen and a menu screen. The main scree
 \label{fig:appOverview}
 \end{figure}
 
-In this application, various user actions are accompanied with an animation:
+In this application, various user actions are accompanied with an animation.
+We list these actions below. Some animations are shown in Figure~\ref{fig:animExamples}.
 \begin{itemize}
-\item Each item can be marked as \emph{done} or \emph{not done} by clicking on it. The
-checkmark icon changes shape and color to indicate the change in status. These
-are the \hs{markAsDone}/\hs{markAsToDo} animations, of which \hs{markAsDone} is
-shown in Figure~\ref{fig:completeIconCheck}.
-\item Items can be filtered by their status by using the navigation bar
-buttons. The first button shows all items, the second shows all done items, and
-the third shows all to-do items. Both the navigation bar underline and the
-to-do items itself change shape to indicate the change in selection. These are
-the \hs{showAll}/\hs{onlyDone}/\hs{onlyToDo} animations, of which
-\hs{onlyDone} is shown in Figure~\ref{fig:onlyDoneFig}.
+\item The user marks items as \emph{(not) done} by clicking them. The
+checkmark icon changes shape and color to display its status change.
+\item The user filters items by their status with the navigation bar
+buttons. The leftmost shows all items, the middle shows all done items, and
+the rightmost shows all to-do items. The navigation bar underline and to-do
+items itself change shape to indicate the new selection.
 \item The menu screen shows/hides itself after clicking the hamburger icon. The
-menu expands inward from the left, to indicate the change in application state.
-These are the \hs{menuIntro}/\hs{menuOutro} animations, of which \hs{menuIntro}
-is shown in Figure~\ref{fig:menuIntroFig}.
+menu expands inward from the left, to indicate the application state change.
 \end{itemize}
 
 \begin{figure}[!htbp]
@@ -63,33 +58,27 @@ is shown in Figure~\ref{fig:menuIntroFig}.
 
 \subsection{Composing Animations}
 
-We express animations in \dsl{} by composing smaller animations into larger
-ones. When creating an animation, we need come up with a suitable decomposition.
-For example, the \hs{menuIntro} animation both introduces the menu screen and
-fades out the background. Thus, it is composed of two basic animations
-\hs{menuSlideIn} and \hs{appFadeOut} in parallel. The next sections explain how
-to construct such basic and composed animations.
+Animations are built in compositional fashion. When creating an animation, we decompose it into smaller elements. For example, the \hs{menuIntro} animation both introduces the menu screen and fades out the background. Thus, it is composed of two basic animations \hs{menuSlideIn} and \hs{appFadeOut} in parallel. The next sections explain how to construct such basic and composed animations.
 
 \subsection{Basic Animations}
 
-A basic animation changes the property of an element over a period of time. To
-specify a basic animation we need three elements: a lens specifying which
-property to change, the duration of the animation, and lastly the target value
-for this property. Since this operation creates an animation which changes a
-property \emph{to} a target linearly, it is called \hs{linearTo}. The duration
-is specified with the \hs{For} constructor while the target value is specified
-with the \hs{To} constructor.
+Basic animations change the property of an element over a period of time. The
+\hs{linearTo} needs three inputs: a lens targeting the property, the duration,
+and the target value for this property. This results in a linear change from
+the current value to its target, hence the name. The duration is specified
+with the \hs{For} constructor while the target value is specified with the
+\hs{To} constructor.
 
-\paragraph{Note on Lenses} We use the lens notation \texttt{x . y . z} to
-target the property \texttt{z} inside a nested structure \hs{{ x: { y: { z:
-Property } } }}. This type of lenses was conceived by van Laarhoven
+\paragraph{Note on Lenses} We use lens notation \texttt{x . y . z} to
+target \texttt{z} inside a nested structure \hs{{ x: { y: { z:
+T } } }}. This type of lenses was conceived by van Laarhoven
 \cite{vlLenses}, and later packaged into
 various Haskell libraries, such as
 \texttt{lens}\footnote{\url{https://hackage.haskell.org/package/lens}}.
 
-To implement the navigation bar underline animation, we reduce the underline
-width of the first button for 0.25 seconds and increase the underline width of
-the second button for 0.25 seconds. These animations are expressed in
+To animate the navigation bar underline, we reduce the width of the
+leftmost underline for 0.25 seconds and increase the width of
+the middle underline for 0.25 seconds. These animations are expressed in
 respectively \hs{line1Out} and \hs{line2In} below, and shown visually in
 Figure~\ref{fig:basic}.
 
@@ -98,7 +87,7 @@ line1Out = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
 line2In = linearTo (navbar . underline2 . width) (For 0.25) (To 28)
 \end{spec}
 
-Other examples are the \hs{menuSlideIn} and \hs{appFadeOut} animations. For the
+The \hs{menuSlideIn} and \hs{appFadeOut} animations are other examples. For the
 former, we increase the width of the menu over a duration of 0.5 seconds, and
 for the latter we increase the alpha value of the obscuring box over a duration
 of 0.5 seconds. These animations are shown visually in Figure~\ref{fig:basic}.
@@ -147,13 +136,13 @@ appFadeOut = linearTo (obscuringBox . alpha) (For 0.5) (To 0.65)
 
 A composed animation combines several other animations into one new animation. We can do this either in \emph{sequence} or in \emph{parallel}.
 
-To obtain the \hs{selectBtn2} animation, we combine both the \hs{line1Out} and \hs{line2In} animations with the \hs{sequential} combinator. This constructs a new animation which first plays the \hs{line1Out} animation, and once it is finished plays the \hs{line2In} animation.
+We create the \hs{selectBtn2} animation by combining the \hs{line1Out} and \hs{line2In} animations with \hs{sequential}. This constructs a new animation which first plays \hs{line1Out}, and once it is finished plays \hs{line2In}.
 
 \begin{spec}
 selectBtn2Anim = line1Out `sequential` line2In
 \end{spec}
 
-To obtain the \hs{menuIntro} animation, we combine both the \hs{menuSlideIn} and \hs{appFadeOut} animations with the \hs{parallel} combinator. This constructs a new animation which plays both the \hs{menuSlideIn} and \hs{appFadeOut} animations at the same time.
+To obtain the \hs{menuIntro} animation, we combine both the \hs{menuSlideIn} and \hs{appFadeOut} animations with \hs{parallel}. This constructs a new animation which plays both the \hs{menuSlideIn} and \hs{appFadeOut} animations at the same time.
 
 \begin{spec}
 menuIntro = menuSlideIn `parallel` appFadeOut

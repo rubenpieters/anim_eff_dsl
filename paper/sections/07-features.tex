@@ -2,14 +2,12 @@
 \label{sec:features}
 
 The features seen in Section~\ref{sec:motivation} form the basis of \dsl{}.
-However, animation libraries such as GSAP provide a much more extensive list of
-features.
-
-To add support for similar features, we design \dsl{} with extensibility and
-inspectability in mind. This means that \dsl{} can be extended with custom
+To provide support for additional features present in other animation libraries,
+we design \dsl{} with extensibility and
+inspectability in mind. This means that \dsl{} can be extended with new
 operations and information can be derived from inspecting specified animations.
 To support arbitrary expressiveness in combination with those
-features, we also emphasize the possibility to extend \dsl{} with custom
+features, we also emphasize the possibility to extend \dsl{} with new
 combinators.
 
 \subsection{Extensibility}
@@ -45,7 +43,7 @@ complicatedAnim = do v <- get; linearTo lens (For v) (To 10)
 complicatedAnimDuration = duration complicatedAnim -- type error
 \end{spec}
 
-Calculating a duration is mostly a stepping stone towards supporting other interesting features. One such example is sequentially composing animations with a relative offset. For example, to compose a first animation \hs{anim1} with a second animation \hs{anim2} which starts 0.5 seconds before the end of \hs{anim1}.
+Calculating a duration is mostly a stepping stone towards supporting other interesting features. One such example is sequentially composing animations with a relative offset. For example, to compose a first animation \hs{anim1} with a second animation \hs{anim2} which starts 0.5 seconds \emph{before} the end of \hs{anim1}.
 
 \begin{spec}
 relSeqAnim = relSequential anim1 anim2 (-0.5)
