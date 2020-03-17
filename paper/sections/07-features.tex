@@ -52,29 +52,21 @@ relSeqAnim = relSequential anim1 anim2 (-0.5)
 \subsection{Expressiveness}
 \label{sec:customcomb}
 
-Similarly to providing custom operations, \dsl{} also supports custom
-combinators. For typical monadic DSLs this is not needed as \hs{>>=} and \hs{return} 
-cover all use cases.
-However, since \dsl{} has the additional requirement of being inspectable, the
-\hs{>>=} combinator ends up being a liability because it only provides a very
-limited amount of inspectability.
+In monadic DSLs the \hs{>>=} and \hs{return} combinators provide the needed expressivity. When creating inspectable animations, \hs{>>=} is a liability since it has limited inspectability. \dsl{} supports extension with custom control flow combinators.
 
-In the \hs{onlyDone} animation, we show all \emph{done} items, while
+The \hs{onlyDone} animation shows all \emph{done} items while
 hiding all \emph{to-do} items. This could be implemented by first
 showing all items with the \hs{showAll} animation, since an item might have
 been hidden by a previous action, and then hiding all to-do items with the
-\hs{hideToDo} animation. The definition for this is given below, while the
-implementation of \hs{showAll} and \hs{hideToDo} is omitted.
+\hs{hideToDo} animation. The definition is given below, while the definitions
+of \hs{showAll} and \hs{hideToDo} are omitted for brevity.
 
 \begin{spec}
 onlyDoneNaive = do showAll; hideToDo
 \end{spec}
 
-However, this animation is a bit naive since it executes the \hs{showAll}
-animation regardless of whether there are any hidden done items that actually
-need to appear. Instead, the intended animation is to only make done items
-appear when any were hidden. This is done by first checking whether there are
-any done items and based on that we play the naive version of \hs{onlyDone},
+However, the intended animation is to only show done items when any were hidden.
+So instead we first check the amount and based on that we play the naive version of \hs{onlyDone},
 otherwise we just hide the not done items.
 
 \begin{spec}
@@ -83,11 +75,9 @@ onlyDone = do
   if cond then onlyDoneNaive else hideToDo
 \end{spec}
 
-However, if we also want to inspect this computation, this formulation
-is problematic since it is specified using a construction which is too general;
-we explain this in more detail in Section~\ref{sec:interaction}. Instead, we
-can define a custom combinator \hs{ifThenElse} to express \hs{onlyDone}
-in an inspectable manner.
+However, this formulation uses monadic features and is thus not inspectable.
+To make it inspectable, we utilize a custom combinator \hs{ifThenElse}.
+We revisit this example in more detail in Section~\ref{sec:interaction}.
 
 \begin{spec}
 onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideToDo
