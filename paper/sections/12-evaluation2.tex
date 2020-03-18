@@ -24,7 +24,7 @@ each module.
 $\sim$1.5 working days, while the TypeScript application took $\sim$1 working
 day. We consider this approximately the same development time as the Haskell application
 was developed first, and thus contains design work shared by both
-applications.
+applications. The developer is proficient in both languages.
 \item \textbf{Lines of Code (LOC)} Table~\ref{tbl:loc} contains the LOC data
 (including whitespace) for both applications. Their total LOCs are roughly the same. However, the Haskell
 code implements its own functionality for sprites and
@@ -93,10 +93,8 @@ animation.
 \item \textbf{Performance} Both libraries perform 
 equally acceptable on Pac-Man: no visible glitches or lag at 60
 frames per second (FPS) on an Intel core i7-6600U at 2.60 GHz with 8GB memory. We have also implemented a benchmark similar to GSAP's
-speed test\footnote{\url{https://greensock.com/js/speed.html}}. This test
-benchmarks animations with a large number of parallel components. GSAP is
-slightly more optimized as it handles 500 parallel animations at 60 FPS, while
-PaSe currently handles 400 parallel animations at 60 FPS.
+speed test\footnote{\url{https://greensock.com/js/speed.html}}, which tests a large parallel animations. GSAP is
+slightly more optimized currently as it handles 500 parallel animations at 60 FPS instead of \dsl{}'s 400.
 This could be remedied by further performance improvements of \dsl{},
 like fusing multiple parallel animations or improving the \hs{Animation} data structure, which are future work.
 \item \textbf{Extensibility \& Inspectability} Extensibility and inspectability

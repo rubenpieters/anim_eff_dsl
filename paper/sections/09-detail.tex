@@ -6,7 +6,7 @@ develop \dsl{} in the style of the \texttt{mtl}
 library\footnote{\url{http://hackage.haskell.org/package/mtl}} which implements
 monadic effects using type classes \cite{DBLP:conf/afp/Jones95}.  This style is
 also called the finally tagless approach \cite{DBLP:journals/jfp/CaretteKS09}.
-However, because the \dsl{} classes are not subclasses of \hs{Monad} they leave
+However, because the \dsl{} classes are not subclasses of \hs{Monad}, they leave
 room for inspectability.
 
 \subsection{Specifying Basic Animations}
@@ -40,15 +40,7 @@ line1Out = linearTo (navbar . underline1 . width) (For 0.25) (To 0)
 \subsection{Specifying Composed Animations}
 
 Section~\ref{sec:motivation} used the combinators \hs{sequential} and
-\hs{parallel} for composing animations. Here, we provide these as well as more
-general combinators.
-
-
-% to
-% \hs{(}\hs{a}~\hs{->}~\hs{b}~\hs{->}~\hs{c}\hs{)}~\hs{->}~\hs{f}~\hs{a}~\hs{->}~\hs{f}~\hs{b}~\hs{->}~\hs{f}~\hs{c},
-% which takes two animations returning values of respectively type \hs{a} and
-% \hs{b} and a function that combines these return values. The result is then an
-% animation returning a value of type \hs{c}.
+\hs{parallel} for composing animations. In this section, we describe these combinators in more detail.
 
 \subsubsection{Sequential Composition}
 
@@ -68,7 +60,7 @@ sequential f1 f2 = liftA2 (\_ _ -> ()) f1 f2
 \end{code}
 
 Hence, the type signature for \hs{selectBtn2Anim} contains an 
-\hs{Applicative f} constraint in addition to the \hs{LinearTo Application f}
+\hs{(Applicative f)} constraint in addition to the \hs{(LinearTo Application f)}
 constraint.
 
 \begin{code}
@@ -78,7 +70,7 @@ selectBtn2Anim = line1Out `sequential` line2In
 
 \subsubsection{Parallel Composition}
 
-We create our own \hs{Parallel} type class for the \hs{parallel} function\footnote{The \hs{Alternative} class (\url{https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus}) is not suitable as the laws are not the same.}. Its \hs{liftP2} function has the same signature as \hs{liftA2}, but denotes parallel rather than sequential composition. The \hs{parallel} function is a specialization of \hs{liftP2}.
+We create our own \hs{Parallel} type class for the \hs{parallel} function\footnote{The \hs{Alternative} class (\url{https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus}) is not suitable as the laws are not the same.}. Its \hs{liftP2} function has the same signature as \hs{liftA2}, but the intended semantics of the \hs{liftA2} implementation is parallel rather than sequential composition. Technically they could also be swapped, but the relation of \hs{Applicative} to \hs{Monad} makes it more sensible for sequential composition semantics. The \hs{parallel} function is a specialization of \hs{liftP2}.
 
 \begin{code}
 class Parallel f where
@@ -95,10 +87,10 @@ menuIntro = menuSlideIn `parallel` appFadeOut
 
 \subsection{Running Animations}
 
-Now we create a new \hs{Animation} datatype that instantiates the above
+Now we create a new \hs{Animation} data type that instantiates the above
 type classes to interpret \dsl{} programs as actual animations. We briefly
 summarize this implementation here and refer for more details to
-our implementation.\footnote{\url{https://github.com/rubenpieters/anim_eff_dsl/tree/master/code}}
+our codebase.\footnote{\url{https://github.com/rubenpieters/anim_eff_dsl/tree/master/code}}
 
 The \hs{Animation} data type, defined below, models an animation.
 It takes the current state \hs{s} and the
@@ -116,21 +108,20 @@ newtype Animation s m a = Animation { runAnimation ::
     Float ->                         -- time delta
     m ( s                            -- next state
       , Either (Animation s m a) a   -- remainder / result
-      , Maybe Float )}               -- remaining time delta
+      , Maybe Float )}               -- remaining delta time
 \end{code}
 
 \subsubsection{LinearTo Instance}
 
 The \hs{linearTo} implementation of \hs{Animation} constructs
-the new state, calculates the remainder of the animation, and calculates
-the unused time. The difference between the \hs{linearTo} duration and the
+the new state, calculates the remainder of the animation and the remaining delta time. The difference between the \hs{linearTo} duration and the
 frame time determines whether there is a remaining \hs{linearTo} animation or
 remaining time.
 
 \paragraph{Examples}
 
-Let us illustrate the behaviour on a tuple state \hs{(Float, Float)}, of an \hs{x} and \hs{y}-value.
-The \hs{right} animation transforms the \hs{x}-value to 50 over 1 second.
+We illustrate the behaviour on a tuple state \hs{(Float, Float)}, of an \hs{x} and \hs{y} value.
+The \hs{right} animation transforms the \hs{x} value to 50 over 1 second.
 
 \begin{code}
 right :: (LinearTo (Float, Float) f) => f ()
@@ -172,7 +163,7 @@ because the remaining time was used up, we return that remainder.
 
 \paragraph{Examples}
 
-Let us define an additional animation \hs{up} which transforms the \hs{y}-value to 50 over a duration of 1 second. Additionally, we define an animation \hs{rightThenUp} which composes the \hs{right} and \hs{up} animations in sequence.
+Let us define an additional animation \hs{up} which transforms the \hs{y} value to 50 over a duration of 1 second. Additionally, we define an animation \hs{rightThenUp} which composes the \hs{right} and \hs{up} animations in sequence.
 
 \begin{code}
 up :: (LinearTo (Float, Float) f) => f ()
@@ -185,8 +176,8 @@ rightThenUp = right `sequential` up
 Running the \hs{rightThenUp} animation for 0.5 seconds gives a similar result
 to running \hs{right} for 0.5 seconds. We obtain the new state \hs{(25,
 0)}, an animation remainder \hs{anim2} and there is no remaining time.
-Now the animation remainder is the rest of the \hs{rightThenUp} animation,
-which is half of the \hs{right} animation and the full \hs{up} animation. So,
+Now the animation remainder is the rest of \hs{rightThenUp},
+which is half of \hs{right} and \hs{up}. So,
 when we run this animation remainder for 1 second, it will run the second half
 of \hs{right} and the first half of \hs{up}.  This results in the state
 \hs{(50, 25)}, the animation remainder \hs{anim3} and no remaining delta time.
@@ -209,7 +200,7 @@ of the animation.
 \paragraph{Examples}
 
 Let us run the animations \hs{right} and \hs{up} in parallel, which means
-that both the \hs{x} and \hs{y}-value will increase simultaneously.
+that both the \hs{x} and \hs{y} value will increase simultaneously.
 
 \begin{code}
 rightAndUp :: (LinearTo (Float, Float) f, Parallel f) => f ()
@@ -223,7 +214,7 @@ time.
 
 \subsection{Inspecting Animations}
 
-To inspect animations we instantiate animations with \hs{Const}. It wraps an \hs{a} value and has a \hs{b} phantom type parameter to trivially make it a functor.
+To inspect animations we instantiate them with \hs{Const}. It wraps an \hs{a} value and has a \hs{b} phantom type parameter to trivially make it a functor.
 
 \begin{spec}
 newtype Const a b = Const { getConst :: a }
@@ -242,13 +233,11 @@ instance LinearTo obj (Const Duration) where
 
 \subsubsection{Inspecting Applicative}
 
-While the \hs{Const} data type does not provide a \hs{Monad} instance, it does
-provide an \hs{Applicative} instance. This means that it is not possible to
+It is not possible to
 inspect animations with a \hs{Monad} constraint, but it is possible for
 animations with an \hs{Applicative} constraint. The \hs{Const} data type is not
-the culprit here, but rather the \hs{>>=} method of the \hs{Monad} class which
-contains a continuation function \hs{a}~\hs{->}~\hs{m}~\hs{b}, which is the
-limiting factor of inspection.
+the culprit here, but rather the \hs{>>=} method of the \hs{Monad} class, which
+contains the limiting factor: a continuation function \hs{a}~\hs{->}~\hs{m}~\hs{b}.
 
 \subsubsection{Inspecting Parallel}
 
@@ -265,8 +254,7 @@ instance Par (Const Duration) where
 The duration function is a specialization of the unwrapper function of the
 \hs{Const} data type, namely \hs{getConst}. We can feed our previously defined
 animations \hs{selectBtn2Anim} and \hs{menuIntro} from
-Section~\ref{sec:motivation} to this function and obtain the duration of the
-animations as a result.
+Section~\ref{sec:motivation} to this function and obtain their durations as a result.
 
 \begin{code}
 duration :: Const Duration a -> Duration

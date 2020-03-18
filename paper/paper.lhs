@@ -2,7 +2,7 @@
 
 \input{sections/01-packages.tex}
 
-\title{PaSe: An Extensible and Inspectable DSL\\for Micro-Animations}
+\title{PaSe: An Extensible and Inspectable DSL\\for Micro-Animations}}
 
 \input{sections/02-commands.tex}
 
@@ -17,6 +17,7 @@ Tom Schrijvers \orcidID{0000-0001-8771-5559}}
 \\\email{\{ruben.pieters, tom.schrijvers\}@@cs.kuleuven.be}}
 
 \maketitle
+\\First author is a \emph{research student}. Article category: \emph{Project Article}.
 
 \input{sections/04-abstract.tex}
 

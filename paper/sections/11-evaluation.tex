@@ -73,7 +73,7 @@ const condAnimDuration = condAnim.totalDuration() // = 1
 
 \subsection{Relevance of Duration in Other Features}
 
-A wrongly calculated duration becomes more problematic when another feature relies on this calculation. The relative sequencing feature needs the duration of the first animation, so the second animation can be added with the correct offset. For example, we can specify the position parameter \texttt{-=0.5} to specify that it should start 0.5 seonds before the end of the previous animation.
+A wrongly calculated duration becomes more problematic when another feature relies on this calculation. The \emph{relative sequencing} feature needs the duration of the first animation, so the second animation can be added with the correct offset. For example, we can specify the position parameter \texttt{-=0.5} to specify that it should start 0.5 seonds before the end of the previous animation.
 
 \begin{js}
 const bothDelayed = new TimelineMax({ paused: true })
@@ -82,7 +82,7 @@ const bothDelayed = new TimelineMax({ paused: true })
 \end{js}
 
 
-This features differs from ordinary sequencing such as with \hs{sequential}. When we state that animation \texttt{B} must play 0.5 seconds before the end of animation \texttt{A}, then it is not possible to wait until animation \texttt{A} has finished to start running animation \textt{B}. This is because animation \texttt{B} \emph{should have started playing for 0.5 seconds already}. When we have the duration of animation \texttt{A} available, animation \texttt{B} can be appropriately scheduled.
+This feature differs from ordinary sequencing such as with \hs{sequential}. When we state that animation \texttt{B} must play 0.5 seconds before the end of animation \texttt{A}, then it is not possible to wait until animation \texttt{A} has finished to start running animation \textt{B}. This is because animation \texttt{B} \emph{should have started playing for 0.5 seconds already}. When we have the duration of animation \texttt{A} available, animation \texttt{B} can be appropriately scheduled.
 
 This feature behaves somewhat unexpectedly when combined with a
 conditional animation. In the \texttt{relativeCond} animation below we add a
@@ -105,7 +105,7 @@ erroneous duration calculations.  Clearly, being more explicit about control
 flow structures and their impact on inspectability like in \dsl{} helps
 providing more predictable interaction between these features.
 
-\subsection{Relative Sequential Composition in \dsl{}}
+\subsection{Relative Sequencing in \dsl{}}
 
 While not yet ideal from a usability perspective,\footnote{It
 requires

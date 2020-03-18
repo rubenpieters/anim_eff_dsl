@@ -3,7 +3,7 @@
 
 Haskell DSLs are typically monadic because the \hs{>>=} combinator provides
 great expressive power. Yet, this power also hinders inspectability. This section shows how to balance 
-expressiveness and inspectability with a custom combinator. This feature is \emph{opt-in} in that it is only required when inspectability is required. If that is no concern, then it is no problem to work with the \hs{Monad} constraint.
+expressiveness and inspectability with a custom combinator. This feature is \emph{opt-in} in the sense that it is only required when inspectability is required. If that is no concern, then it is no problem to work with the \hs{Monad} constraint.
 
 Let us revisit the \hs{onlyDone} animation from Section~\ref{sec:customcomb}. The following definition imposes a \hs{Monad} constraint on \hs{f}, making the animation non-inspectable.
 
