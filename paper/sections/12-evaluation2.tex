@@ -45,7 +45,7 @@ discuss in more detail in the qualitative evaluation.
 \centering
 \label{tbl:loc}
 \begin{center}
-\begin{tabular}{l@{\hskip 0.5cm}ll@{\hskip 0.2cm}ll}
+\begin{tabular}{l@{\hskip 0.5cm}rr@{\hskip 0.2cm}rr}
  \textbf{Module} & \textbf{Haskell/PaSe (LOC)} & \textbf{\%} & \textbf{TypeScript/GSAP (LOC)} & \textbf{\%} \\
  \hline
  AnimDefs & 127 & 21\% & 197 & 32\% \\ 
@@ -103,10 +103,10 @@ like fusing multiple parallel animations or improving the \hs{Animation} data st
 are key features of PaSe. Both were useful for Pac-Man. Inspectability allowed 
 extracting all used textures in the animations to
 automate their loading. Extensibility enabled the definition of the 
-effect mentioned earlier. We
+particle effect mentioned earlier. We
 created a new \hs{WithParticle} type class and implemented both an
 \hs{Animation} instance and a \hs{Const} instance for the texture inspection.
 GSAP does not support inspectability, and thus we did not
-implement the automatic tracking of textures. The particle animation function
+implement the automatic loading of textures. The particle animation function
 was implemented with callbacks and implicit side-effects, which TypeScript allows anywhere.
 \end{itemize}
