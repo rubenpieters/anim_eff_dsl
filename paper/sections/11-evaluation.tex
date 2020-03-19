@@ -103,7 +103,7 @@ Predicting the resulting behavior becomes much more complicated when
 conditional animations are embedded deep inside complex timelines and cause
 erroneous duration calculations.  Clearly, being more explicit about control
 flow structures and their impact on inspectability like in \dsl{} helps
-providing more predictable interaction between these features.
+providing a more predictable interaction between these features.
 
 \subsection{Relative Sequencing in \dsl{}}
 
@@ -133,6 +133,7 @@ relative positioning. We use the \hs{relMaxSequential} function to sequence
 animations with a maximum duration.
 
 \begin{spec}
+-- create synonym for multiple constraints
 class (LinearTo Float f, IfThenElse f) => Combined f where
 instance (LinearTo Float f, IfThenElse f) => Combined f where
 

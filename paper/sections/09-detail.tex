@@ -70,7 +70,7 @@ selectBtn2Anim = line1Out `sequential` line2In
 
 \subsubsection{Parallel Composition}
 
-We create our own \hs{Parallel} type class for the \hs{parallel} function\footnote{The \hs{Alternative} class (\url{https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus}) is not suitable as the laws are not the same.}. Its \hs{liftP2} function has the same signature as \hs{liftA2}, but the intended semantics of the \hs{liftA2} implementation is parallel rather than sequential composition. Technically they could also be swapped, but the relation of \hs{Applicative} to \hs{Monad} makes it more sensible for sequential composition semantics. The \hs{parallel} function is a specialization of \hs{liftP2}.
+We create our own \hs{Parallel} type class for the \hs{parallel} function\footnote{The \hs{Alternative} class (\url{https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus}) is not suitable as the laws are not the same.}. Its \hs{liftP2} function has the same signature as \hs{liftA2}, but the intended semantics of the \hs{liftA2} implementation is parallel rather than sequential composition. Technically they are interchangeable, but the relation of \hs{Applicative} to \hs{Monad} makes it more sensible for sequential composition semantics. The \hs{parallel} function is a specialization of \hs{liftP2}.
 
 \begin{code}
 class Parallel f where
