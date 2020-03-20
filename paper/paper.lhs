@@ -6,7 +6,13 @@
 
 \input{sections/02-commands.tex}
 
+% for review
+\usepackage{lineno}
+
 \begin{document}
+
+% for review
+\linenumbers
 
 \author{Ruben~P. Pieters $^{\textrm{\Letter}}$ \orcidID{0000-0003-0537-9403} \and
 Tom Schrijvers \orcidID{0000-0001-8771-5559}}
