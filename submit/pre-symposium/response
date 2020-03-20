@@ -86,9 +86,12 @@ Fixed.
 > design. Does the inspectability issue matter in practice? (Why?) Does
 > something else come up that needs some thought or care?
 
-We have since implemented a demo application, a communication story example and a Pac-Man game. We have not encountered any noteworthy difficulties with respect to creating animations. In contrast, with GSAP, we did encounter a difficulty when implementing a general function for particle animations. We also recreated a GSAP benchmark of parallel animations, where PaSe scores slightly worse. We have added an evaluation section in the paper.
+We have since implemented a demo application, a communication story example and a Pac-Man game. We have not encountered any noteworthy difficulties with respect to creating animations. In contrast, with GSAP, we did encounter a difficulty when implementing a general function for particle animations. We also recreated a GSAP benchmark of parallel animations, where PaSe scores slightly worse. We were able to utilize inspectability to automatically fetch the used textures in the animations. We have added an evaluation section in the paper detailing this use case evaluation.
+
 
 > ----------------------- REVIEW 3 ---------------------
 > The paper introduces PaSe -- a DSL embedded in Haskell for expressing micro-animations. In particular the authors target two aspects: extensibility and inspectability. The paper is very well written and provides interesting insights into different aspects of PaSe. The only limitation of the paper is a lack of any kind of evaluation to demonstrate effectiveness and performance of the approach.
 
-We have since implemented a demo application, a communication story example and a Pac-Man game. We have not encountered any noteworthy difficulties with respect to creating animations. In contrast, with GSAP, we did encounter a difficulty when implementing a general function for particle animations. We also recreated a GSAP benchmark of parallel animations, where PaSe scores slightly worse. We have added an evaluation section in the paper.
+We have since implemented a demo application, a communication story example and a Pac-Man game. We have not encountered any noteworthy difficulties with respect to creating animations. In contrast, with GSAP, we did encounter a difficulty when implementing a general function for particle animations. We also recreated a GSAP benchmark of parallel animations, where PaSe scores slightly worse. We were able to utilize inspectability to automatically fetch the used textures in the animations. We have added an evaluation section in the paper detailing this use case evaluation.
+
+
