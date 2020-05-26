@@ -1,8 +1,8 @@
 \section{Future Work}
 \label{sec:future}
 
-The main aspects to improve are currently related to the \dsl{} eco-system, such as providing bindings to various graphics backends, extending the provided set of features and improving the performance of the implementation.
+Some general improvements can be made regarding supporting new backends, more features and improving performance.
 
-Another avenue of future work is to explore trade-offs between the MTL style, as used in this paper, or an initial encoding approach, as is typical in approaches based on algebraic effects and handlers. The MTL style was chosen since it is simpler presentation-wise, mainly on the extensibility aspect with regards to different computation classes. However, we believe that implementation of some features, such as the relative sequencing, is simpler in the initial approach.
+We chose the MTL style for this paper, as we believe it is simpler presentation-wise. However, an initial encoding, which is more typical for algebraic effects and handlers, can provide benefits in areas such as the implementation of the relative sequencing. This comparison is another avenue for future work.
 
 An aspect not touched in this paper is \emph{conflict management}. A conflict appears when the same property is targeted by different animations in parallel. For example, if we want to change a value both to 0 and 100 in parallel, what should this animation look like? \dsl{} does no conflict management, and the animation might look stuttery. GSAP, for example, resolves this by only enabling the most recently added animation. However this strategy is not straightforwardly mapped to the context of \dsl{}. Inspectability could provide a solution for this problem by providing the possibility to detect conflicts.
