@@ -6,19 +6,7 @@
 
 \input{sections/02-commands.tex}
 
-% for review
-\usepackage{lineno}
-\usepackage{mdframed}
-\newmdtheoremenv[linewidth=0.5pt, topline=false, bottomline=false, rightline=false,%
-leftmargin=0pt, innerleftmargin=0.4em, rightmargin=0pt, innerrightmargin=0pt, innertopmargin=-5pt ,%
-innerbottommargin=3pt, splittopskip=\topskip, splitbottomskip=0.3\topskip, %
-skipabove=0.6\topsep]%
-{quote}{}%
-
 \begin{document}
-
-% for review
-\linenumbers
 
 \author{Ruben~P. Pieters $^{\textrm{\Letter}}$ \orcidID{0000-0003-0537-9403} \and
 Tom Schrijvers \orcidID{0000-0001-8771-5559}}
