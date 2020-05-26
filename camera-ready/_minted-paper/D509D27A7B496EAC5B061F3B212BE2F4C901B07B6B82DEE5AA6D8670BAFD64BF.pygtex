@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{newtype} \PYG{k+kt}{Animation} \PYG{n}{s} \PYG{n}{m} \PYG{n}{a} \PYG{o+ow}{=} \PYG{k+kt}{Animation} \PYG{p}{\PYGZob{}} \PYG{n}{runAnimation} \PYG{o+ow}{::}
+    \PYG{n}{s} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}}                             \PYG{c+c1}{\PYGZhy{}\PYGZhy{} previous state}
+    \PYG{k+kt}{Float} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}}                         \PYG{c+c1}{\PYGZhy{}\PYGZhy{} time delta}
+    \PYG{n}{m} \PYG{p}{(} \PYG{n}{s}                            \PYG{c+c1}{\PYGZhy{}\PYGZhy{} next state}
+      \PYG{p}{,} \PYG{k+kt}{Either} \PYG{p}{(}\PYG{k+kt}{Animation} \PYG{n}{s} \PYG{n}{m} \PYG{n}{a}\PYG{p}{)} \PYG{n}{a}   \PYG{c+c1}{\PYGZhy{}\PYGZhy{} remainder / result}
+      \PYG{p}{,} \PYG{k+kt}{Maybe} \PYG{k+kt}{Float} \PYG{p}{)\PYGZcb{}}               \PYG{c+c1}{\PYGZhy{}\PYGZhy{} remaining delta time}
+\end{Verbatim}

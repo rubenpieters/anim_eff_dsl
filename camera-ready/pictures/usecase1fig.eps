@@ -1,0 +1,216 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: ImageMagick 6.8.9
+%%Title: pictures/usecase1fig.eps
+%%CreationDate: 2020-03-19T11:06:19+01:00
+%%BoundingBox: -0 -0 412 120
+%%HiResBoundingBox: 0 0 412 120
+%%LanguageLevel: 3
+%%Pages: 1
+%%EndComments
+%%BeginProlog
+/ByteStreamDecodeFilter
+{
+  /z exch def
+  /r exch def
+  /c exch def
+  z 0 eq { /ASCII85Decode filter } if
+  z 1 eq
+  {
+    <<
+      /K -1
+      /Columns c
+      /Rows r
+    >>
+    /CCITTFaxDecode filter
+  } if
+  z 2 eq { /DCTDecode filter } if
+  z 3 eq { /LZWDecode filter } if
+  z 4 eq { /RunLengthDecode filter } if
+  z 5 eq { /FlateDecode filter } if
+} bind def
+
+/DirectClassImageDict
+{
+  colorspace 0 eq
+  {
+    /DeviceRGB setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 8
+      /DataSource pixel_stream
+      /MultipleDataSources false
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /Decode [0 1 0 1 0 1]
+    >>
+  }
+  {
+    /DeviceCMYK setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 8
+      /DataSource pixel_stream
+      /MultipleDataSources false
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /Decode
+        compression 2 eq
+        { [1 0 1 0 1 0 1 0] }
+        { [0 1 0 1 0 1 0 1] }
+        ifelse
+    >>
+  }
+  ifelse
+} bind def
+
+/PseudoClassImageDict
+{
+  % Colors in colormap image.
+  currentfile buffer readline pop
+  token pop /colors exch def pop
+  colors 0 eq
+  {
+    % Depth of grayscale image.
+    currentfile buffer readline pop
+    token pop /bits exch def pop
+    /DeviceGray setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent bits
+      /Decode [0 1]
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /DataSource pixel_stream
+    >>
+  }
+  {
+    % RGB colormap.
+    /colormap colors 3 mul string def
+    compression 0 eq
+    { currentfile /ASCII85Decode filter colormap readstring pop pop }
+    { currentfile colormap readstring pop pop }
+    ifelse
+    [ /Indexed /DeviceRGB colors 1 sub colormap ] setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 8
+      /Decode [0 255]
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /DataSource pixel_stream
+    >>
+  }
+  ifelse
+} bind def
+
+/NonMaskedImageDict
+{
+  class 1 eq
+  { PseudoClassImageDict }
+  { DirectClassImageDict }
+  ifelse
+} bind def
+
+/MaskedImageDict
+{
+  <<
+    /ImageType 3
+    /InterleaveType 3
+    /DataDict NonMaskedImageDict
+    /MaskDict
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 1
+      /DataSource mask_stream
+      /MultipleDataSources false
+      /ImageMatrix [ columns 0 0 rows neg 0 rows]
+      /Decode [ 0 1 ]
+    >>
+  >>
+} bind def
+
+/ClipImage
+{} def
+
+/DisplayImage
+{
+  gsave
+  /buffer 512 string def
+  % Translation.
+  currentfile buffer readline pop
+  token pop /x exch def
+  token pop /y exch def pop
+  x y translate
+  % Image size and font size.
+  currentfile buffer readline pop
+  token pop /x exch def
+  token pop /y exch def pop
+  currentfile buffer readline pop
+  token pop /pointsize exch def pop
+  x y scale
+  % Clipping path.
+  currentfile buffer readline pop
+  token pop /clipped exch def pop
+  % Showpage.
+  currentfile buffer readline pop
+  token pop /sp exch def pop
+  % Image pixel size.
+  currentfile buffer readline pop
+  token pop /columns exch def
+  token pop /rows exch def pop
+  % Colorspace (RGB/CMYK).
+  currentfile buffer readline pop
+  token pop /colorspace exch def pop
+  % Transparency.
+  currentfile buffer readline pop
+  token pop /alpha exch def pop
+  % Stencil mask?
+  currentfile buffer readline pop
+  token pop /stencil exch def pop
+  % Image class (direct/pseudo).
+  currentfile buffer readline pop
+  token pop /class exch def pop
+  % Compression type.
+  currentfile buffer readline pop
+  token pop /compression exch def pop
+  % Clip and render.
+  /pixel_stream currentfile columns rows compression ByteStreamDecodeFilter def
+  clipped { ClipImage } if
+  alpha stencil not and
+  { MaskedImageDict mask_stream resetfile }
+  { NonMaskedImageDict }
+  ifelse
+  stencil { 0 setgray imagemask } { image } ifelse
+  grestore
+  sp { showpage } if
+} bind def
+%%EndProlog
+%%Page: 1 1
+%%PageBoundingBox: 0 0 412 120
+/ClipImage {} def
+userdict begin
+%%BeginData:         1277 BINARY Bytes
+DisplayImage
+0 0
+412 120
+12
+false
+false
+412 120
+0
+false
+false
+0
+5
+xÚíÜ½jQ†ás-^€,caaÅ&`ÀF+±Œ	ØY*ØÅFñoA,¼¬h™Ñ™9³g¯ùÎ³x»¥aÎ<0ì“l6ÆcŒ1ÆcLÛ9¿<¶¶¶¶ÛÊ×fkkk;v[ùÚlmmmÇn+_›­­­íØmåk³µµµ¸İcŒ1Æ˜’søæL»xßö_ÎÕİg'Ù5ºo3vëşQÁêß·»±·?Wİ¡XQLcÓ˜–Ó˜Æ4¦%Å4¦1iI1iLcZRLcÓ˜–Ó˜Æ´•šöêìÛ\üäÖ¦=9y½+,üõßLk±Ÿ¼"Óÿ·+àù/cÚŸnîŒiLcÓÊÆ4¦1iI1iLcZRLcÓ˜–Ó˜Æ4¦%Å4¦1iI1iLcZRL+hÚããwÃcÚ?u''ßö1­İÍœåÎ3iLcÓ&˜¦%Mëş»KÕ~7jù'«û¯A1Íï{2mE1iL«Ó˜Æ4¦%Å4¦1iI1iLcZRLcÓ˜–Ó˜Æ4¦%Å4¦1iIÍò»^wsª™¶|İùjgÚZbÓVTıg³;_LcÓVTıg³;_L›Ñ´Ÿ¿~h`>cŸ¿|Ê®ş³ùúô¸`õïÛŒ=|ô`®ºC±¢˜Æ4¦1-©FçİÍ©fÚò§oİùjgZ÷ÏçLcÚŠbÓ˜V3¦1iLKŠiLcÓ’bÓ˜–mÚ÷¯¶:Ó>¼=­Ğ.›öâéÑä˜Æ4¦1iLcÓ˜Æ4¦1iLcZ…˜Æ4¦1iLëkÚäºkVÍ´å6m-1iLcZRLcÓ˜–TÓv­FŸ±v˜©ş³ÙÎ%¦1­rLcÓ²Mëşš¹ğ›iö¹g»7ÓìsÏvo¦;uîyïÎí‹1iLcÓ˜Æ4¦1iLcÓ˜Æ´:1iLcÓ˜Æ4¦1­fLcÓ˜Æ4¦1iL«Ó˜Æ4¦1iLcÓjÖÎ´Éu÷ªšiËlÚZbÓ˜Æ´¤˜Æ4¦1-)¦1iLKŠiLcÓ’bZAÓœ{:÷,hZ÷OçL«Ó˜Æ´š1iLcÓ˜Æ4¦1­fLcÓ˜Æ4¦1iL«Ó˜Æ4¦1iLcÓjÆ4¦1iLcÓ˜Æ´šµ3mrİ½ªfÚò›¶–˜Æ4¦1-)¦1iLKŠiLcÓ’bÓ˜Æ´¤Š˜¶k5:÷Ü†‹UTÿÜsyÚµSçÛ Æ4¦1iLÓ˜Æ4¦…Å4¦1iI1iLcZRLcÓ˜–Ó˜Æ4¦%Å4¦1-Û´î_ ı[µ]Lëş}Úí¿U»vÓz}«–iLcÓ˜Æ4¦-cÚäºkVÍ´å6m-1iLcZRLcÓ˜–Ó˜Æ4¦%Å4¦1iI1iLcZRELÛµ}ÆÚaR¤úÏf;—˜Æ´Ê1iLË6­ûkæÂo¦ÙïíŞLë?›şvw÷Šüíîî@1iLËˆiLcÓ’bÓ˜Æ´¤˜Æ4¦1-)¦1iLKŠiLcÓ’šÑ´1ÆcŒ1ÆÓxÎ/­­­mÆ¶òµÙÚÚÚİV¾6[[[Û±ÛÊ×fkkk;v[ùÚlmmmn7ÆcŒ1¦äüÖ´¨
+%%EndData
+end
+%%PageTrailer
+%%Trailer
+%%EOF

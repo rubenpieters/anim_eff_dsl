@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{onlyDone} \PYG{o+ow}{=} \PYG{k+kr}{do}
+  \PYG{n}{cond} \PYG{o+ow}{\PYGZlt{}\PYGZhy{}} \PYG{n}{doneItemsGt0}    \PYG{c+c1}{\PYGZhy{}\PYGZhy{} check if more than 0 \PYGZsq{}done\PYGZsq{} items}
+  \PYG{k+kr}{if} \PYG{n}{cond} \PYG{k+kr}{then} \PYG{n}{onlyDoneNaive} \PYG{k+kr}{else} \PYG{n}{hideToDo}
+\end{Verbatim}

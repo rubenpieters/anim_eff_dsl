@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{instance} \PYG{k+kt}{IfThenElse} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{k+kt}{MaxDuration}\PYG{p}{)} \PYG{k+kr}{where}
+  \PYG{n}{ifThenElse} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{p}{(}\PYG{k+kt}{MaxDur} \PYG{n}{durCond}\PYG{p}{))} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{p}{(}\PYG{k+kt}{MaxDur} \PYG{n}{durThen}\PYG{p}{))}
+             \PYG{p}{(}\PYG{k+kt}{Const} \PYG{p}{(}\PYG{k+kt}{MaxDur} \PYG{n}{durElse}\PYG{p}{))} \PYG{o+ow}{=}
+    \PYG{k+kt}{Const} \PYG{p}{(}\PYG{k+kt}{MaxDur} \PYG{p}{(}\PYG{n}{durCond} \PYG{o}{+} \PYG{n}{max} \PYG{n}{durThen} \PYG{n}{durElse}\PYG{p}{))}
+\end{Verbatim}

@@ -1,0 +1,8 @@
+\section{Future Work}
+\label{sec:future}
+
+Some general improvements can be made regarding supporting new backends, more features and improving performance.
+
+We chose the MTL style for this paper, as we believe it is simpler presentation-wise. However, an initial encoding, which is more typical for algebraic effects and handlers, can provide benefits in areas such as the implementation of the relative sequencing. This comparison is another avenue for future work.
+
+An aspect not touched in this paper is \emph{conflict management}. A conflict appears when the same property is targeted by different animations in parallel. For example, if we want to change a value both to 0 and 100 in parallel, what should this animation look like? \dsl{} does no conflict management, and the animation might look stuttery. GSAP, for example, resolves this by only enabling the most recently added animation. However this strategy is not straightforwardly mapped to the context of \dsl{}. Inspectability could provide a solution for this problem by providing the possibility to detect conflicts.

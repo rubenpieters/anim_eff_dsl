@@ -1,0 +1,219 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: ImageMagick 6.8.9
+%%Title: pictures/onlyDoneFig.eps
+%%CreationDate: 2020-03-19T11:06:19+01:00
+%%BoundingBox: -0 -0 412 120
+%%HiResBoundingBox: 0 0 412 120
+%%LanguageLevel: 3
+%%Pages: 1
+%%EndComments
+%%BeginProlog
+/ByteStreamDecodeFilter
+{
+  /z exch def
+  /r exch def
+  /c exch def
+  z 0 eq { /ASCII85Decode filter } if
+  z 1 eq
+  {
+    <<
+      /K -1
+      /Columns c
+      /Rows r
+    >>
+    /CCITTFaxDecode filter
+  } if
+  z 2 eq { /DCTDecode filter } if
+  z 3 eq { /LZWDecode filter } if
+  z 4 eq { /RunLengthDecode filter } if
+  z 5 eq { /FlateDecode filter } if
+} bind def
+
+/DirectClassImageDict
+{
+  colorspace 0 eq
+  {
+    /DeviceRGB setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 8
+      /DataSource pixel_stream
+      /MultipleDataSources false
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /Decode [0 1 0 1 0 1]
+    >>
+  }
+  {
+    /DeviceCMYK setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 8
+      /DataSource pixel_stream
+      /MultipleDataSources false
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /Decode
+        compression 2 eq
+        { [1 0 1 0 1 0 1 0] }
+        { [0 1 0 1 0 1 0 1] }
+        ifelse
+    >>
+  }
+  ifelse
+} bind def
+
+/PseudoClassImageDict
+{
+  % Colors in colormap image.
+  currentfile buffer readline pop
+  token pop /colors exch def pop
+  colors 0 eq
+  {
+    % Depth of grayscale image.
+    currentfile buffer readline pop
+    token pop /bits exch def pop
+    /DeviceGray setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent bits
+      /Decode [0 1]
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /DataSource pixel_stream
+    >>
+  }
+  {
+    % RGB colormap.
+    /colormap colors 3 mul string def
+    compression 0 eq
+    { currentfile /ASCII85Decode filter colormap readstring pop pop }
+    { currentfile colormap readstring pop pop }
+    ifelse
+    [ /Indexed /DeviceRGB colors 1 sub colormap ] setcolorspace
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 8
+      /Decode [0 255]
+      /ImageMatrix [columns 0 0 rows neg 0 rows]
+      /DataSource pixel_stream
+    >>
+  }
+  ifelse
+} bind def
+
+/NonMaskedImageDict
+{
+  class 1 eq
+  { PseudoClassImageDict }
+  { DirectClassImageDict }
+  ifelse
+} bind def
+
+/MaskedImageDict
+{
+  <<
+    /ImageType 3
+    /InterleaveType 3
+    /DataDict NonMaskedImageDict
+    /MaskDict
+    <<
+      /ImageType 1
+      /Width columns
+      /Height rows
+      /BitsPerComponent 1
+      /DataSource mask_stream
+      /MultipleDataSources false
+      /ImageMatrix [ columns 0 0 rows neg 0 rows]
+      /Decode [ 0 1 ]
+    >>
+  >>
+} bind def
+
+/ClipImage
+{} def
+
+/DisplayImage
+{
+  gsave
+  /buffer 512 string def
+  % Translation.
+  currentfile buffer readline pop
+  token pop /x exch def
+  token pop /y exch def pop
+  x y translate
+  % Image size and font size.
+  currentfile buffer readline pop
+  token pop /x exch def
+  token pop /y exch def pop
+  currentfile buffer readline pop
+  token pop /pointsize exch def pop
+  x y scale
+  % Clipping path.
+  currentfile buffer readline pop
+  token pop /clipped exch def pop
+  % Showpage.
+  currentfile buffer readline pop
+  token pop /sp exch def pop
+  % Image pixel size.
+  currentfile buffer readline pop
+  token pop /columns exch def
+  token pop /rows exch def pop
+  % Colorspace (RGB/CMYK).
+  currentfile buffer readline pop
+  token pop /colorspace exch def pop
+  % Transparency.
+  currentfile buffer readline pop
+  token pop /alpha exch def pop
+  % Stencil mask?
+  currentfile buffer readline pop
+  token pop /stencil exch def pop
+  % Image class (direct/pseudo).
+  currentfile buffer readline pop
+  token pop /class exch def pop
+  % Compression type.
+  currentfile buffer readline pop
+  token pop /compression exch def pop
+  % Clip and render.
+  /pixel_stream currentfile columns rows compression ByteStreamDecodeFilter def
+  clipped { ClipImage } if
+  alpha stencil not and
+  { MaskedImageDict mask_stream resetfile }
+  { NonMaskedImageDict }
+  ifelse
+  stencil { 0 setgray imagemask } { image } ifelse
+  grestore
+  sp { showpage } if
+} bind def
+%%EndProlog
+%%Page: 1 1
+%%PageBoundingBox: 0 0 412 120
+/ClipImage {} def
+userdict begin
+%%BeginData:         1598 BINARY Bytes
+DisplayImage
+0 0
+412 120
+12
+false
+false
+412 120
+0
+false
+false
+0
+5
+xÚíİ±ª$U‡ñût†Šˆè>°`¤™˜m"F‚‰™˜É>Öu``™Ûs·ïé¾}æTúÿÈšiº>«?vzaÏÃƒRJ)¥”RJ)Õ·Ÿ–®®®îİÈ÷¦«««»µùŞtuuu·v#ß›®®®îÖnä{ÓÕÕÕmì>(¥”RJ©õùwï¤1¸á†›Ì;†n2Sìn¸ÉL±c¸á–+ß¾ûsw²_ó5;–eFÜâ\·~Ü2Îuø5Êá†[
+néæ²cq®‰n¹¥›ËÅ¹&n¸ä–n.;çš¸á[º¹:]³%v7ÜâsË8—‹sMÜp‹Æ-ã\‡_ÓoÜp‹M¿=ín1¯‰§aeÇpÃ->7iÏ‡vLpÃM2Æá†›¤È+”n¸äöæ«¯ÏğÙï°c3ŸıÙL÷ÿ">·˜Ï>§uİ±™ÆŸøÙ()·˜Ï>§uİ±™ÆŸøÙ()·˜Ï>§N{=·;?›ÃgOÊ-õ³?ë\½w¬àøŸÍá³'å–úÙŸu®Ş;VpüŒÏæğÙ“rKıìÏ:Wï+8~ÆgsøìI¹¥~ög«÷?ã³9|ö¤ÜR?û§ÿş•Æ\ïØğ›IÜp“˜±c¸á&ÁóÉO_\Çá†[ÀlâV6J-Ğìn¸Åç¶)¯ù‘Fe+¥b»wl8Üp¹UcÕêWåÃ·,ÜJ±z‘Ã:®²;†n‰¸Õaµ‰À³®¹c¸á–‹[MV-ÃÚ1ÜpËÈ­«ÆÁX|«àá†[:nÕXm¾Ã·\Ü*°úÆ¯ÿËúg.©¶c¸á–‘[YVÏşÕÉ-;†n¹¸•eõ,®õ?èÚ1Üp‹Ï­2«v7Ürq+Îêôô×ºÃ·ìÜ*°ºyÓ¼‹/VÛ1ÜpËÈ­«MS/¾UyÇpÃ-7¬ìn¸§meµcğÛÏÜ1ÜpKÇ­&«ö÷v7Ürq«ÃªÂÊgjîn¸åâVŠÕ³(Ösıİ²;†n‰¸Ucµ	×â‹•w7Ü²p«œ­ˆvïØdÁ·ÈÜ¤=v7Üd¦Ø1Üp“™bÇpÃm²‘xÈ»ÇûïØÏ¿ÿ•.¸ıñ÷?é›p§q§ÕÌpAq§OnÂiœÆiœV3ÃÅiœ<¸	§½ÏGz§muÚ7oßÃi[öËo¿ÃiœÖÉi¡­hÓV„¶¢5N[ÚŠÖ8Ó¶:íZ_/
+Ók§-$Ö(4Nã´­N»–X‹Ğ8íVb-Bã´[‰µÓ8m÷ŸÓ…Æi­}öå›s^§-´öı?œó¢Ğ8Óö½Ok§]ç"´Kúq.¨Ãß§]„vI?nRÙi§—ş®“ÓÖµÖ•ÛpAî´÷ZëÊMŠ;­=œvgnÃÕÃiwà&œÆiœÆi53\PœÆiÁ›p§q§ÕÌpAq§OnÂiœÆiœV3ÃÅiœ<¸	§q§qšŒÃ7™)v7Üd¦Ø1Üp›,Ã_yŸæ}ZğDà&œÆiœÆi53\PœÆiÁ›p§q§ÕÌpAq§OnÂi×qÆÊ>§9ceŸÓœ±Âi]æ,¼}NsŞ>§9ox†êX§-Üå|ÏF§-Üå|ÏF§-Üå|Ï.¨¶Ğ—ó=¶Ğ—ó=¶Ğ—ó=ƒd¸ z8Íùûœæ|Ï}Ns¾g¨Ôá¿=ï¹ï·§ó=÷ıöt¾g´Ô±N;9ßs—ÓNÎ÷Üå´“ó=ãe¸ wÚÉù»œvr¾ç.§œï,ÃÕÃiíá´;s.¨N»7á4Nã4N«™á‚â4NÜ„Ó8Ó8­f†ŠÓ8-x"pNã4Nã´š.(Nã´à‰ÀMÄá0¸‰‹Üp“˜±c¸á&3Åá†[ü<(¥”RJ)¥”RëñiéêêêÎÑ|oºººº[»‘ïMWWWwk7ò½éêêêníF¾7]]]İÆîƒRJ)¥”
+Yÿ±Ên
+%%EndData
+end
+%%PageTrailer
+%%Trailer
+%%EOF

@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{duration} \PYG{o+ow}{::} \PYG{k+kt}{Const} \PYG{k+kt}{Duration} \PYG{n}{a} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Duration}
+\PYG{n+nf}{duration} \PYG{o+ow}{=} \PYG{n}{getConst}
+
+\PYG{n+nf}{selectBtn2AnimDuration} \PYG{o+ow}{::} \PYG{k+kt}{Duration}
+\PYG{n+nf}{selectBtn2AnimDuration} \PYG{o+ow}{=} \PYG{n}{duration} \PYG{n}{selectBtn2Anim} \PYG{c+c1}{\PYGZhy{}\PYGZhy{} = For 1.0}
+
+\PYG{n+nf}{menuIntroDuration} \PYG{o+ow}{::} \PYG{k+kt}{Duration}
+\PYG{n+nf}{menuIntroDuration} \PYG{o+ow}{=} \PYG{n}{duration} \PYG{n}{menuIntro} \PYG{c+c1}{\PYGZhy{}\PYGZhy{} = For 0.5}
+\end{Verbatim}

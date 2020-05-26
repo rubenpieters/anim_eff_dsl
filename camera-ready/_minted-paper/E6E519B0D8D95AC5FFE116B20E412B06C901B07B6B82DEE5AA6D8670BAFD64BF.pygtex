@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{class} \PYG{k+kt}{LinearTo} \PYG{n}{obj} \PYG{n}{f} \PYG{k+kr}{where}
+  \PYG{n}{linearTo} \PYG{o+ow}{::} \PYG{k+kt}{Traversal\PYGZsq{}} \PYG{n}{s} \PYG{k+kt}{Float} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Duration} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Target} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\end{Verbatim}

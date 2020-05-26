@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{sequential} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{Applicative} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{sequential} \PYG{n}{f1} \PYG{n}{f2} \PYG{o+ow}{=} \PYG{n}{liftA2} \PYG{p}{(}\PYG{n+nf}{\PYGZbs{}}\PYG{k+kr}{\PYGZus{}} \PYG{k+kr}{\PYGZus{}} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n+nb}{()}\PYG{p}{)} \PYG{n}{f1} \PYG{n}{f2}
+\end{Verbatim}

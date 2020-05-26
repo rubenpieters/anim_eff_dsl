@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{const} \PYG{n+nx}{right} \PYG{o}{=} \PYG{k}{new} \PYG{n+nx}{TweenMax}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}box1\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n+nx}{x}\PYG{o}{:} \PYG{l+m+mi}{50} \PYG{p}{\PYGZcb{});}
+\end{Verbatim}

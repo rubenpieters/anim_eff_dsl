@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{line1Out} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{k+kt}{Application} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{line1Out} \PYG{o+ow}{=} \PYG{n}{linearTo} \PYG{p}{(}\PYG{n}{navbar} \PYG{o}{.} \PYG{n}{underline1} \PYG{o}{.} \PYG{n}{width}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{For} \PYG{l+m+mf}{0.25}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{To} \PYG{l+m+mi}{0}\PYG{p}{)}
+\end{Verbatim}

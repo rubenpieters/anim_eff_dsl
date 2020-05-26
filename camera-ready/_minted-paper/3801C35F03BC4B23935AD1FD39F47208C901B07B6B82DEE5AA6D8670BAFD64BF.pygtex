@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{menuIntroDuration} \PYG{o+ow}{=} \PYG{n}{duration} \PYG{n}{menuIntro} \PYG{c+c1}{\PYGZhy{}\PYGZhy{} = 0.5}
+\end{Verbatim}

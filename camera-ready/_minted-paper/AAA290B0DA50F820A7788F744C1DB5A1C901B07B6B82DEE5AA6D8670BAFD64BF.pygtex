@@ -1,0 +1,6 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{instance} \PYG{p}{(}\PYG{k+kt}{Monad} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{k+kt}{IfThenElse} \PYG{p}{(}\PYG{k+kt}{Animation} \PYG{n}{obj} \PYG{n}{f}\PYG{p}{)} \PYG{k+kr}{where}
+  \PYG{n}{ifThenElse} \PYG{n}{fBool} \PYG{n}{thenBranch} \PYG{n}{elseBranch} \PYG{o+ow}{=} \PYG{k+kr}{do}
+    \PYG{n}{bool} \PYG{o+ow}{\PYGZlt{}\PYGZhy{}} \PYG{n}{fBool}
+    \PYG{k+kr}{if} \PYG{n}{bool} \PYG{k+kr}{then} \PYG{n}{thenBranch} \PYG{k+kr}{else} \PYG{n}{elseBranch}
+\end{Verbatim}

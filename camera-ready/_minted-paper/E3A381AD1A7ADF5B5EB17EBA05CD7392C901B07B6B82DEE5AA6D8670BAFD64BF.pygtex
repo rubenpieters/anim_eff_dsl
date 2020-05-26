@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{instance} \PYG{k+kt}{Par} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{k+kt}{Duration}\PYG{p}{)} \PYG{k+kr}{where}
+  \PYG{n}{liftP2} \PYG{k+kr}{\PYGZus{}} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{n}{x1}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{n}{x2}\PYG{p}{)} \PYG{o+ow}{=} \PYG{k+kt}{Const} \PYG{p}{(}\PYG{n}{max} \PYG{n}{x1} \PYG{n}{x2}\PYG{p}{)}
+\end{Verbatim}

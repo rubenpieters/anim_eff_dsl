@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{complicatedAnimDuration} \PYG{o+ow}{::} \PYG{k+kt}{Duration}
+\PYG{n+nf}{complicatedAnimDuration} \PYG{o+ow}{=} \PYG{n}{duration} \PYG{n}{complicatedAnim}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} No instance for (Monad (Const Duration))}
+\end{Verbatim}

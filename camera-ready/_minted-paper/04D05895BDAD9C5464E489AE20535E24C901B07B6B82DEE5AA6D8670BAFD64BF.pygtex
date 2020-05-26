@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{instance} \PYG{p}{(}\PYG{k+kt}{Applicative} \PYG{n}{m}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{k+kt}{Set} \PYG{n}{obj} \PYG{p}{(}\PYG{k+kt}{Animation} \PYG{n}{obj} \PYG{n}{m}\PYG{p}{)} \PYG{k+kr}{where}
+  \PYG{n}{set} \PYG{n}{lens} \PYG{n}{a} \PYG{o+ow}{=} \PYG{k+kt}{Animation} \PYG{o}{\PYGZdl{}} \PYG{n+nf}{\PYGZbs{}}\PYG{n}{obj} \PYG{n}{t} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kr}{let}
+    \PYG{n}{newObj} \PYG{o+ow}{=} \PYG{k+kt}{Lens}\PYG{o}{.}\PYG{n}{set} \PYG{n}{lens} \PYG{n}{a} \PYG{n}{obj}
+    \PYG{k+kr}{in} \PYG{n}{pure} \PYG{p}{(}\PYG{n}{newObj}\PYG{p}{,} \PYG{k+kt}{Right} \PYG{n+nb}{()}\PYG{p}{,} \PYG{k+kt}{Just} \PYG{n}{t}\PYG{p}{)}
+
+\PYG{k+kr}{instance} \PYG{k+kt}{Set} \PYG{n}{obj} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{k+kt}{Duration}\PYG{p}{)} \PYG{k+kr}{where}
+  \PYG{n}{set} \PYG{k+kr}{\PYGZus{}} \PYG{k+kr}{\PYGZus{}} \PYG{o+ow}{=} \PYG{k+kt}{Const} \PYG{p}{(}\PYG{k+kt}{For} \PYG{l+m+mi}{0}\PYG{p}{)}
+\end{Verbatim}

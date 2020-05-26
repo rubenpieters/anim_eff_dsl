@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{checkIcon} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{Set} \PYG{k+kt}{CompleteIcon} \PYG{n}{f}\PYG{p}{,} \PYG{o}{...}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{checkIcon} \PYG{o+ow}{=} \PYG{k+kr}{do} \PYG{o}{...}\PYG{p}{;} \PYG{n}{set} \PYG{p}{(}\PYG{n}{checkmark} \PYG{o}{.} \PYG{n}{color}\PYG{p}{)} \PYG{n}{green}\PYG{p}{;} \PYG{o}{...}
+\end{Verbatim}

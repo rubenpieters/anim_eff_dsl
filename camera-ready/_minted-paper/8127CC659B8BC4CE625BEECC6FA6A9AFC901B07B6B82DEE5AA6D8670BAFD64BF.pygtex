@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{relSeqAnim} \PYG{o+ow}{=} \PYG{n}{relSequential} \PYG{n}{anim1} \PYG{n}{anim2} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+\end{Verbatim}

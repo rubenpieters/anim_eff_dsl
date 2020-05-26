@@ -1,0 +1,69 @@
+\section{Interaction Between Inspectability and Expressivity}
+\label{sec:interaction}
+
+Haskell DSLs are typically monadic because the \hs{>>=} combinator provides
+great expressive power. Yet, this power also hinders inspectability. This section shows how to balance 
+expressiveness and inspectability with a custom combinator. This feature is \emph{opt-in} in the sense that it is only required when inspectability is required. If that is no concern, then it is no problem to work with the \hs{Monad} constraint.
+
+Let us revisit the \hs{onlyDone} animation from Section~\ref{sec:customcomb}. The following definition imposes a \hs{Monad} constraint on \hs{f}, making the animation non-inspectable.
+
+\begin{spec}
+onlyDone :: (LinearTo Application f, Get Application f,
+  Set Application f, Monad f, Parallel f) => f ()
+onlyDone = do
+  cond <- doneItemsGt0
+  if cond then onlyDoneNaive else hideNotDone
+\end{spec}
+
+However, there is duration-related information we can extract.
+For example, the \emph{maximum duration} is the largest
+duration of the two branches.
+
+To express this idea in \dsl{} we introduce an explicit combinator to replace
+this particular use of \hs{>>=}, namely an \hs{if-then-else} construction. 
+
+\begin{code}
+class IfThenElse f where
+  ifThenElse :: f Bool -> f a -> f a -> f a
+\end{code}
+
+This is similar to the \hs{handle} combinator from the \hs{DynamicIdiom} class
+\cite{DBLP:phd/ethos/Yallop10} and the \hs{ifS} combinator from the
+\hs{Selective} class \cite{Mokhov:2019:SAF:3352468.3341694}.
+
+Now we can reformulate \hs{onlyDone} in terms of this \hs{ifThenElse} combinator\footnote{Using GHC's \texttt{RebindableSyntax} extension, it is possible to use the builtin \hs{if ... then ... else ...} syntax.}.
+
+\begin{code}
+onlyDone :: (LinearTo Application f, Get Application f,
+  Set Application f, Applicative f, Parallel f, IfThenElse f)
+  => f ()
+onlyDone = ifThenElse doneItemsGt0 onlyDoneNaive hideNotDone
+\end{code}
+
+We implement an appropriate \hs{Animation} instance for \hs{IfThenElse}.
+
+\begin{code}
+instance (Monad f) => IfThenElse (Animation obj f) where
+  ifThenElse fBool thenBranch elseBranch = do
+    bool <- fBool
+    if bool then thenBranch else elseBranch
+\end{code}
+
+Now, we can retrieve the maximum duration, using the \hs{newtype}
+\hs{MaxDuration} to signify this. The instance for \hs{IfThenElse} retrieves the
+durations of the \texttt{then} and \texttt{else} branches and adds the greater
+value to the duration of the preceding animation inside the condition.
+
+\begin{code}
+instance IfThenElse (Const MaxDuration) where
+  ifThenElse (Const (MaxDur durCond)) (Const (MaxDur durThen))
+             (Const (MaxDur durElse)) =
+    Const (MaxDur (durCond + max durThen durElse))
+\end{code}
+
+This allows us to retrieve the maximum duration of the \hs{onlyDone} animation.
+
+\begin{spec}
+onlyDoneMaxDuration :: MaxDuration
+onlyDoneMaxDuration = maxDuration onlyDone -- = MaxDur 1.0
+\end{spec}

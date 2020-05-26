@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{relSequential} \PYG{o+ow}{::} \PYG{n}{forall} \PYG{n}{c} \PYG{n}{g}\PYG{o}{.}
+  \PYG{p}{(}\PYG{n}{c} \PYG{p}{(}\PYG{k+kt}{Const} \PYG{k+kt}{Duration}\PYG{p}{),} \PYG{n}{c} \PYG{n}{g}\PYG{p}{,} \PYG{k+kt}{Applicative} \PYG{n}{g}\PYG{p}{,} \PYG{k+kt}{Delay} \PYG{n}{g}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}}
+  \PYG{p}{(}\PYG{n}{forall} \PYG{n}{f}\PYG{o}{.} \PYG{n}{c} \PYG{n}{f} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}\PYG{p}{)} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n}{g} \PYG{n+nb}{()} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{k+kt}{Float} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n}{g} \PYG{n+nb}{()}
+\PYG{n+nf}{relSequential} \PYG{n}{anim1} \PYG{n}{anim2} \PYG{n}{offset} \PYG{o+ow}{=} \PYG{k+kr}{let}
+  \PYG{n}{dur} \PYG{o+ow}{=} \PYG{n}{getDuration} \PYG{p}{(}\PYG{n}{duration} \PYG{n}{anim1}\PYG{p}{)}
+  \PYG{k+kr}{in} \PYG{n}{anim1} \PYG{p}{`}\PYG{n}{sequential}\PYG{p}{`} \PYG{p}{(}\PYG{n}{delay} \PYG{p}{(}\PYG{n}{dur} \PYG{o}{+} \PYG{n}{offset}\PYG{p}{)} \PYG{o}{*\PYGZgt{}} \PYG{n}{anim2}\PYG{p}{)}
+\end{Verbatim}

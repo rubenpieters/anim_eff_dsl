@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{p}{(}\PYG{n}{s2}\PYG{p}{,} \PYG{n}{remAn2}\PYG{p}{,} \PYG{n}{remDel2}\PYG{p}{)} \PYG{o+ow}{=} \PYG{n}{runIdentity} \PYG{p}{(}\PYG{n}{runAnimation} \PYG{n}{anim2} \PYG{n}{s1} \PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} s2 = (50.0, 0.0) | remAn2 = Right () | remDel2 = Just 0.5}
+\end{Verbatim}

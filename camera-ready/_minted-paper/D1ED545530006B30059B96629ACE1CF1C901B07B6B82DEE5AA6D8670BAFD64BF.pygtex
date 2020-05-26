@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{menuSlideIn} \PYG{o+ow}{=} \PYG{n}{linearTo} \PYG{p}{(}\PYG{n}{menu} \PYG{o}{.} \PYG{n}{width}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{For} \PYG{l+m+mf}{0.5}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{To} \PYG{l+m+mi}{75}\PYG{p}{)}
+\PYG{n+nf}{appFadeOut} \PYG{o+ow}{=} \PYG{n}{linearTo} \PYG{p}{(}\PYG{n}{obscuringBox} \PYG{o}{.} \PYG{n}{alpha}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{For} \PYG{l+m+mf}{0.5}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{To} \PYG{l+m+mf}{0.65}\PYG{p}{)}
+\end{Verbatim}

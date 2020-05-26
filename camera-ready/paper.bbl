@@ -1,0 +1,97 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{DBLP:conf/infovis/BedersonB99}
+Bederson, B.B., Boltman, A.: Does animation help users build mental maps of
+  spatial information? In: INFOVIS 1999. pp. 28--35 (1999).
+  \doi{10.1109/INFVIS.1999.801854}
+
+\bibitem{DBLP:journals/corr/CapriottiK14}
+Capriotti, P., Kaposi, A.: Free applicative functors. In: MSFP 2014. pp. 2--30
+  (2014). \doi{10.4204/EPTCS.153.2}
+
+\bibitem{DBLP:journals/jfp/CaretteKS09}
+Carette, J., Kiselyov, O., Shan, C.: Finally tagless, partially evaluated:
+  Tagless staged interpreters for simpler typed languages. J. Funct. Program.
+  \textbf{19}(5),  509--543 (2009). \doi{10.1017/S0956796809007205}
+
+\bibitem{DBLP:conf/icfp/ElliottH97}
+Elliott, C., Hudak, P.: Functional reactive animation. In: ICFP 1997. pp.
+  263--273 (1997). \doi{10.1145/258948.258973}
+
+\bibitem{DBLP:conf/haskell/Gibbons16}
+Gibbons, J.: Free delivery (functional pearl). In: Haskell 2016. pp. 45--50
+  (2016). \doi{10.1145/2976002.2976005}
+
+\bibitem{DBLP:conf/haskell/GillSDEFGRSS15}
+Gill, A., Sculthorpe, N., Dawson, J., Eskilson, A., Farmer, A., Grebe, M.,
+  Rosenbluth, J., Scott, R., Stanton, J.: The remote monad design pattern. In:
+  Haskell 2015. pp. 59--70 (2015). \doi{10.1145/2804302.2804311}
+
+\bibitem{DBLP:conf/chi/Gonzalez96}
+Gonzalez, C.: Does animation in user interfaces improve decision making? In:
+  CHI 1996. pp. 27--34 (1996). \doi{10.1145/238386.238396}
+
+\bibitem{DBLP:journals/tvcg/HeerR07}
+Heer, J., Robertson, G.G.: Animated transitions in statistical data graphics.
+  {IEEE} Trans. Vis. Comput. Graph.  \textbf{13}(6),  1240--1247 (2007).
+  \doi{10.1109/TVCG.2007.70539}
+
+\bibitem{DBLP:journals/scp/Hughes00}
+Hughes, J.: Generalising monads to arrows. Sci. Comput. Program.
+  \textbf{37}(1-3),  67--111 (2000). \doi{10.1016/S0167-6423(99)00023-4}
+
+\bibitem{DBLP:conf/afp/Jones95}
+Jones, M.P.: Functional programming with overloading and higher-order
+  polymorphism. In: Advanced Functional Programming, First International Spring
+  School on Advanced Functional Programming Techniques, B{\aa}stad, Sweden, May
+  24-30, 1995, Tutorial Text. pp. 97--136 (1995).
+  \doi{10.1007/3-540-59451-5\_4}
+
+\bibitem{DBLP:journals/corr/abs-1905-06544}
+Kiselyov, O.: Effects without monads: Non-determinism - back to the meta
+  language. In: ML/OCaml 2017. pp. 15--40 (2017). \doi{10.4204/EPTCS.294.2}
+
+\bibitem{DBLP:conf/chi/KurlanderL95}
+Kurlander, D., Ling, D.T.: Planning-based control of interface animation. In:
+  CHI 1995. pp. 472--479 (1995). \doi{10.1145/223904.223968}
+
+\bibitem{vlLenses}
+van Laarhoven, T.: {CPS-Based Functional References} (2009),
+  \url{https://www.twanvl.nl/blog/haskell/cps-functional-references}
+
+\bibitem{DBLP:conf/popl/LiangHJ95}
+Liang, S., Hudak, P., Jones, M.P.: Monad transformers and modular interpreters.
+  In: POPL 1995. pp. 333--343 (1995). \doi{10.1145/199448.199528}
+
+\bibitem{DBLP:conf/icfp/Lindley14}
+Lindley, S.: Algebraic effects and effect handlers for idioms and arrows. In:
+  WGP 2014. pp. 47--58 (2014). \doi{10.1145/2633628.2633636}
+
+\bibitem{DBLP:journals/jfp/McbrideP08}
+McBride, C., Paterson, R.: Applicative programming with effects. J. Funct.
+  Program.  \textbf{18}(1),  1--13 (2008). \doi{10.1017/S0956796807006326}
+
+\bibitem{DBLP:conf/eics/MirlacherPB12}
+Mirlacher, T., Palanque, P.A., Bernhaupt, R.: Engineering animations in user
+  interfaces. In: EICS 2012. pp. 111--120 (2012). \doi{10.1145/2305484.2305504}
+
+\bibitem{Mokhov:2019:SAF:3352468.3341694}
+Mokhov, A., Lukyanov, G., Marlow, S., Dimino, J.: Selective applicative
+  functors. ICFP 2019 pp. 90:1--90:29 (2019). \doi{10.1145/3341694}
+
+\bibitem{DBLP:journals/pacmpl/MokhovMJ18}
+Mokhov, A., Mitchell, N., {Peyton Jones}, S.: Build systems {\`{a}} la carte.
+  {PACMPL}  \textbf{2}({ICFP 2018}),  79:1--79:29 (2018). \doi{10.1145/3236774}
+
+\bibitem{DBLP:conf/lfp/Wadler90}
+Wadler, P.: Comprehending monads. In: LFP 1990. pp. 61--78 (1990).
+  \doi{10.1145/91556.91592}
+
+\bibitem{DBLP:phd/ethos/Yallop10}
+Yallop, J.: Abstraction for web programming. Ph.D. thesis, University of
+  Edinburgh, {UK} (2010)
+
+\end{thebibliography}

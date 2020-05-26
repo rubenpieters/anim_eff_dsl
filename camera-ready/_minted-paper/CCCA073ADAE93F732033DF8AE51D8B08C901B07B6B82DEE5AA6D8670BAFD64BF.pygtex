@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{up} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{p}{(}\PYG{k+kt}{Float}\PYG{p}{,} \PYG{k+kt}{Float}\PYG{p}{)} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{up} \PYG{o+ow}{=} \PYG{n}{linearTo} \PYG{n}{y} \PYG{p}{(}\PYG{k+kt}{For} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{To} \PYG{l+m+mi}{50}\PYG{p}{)}
+
+\PYG{n+nf}{rightThenUp} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{p}{(}\PYG{k+kt}{Float}\PYG{p}{,} \PYG{k+kt}{Float}\PYG{p}{)} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{Applicative} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{rightThenUp} \PYG{o+ow}{=} \PYG{n}{right} \PYG{p}{`}\PYG{n}{sequential}\PYG{p}{`} \PYG{n}{up}
+\end{Verbatim}

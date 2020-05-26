@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{menuIntro} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{k+kt}{Application} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{Parallel} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{menuIntro} \PYG{o+ow}{=} \PYG{n}{menuSlideIn} \PYG{p}{`}\PYG{n}{parallel}\PYG{p}{`} \PYG{n}{appFadeOut}
+\end{Verbatim}

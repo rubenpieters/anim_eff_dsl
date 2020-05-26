@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{onlyDoneMaxDuration} \PYG{o+ow}{::} \PYG{k+kt}{MaxDuration}
+\PYG{n+nf}{onlyDoneMaxDuration} \PYG{o+ow}{=} \PYG{n}{maxDuration} \PYG{n}{onlyDone} \PYG{c+c1}{\PYGZhy{}\PYGZhy{} = MaxDur 1.0}
+\end{Verbatim}

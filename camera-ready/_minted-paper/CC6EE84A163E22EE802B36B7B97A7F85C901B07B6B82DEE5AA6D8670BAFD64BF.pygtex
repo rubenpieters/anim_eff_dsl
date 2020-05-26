@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{newtype} \PYG{k+kt}{Const} \PYG{n}{a} \PYG{n}{b} \PYG{o+ow}{=} \PYG{k+kt}{Const} \PYG{p}{\PYGZob{}} \PYG{n}{getConst} \PYG{o+ow}{::} \PYG{n}{a} \PYG{p}{\PYGZcb{}}
+\end{Verbatim}

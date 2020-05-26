@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{complicatedAnim} \PYG{o+ow}{=} \PYG{k+kr}{do} \PYG{n}{v} \PYG{o+ow}{\PYGZlt{}\PYGZhy{}} \PYG{n}{get}\PYG{p}{;} \PYG{n}{linearTo} \PYG{n}{lens} \PYG{p}{(}\PYG{k+kt}{For} \PYG{n}{v}\PYG{p}{)} \PYG{p}{(}\PYG{k+kt}{To} \PYG{l+m+mi}{10}\PYG{p}{)}
+\PYG{n+nf}{complicatedAnimDuration} \PYG{o+ow}{=} \PYG{n}{duration} \PYG{n}{complicatedAnim} \PYG{c+c1}{\PYGZhy{}\PYGZhy{} type error}
+\end{Verbatim}

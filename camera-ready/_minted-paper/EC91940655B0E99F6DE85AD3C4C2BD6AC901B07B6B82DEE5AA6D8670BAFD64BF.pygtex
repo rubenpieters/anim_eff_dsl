@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{onlyDone} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{k+kt}{Application} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{Get} \PYG{k+kt}{Application} \PYG{n}{f}\PYG{p}{,}
+  \PYG{k+kt}{Set} \PYG{k+kt}{Application} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{Monad} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{Parallel} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{onlyDone} \PYG{o+ow}{=} \PYG{k+kr}{do}
+  \PYG{n}{cond} \PYG{o+ow}{\PYGZlt{}\PYGZhy{}} \PYG{n}{doneItemsGt0}
+  \PYG{k+kr}{if} \PYG{n}{cond} \PYG{k+kr}{then} \PYG{n}{onlyDoneNaive} \PYG{k+kr}{else} \PYG{n}{hideNotDone}
+\end{Verbatim}

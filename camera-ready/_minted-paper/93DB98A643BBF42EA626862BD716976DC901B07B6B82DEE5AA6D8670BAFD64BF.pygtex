@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n+nf}{checkIcon} \PYG{o+ow}{=} \PYG{k+kr}{do} \PYG{o}{...}\PYG{p}{;} \PYG{n}{set} \PYG{p}{(}\PYG{n}{checkmark} \PYG{o}{.} \PYG{n}{color}\PYG{p}{)} \PYG{n}{green}\PYG{p}{;} \PYG{o}{...}
+\end{Verbatim}

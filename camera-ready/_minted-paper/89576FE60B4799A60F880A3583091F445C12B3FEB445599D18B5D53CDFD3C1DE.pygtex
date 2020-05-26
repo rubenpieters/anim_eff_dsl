@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{const} \PYG{n+nx}{relativeCond} \PYG{o}{=} \PYG{k}{new} \PYG{n+nx}{TimelineMax}\PYG{p}{(\PYGZob{}} \PYG{n+nx}{paused}\PYG{o}{:} \PYG{k+kc}{true} \PYG{p}{\PYGZcb{})}
+  \PYG{p}{.}\PYG{n+nx}{add}\PYG{p}{(}\PYG{k}{new} \PYG{n+nx}{TweenMax}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}box1\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n+nx}{x}\PYG{o}{:} \PYG{l+m+mi}{50} \PYG{p}{\PYGZcb{}),} \PYG{l+m+mi}{0}\PYG{p}{)}
+  \PYG{p}{.}\PYG{n+nx}{add}\PYG{p}{(()} \PYG{o}{=\PYGZgt{}} \PYG{p}{\PYGZob{}} \PYG{k}{if} \PYG{p}{(}\PYG{n+nx}{cond}\PYG{p}{)} \PYG{p}{\PYGZob{}} \PYG{k}{new} \PYG{n+nx}{TweenMax}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}box1\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n+nx}{x}\PYG{o}{:} \PYG{l+m+mi}{100} \PYG{p}{\PYGZcb{});}
+               \PYG{p}{\PYGZcb{}} \PYG{k}{else} \PYG{p}{\PYGZob{}} \PYG{k}{new} \PYG{n+nx}{TweenMax}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}box1\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n+nx}{x}\PYG{o}{:} \PYG{l+m+mi}{0} \PYG{p}{\PYGZcb{});} \PYG{p}{\PYGZcb{}} \PYG{p}{\PYGZcb{})}
+  \PYG{p}{.}\PYG{n+nx}{add}\PYG{p}{(}\PYG{k}{new} \PYG{n+nx}{TweenMax}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}\PYGZsh{}box2\PYGZdq{}}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{p}{\PYGZob{}} \PYG{n+nx}{x}\PYG{o}{:} \PYG{l+m+mi}{50} \PYG{p}{\PYGZcb{}),} \PYG{l+s+s2}{\PYGZdq{}\PYGZhy{}=0.5\PYGZdq{}}\PYG{p}{);}
+\end{Verbatim}

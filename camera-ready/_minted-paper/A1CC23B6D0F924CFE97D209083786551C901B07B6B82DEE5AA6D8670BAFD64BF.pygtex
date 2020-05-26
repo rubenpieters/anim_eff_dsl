@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{\PYGZhy{}\PYGZhy{} create synonym for multiple constraints}
+\PYG{k+kr}{class} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{k+kt}{Float} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{IfThenElse} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{k+kt}{Combined} \PYG{n}{f} \PYG{k+kr}{where}
+\PYG{k+kr}{instance} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{k+kt}{Float} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{IfThenElse} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{k+kt}{Combined} \PYG{n}{f} \PYG{k+kr}{where}
+
+\PYG{n+nf}{relCond} \PYG{o+ow}{::} \PYG{p}{(}\PYG{k+kt}{LinearTo} \PYG{k+kt}{Float} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{IfThenElse} \PYG{n}{f}\PYG{p}{,} \PYG{k+kt}{Applicative} \PYG{n}{f}\PYG{p}{)} \PYG{o+ow}{=\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\PYG{n+nf}{relCond} \PYG{o+ow}{=} \PYG{n}{relMaxSequential} \PYG{o}{@}\PYG{k+kt}{Combined} \PYG{n}{anim1} \PYG{n}{anim2} \PYG{p}{(}\PYG{o}{\PYGZhy{}}\PYG{l+m+mf}{0.5}\PYG{p}{)}
+\end{Verbatim}

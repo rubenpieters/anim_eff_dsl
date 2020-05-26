@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{class} \PYG{k+kt}{Set} \PYG{n}{obj} \PYG{n}{f} \PYG{k+kr}{where} \PYG{n}{set} \PYG{o+ow}{::} \PYG{k+kt}{Lens\PYGZsq{}} \PYG{n}{obj} \PYG{n}{a} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n}{a} \PYG{o+ow}{\PYGZhy{}\PYGZgt{}} \PYG{n}{f} \PYG{n+nb}{()}
+\end{Verbatim}

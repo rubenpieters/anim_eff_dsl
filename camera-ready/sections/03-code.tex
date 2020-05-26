@@ -1,0 +1,63 @@
+\begin{code}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+
+import Prelude hiding (seq)
+
+import Control.Applicative (liftA2)
+import Control.Monad
+
+import Data.Functor.Const
+
+import Lens.Micro
+import Lens.Micro.TH
+
+import Graphics.Gloss hiding (color)
+import Graphics.Gloss.Interface.Pure.Game hiding (color)
+
+main :: IO ()
+main = let
+  bgColor = makeColor (196 / 256) (200 / 256) (194 / 256) 1
+  window = InWindow "animation-dsl" (100, 100) (100, 100)
+  in do
+  play window bgColor 60 () (\_ -> rectangleSolid 20 20 & Color (makeColor 1 0 0 1)) (\_ w -> w) (\_ w -> w)
+
+str :: String
+str = "str"
+
+newtype Duration = For Float
+  deriving (Ord, Eq, Show)
+
+instance Semigroup Duration where
+  (<>) = mappend
+
+instance Monoid Duration where
+  mempty = For 0
+  mappend (For a) (For b) = For (a + b)
+
+newtype Target = To Float
+  deriving (Ord, Eq, Show)
+
+data MenuWorld = MenuWorld
+data GameWorld = GameWorld
+
+x = undefined
+y = undefined
+
+menu = undefined
+obscuringBox = undefined
+alpha = undefined
+
+playSound = undefined
+
+instance (Monad m) => Functor (Animation obj m) where
+  fmap = liftM
+
+instance (Monad m) => Applicative (Animation obj m) where
+  pure = return
+  (<*>) = ap
+\end{code}
